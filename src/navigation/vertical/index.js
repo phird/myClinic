@@ -1,16 +1,9 @@
-import { Mail, Home } from "react-feather";
+// ** Navigation imports
+import apps from './apps'
+import dashboards from './dashboards'
 
+// ** Merge & Export
 export default [
-  {
-    id: "home",
-    title: "Home",
-    icon: <Home size={20} />,
-    navLink: "/home",
-  },
-  {
-    id: "secondPage",
-    title: "Second Page",
-    icon: <Mail size={20} />,
-    navLink: "/second-page",
-  },
-];
+    ...dashboards,
+    ...apps,
+    ]

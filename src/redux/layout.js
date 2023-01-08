@@ -1,29 +1,29 @@
 // ** Redux Imports
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit'
 
 // ** ThemeConfig Import
-import themeConfig from "@configs/themeConfig";
+import themeConfig from '@configs/themeConfig'
 
 const initialMenuCollapsed = () => {
-  const item = window.localStorage.getItem("menuCollapsed");
+  const item = window.localStorage.getItem('menuCollapsed')
   //** Parse stored json or if none return initialValue
-  return item ? JSON.parse(item) : themeConfig.layout.menu.isCollapsed;
-};
+  return item ? JSON.parse(item) : themeConfig.layout.menu.isCollapsed
+}
 
 const initialDirection = () => {
-  const item = window.localStorage.getItem("direction");
+  const item = window.localStorage.getItem('direction')
   //** Parse stored json or if none return initialValue
-  return item ? JSON.parse(item) : themeConfig.layout.isRTL;
-};
+  return item ? JSON.parse(item) : themeConfig.layout.isRTL
+}
 
 const initialSkin = () => {
-  const item = window.localStorage.getItem("skin");
+  const item = window.localStorage.getItem('skin')
   //** Parse stored json or if none return initialValue
-  return item ? JSON.parse(item) : themeConfig.layout.skin;
-};
+  return item ? JSON.parse(item) : themeConfig.layout.skin
+}
 
 export const layoutSlice = createSlice({
-  name: "layout",
+  name: 'layout',
   initialState: {
     skin: initialSkin(),
     isRTL: initialDirection(),
@@ -34,47 +34,44 @@ export const layoutSlice = createSlice({
     navbarType: themeConfig.layout.navbar.type,
     menuHidden: themeConfig.layout.menu.isHidden,
     contentWidth: themeConfig.layout.contentWidth,
-    navbarColor: themeConfig.layout.navbar.backgroundColor,
+    navbarColor: themeConfig.layout.navbar.backgroundColor
   },
   reducers: {
     handleRTL: (state, action) => {
-      state.isRTL = action.payload;
-      window.localStorage.setItem("direction", JSON.stringify(action.payload));
+      state.isRTL = action.payload
+      window.localStorage.setItem('direction', JSON.stringify(action.payload))
     },
     handleSkin: (state, action) => {
-      state.skin = action.payload;
-      window.localStorage.setItem("skin", JSON.stringify(action.payload));
+      state.skin = action.payload
+      window.localStorage.setItem('skin', JSON.stringify(action.payload))
     },
     handleLayout: (state, action) => {
-      state.layout = action.payload;
+      state.layout = action.payload
     },
     handleFooterType: (state, action) => {
-      state.footerType = action.payload;
+      state.footerType = action.payload
     },
     handleNavbarType: (state, action) => {
-      state.navbarType = action.payload;
+      state.navbarType = action.payload
     },
     handleMenuHidden: (state, action) => {
-      state.menuHidden = action.payload;
+      state.menuHidden = action.payload
     },
     handleLastLayout: (state, action) => {
-      state.lastLayout = action.payload;
+      state.lastLayout = action.payload
     },
     handleNavbarColor: (state, action) => {
-      state.navbarColor = action.payload;
+      state.navbarColor = action.payload
     },
     handleContentWidth: (state, action) => {
-      state.contentWidth = action.payload;
+      state.contentWidth = action.payload
     },
     handleMenuCollapsed: (state, action) => {
-      state.menuCollapsed = action.payload;
-      window.localStorage.setItem(
-        "menuCollapsed",
-        JSON.stringify(action.payload)
-      );
-    },
-  },
-});
+      state.menuCollapsed = action.payload
+      window.localStorage.setItem('menuCollapsed', JSON.stringify(action.payload))
+    }
+  }
+})
 
 export const {
   handleRTL,
@@ -86,7 +83,7 @@ export const {
   handleFooterType,
   handleNavbarColor,
   handleContentWidth,
-  handleMenuCollapsed,
-} = layoutSlice.actions;
+  handleMenuCollapsed
+} = layoutSlice.actions
 
-export default layoutSlice.reducer;
+export default layoutSlice.reducer
