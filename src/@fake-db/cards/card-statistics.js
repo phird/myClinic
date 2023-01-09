@@ -28,7 +28,7 @@ const data = {
       }
     ],
     analyticsData: {
-      subscribers: 92600
+      subscribers: 1000
     }
   },
   revenueGenerated: {
@@ -61,7 +61,7 @@ const data = {
       }
     ],
     analyticsData: {
-      orders: 97500
+      orders: 1600
     }
   },
   siteTraffic: {

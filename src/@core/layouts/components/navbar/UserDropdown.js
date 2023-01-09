@@ -19,7 +19,7 @@ import { User, Mail, CheckSquare, MessageSquare, Settings, CreditCard, HelpCircl
 import { UncontrolledDropdown, DropdownMenu, DropdownToggle, DropdownItem } from 'reactstrap'
 
 // ** Default Avatar Image
-import defaultAvatar from '@src/assets/images/portrait/small/avatar-s-11.jpg'
+import defaultAvatar from '../../../../assets/images/avatars/avatar-blank.png'
 
 const UserDropdown = () => {
   // ** Store Vars
@@ -42,7 +42,7 @@ const UserDropdown = () => {
     <UncontrolledDropdown tag='li' className='dropdown-user nav-item'>
       <DropdownToggle href='/' tag='a' className='nav-link dropdown-user-link' onClick={e => e.preventDefault()}>
         <div className='user-nav d-sm-flex d-none'>
-          <span className='user-name fw-bold'>{(userData && userData['username']) || 'John Doe'}</span>
+          <span className='user-name fw-bold'>{(userData && userData['username']) || 'Phirachat'}</span>
           <span className='user-status'>{(userData && userData.role) || 'Admin'}</span>
         </div>
         <Avatar img={userAvatar} imgHeight='40' imgWidth='40' status='online' />

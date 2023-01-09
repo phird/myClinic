@@ -2,17 +2,17 @@ import mock from '../mock'
 import jwt from 'jsonwebtoken'
 
 // Avatar Imports
-import avatar1 from '@src/assets/images/avatars/1-small.png'
+import avatar1 from '@src/assets/images/avatars/phi.png'
 import avatar11 from '@src/assets/images/portrait/small/avatar-s-11.jpg'
 
 const data = {
   users: [
     {
       id: 1,
-      fullName: 'John Doe',
-      username: 'johndoe',
+      fullName: 'Phirachat Kochanil',
+      username: 'phird',
       password: 'admin',
-      avatar: avatar11,
+      avatar: avatar1,
       email: 'admin@demo.com',
       role: 'admin',
       ability: [
@@ -27,10 +27,10 @@ const data = {
     },
     {
       id: 2,
-      fullName: 'Jane Doe',
-      username: 'janedoe',
+      fullName: 'mr Client',
+      username: 'phi-client',
       password: 'client',
-      avatar: avatar1,
+      avatar: avatar11,
       email: 'client@demo.com',
       role: 'client',
       ability: [

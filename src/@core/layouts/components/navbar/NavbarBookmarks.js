@@ -42,7 +42,7 @@ const NavbarBookmarks = props => {
   }, [])
 
   // ** Loops through Bookmarks Array to return Bookmarks
-  const renderBookmarks = () => {
+/*   const renderBookmarks = () => {
     if (store.bookmarks.length) {
       return store.bookmarks
         .map(item => {
@@ -60,7 +60,7 @@ const NavbarBookmarks = props => {
     } else {
       return null
     }
-  }
+  } */
 
   // ** If user has more than 10 bookmarks then add the extra Bookmarks to a dropdown
   const renderExtraBookmarksDropdown = () => {
@@ -149,8 +149,8 @@ const NavbarBookmarks = props => {
         </NavItem>
       </ul>
       <ul className='nav navbar-nav bookmark-icons align-items-center'>
-        {renderBookmarks()}
-        {renderExtraBookmarksDropdown()}
+        {/* {renderBookmarks()} */}
+{/*         {renderExtraBookmarksDropdown()}
         <NavItem className='nav-item d-none d-lg-block'>
           <NavLink className='bookmark-star' onClick={handleBookmarkVisibility}>
             <Icon.Star className='ficon text-warning' />
@@ -222,7 +222,7 @@ const NavbarBookmarks = props => {
               />
             ) : null}
           </div>
-        </NavItem>
+        </NavItem> */}
       </ul>
     </Fragment>
   )
