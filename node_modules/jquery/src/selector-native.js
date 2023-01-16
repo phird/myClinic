@@ -196,8 +196,9 @@ jQuery.extend( {
 		return ret;
 	},
 	contains: function( a, b ) {
-		var bup = b && b.parentNode;
-		return a === bup || !!( bup && bup.nodeType === 1 && a.contains( bup ) );
+		var adown = a.nodeType === 9 ? a.documentElement : a,
+			bup = b && b.parentNode;
+		return a === bup || !!( bup && bup.nodeType === 1 && adown.contains( bup ) );
 	},
 	isXMLDoc: function( elem ) {
 		var namespace = elem.namespaceURI,
