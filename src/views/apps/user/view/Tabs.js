@@ -15,7 +15,7 @@ import BillingPlanTab from './BillingTab'
 import UserTimeline from './UserTimeline'
 import Notifications from './Notifications'
 import UserProjectsList from './UserProjectsList'
-
+import EncounterTable from '../../../tables/reactstrap/TableBasic'
 const UserTabs = ({ active, toggleTab }) => {
   return (
     <Fragment>
@@ -23,10 +23,10 @@ const UserTabs = ({ active, toggleTab }) => {
         <NavItem>
           <NavLink active={active === '1'} onClick={() => toggleTab('1')}>
             <User className='font-medium-3 me-50' />
-            <span className='fw-bold'>Account</span>
+            <span className='fw-bold'>รายละเอียดผู้ป่วย</span>
           </NavLink>
         </NavItem>
-        <NavItem>
+{/*         <NavItem>
           <NavLink active={active === '2'} onClick={() => toggleTab('2')}>
             <Lock className='font-medium-3 me-50' />
             <span className='fw-bold'>Security</span>
@@ -43,32 +43,15 @@ const UserTabs = ({ active, toggleTab }) => {
             <Bell className='font-medium-3 me-50' />
             <span className='fw-bold'>Notifications</span>
           </NavLink>
-        </NavItem>
-        <NavItem>
-          <NavLink active={active === '5'} onClick={() => toggleTab('5')}>
-            <Link className='font-medium-3 me-50' />
-            <span className='fw-bold'>Connections</span>
-          </NavLink>
-        </NavItem>
+        </NavItem> */}
+
       </Nav>
       <TabContent activeTab={active}>
         <TabPane tabId='1'>
-          <UserProjectsList />
-          <UserTimeline />
+          <EncounterTable/>
           <InvoiceList />
         </TabPane>
-        <TabPane tabId='2'>
-          <SecurityTab />
-        </TabPane>
-        <TabPane tabId='3'>
-          <BillingPlanTab />
-        </TabPane>
-        <TabPane tabId='4'>
-          <Notifications />
-        </TabPane>
-        <TabPane tabId='5'>
-          <Connections />
-        </TabPane>
+        
       </TabContent>
     </Fragment>
   )

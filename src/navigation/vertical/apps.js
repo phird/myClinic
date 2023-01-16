@@ -8,6 +8,9 @@ import {
   UserCheck,
   Box,
   Settings,
+  Shield,
+  Circle,
+  User
 } from 'react-feather'
 
 export default [
@@ -27,17 +30,18 @@ export default [
     navLink: '/apps/appointment'
   },
   {
+    id: 'patient',
+    title: 'จัดการผู้ป่วย',
+    icon: <UserCheck size={20} />,
+    navLink: '/apps/patient'
+  },
+  {
     id: 'encounter',
     title: 'ตรวจผู้ป่วย',
     icon: <PenTool size={20} />,
     navLink: '/apps/encounter'
   },
-  {
-    id: 'patient',
-    title: 'จัดการผู้ป่วย',
-    icon: <UserCheck size={20} />,
-    navLink: '/apps/users'
-  },
+
   {
     id: 'services',
     title: 'จัดการการบริการ',
@@ -51,11 +55,10 @@ export default [
     navLink: '/apps/drugs'
   },
   {
-    id: 'setting',
-    title: 'ตั้งค่า',
-    icon: <Settings size={20} />,
-    navLink: '/apps/setting'
+    id: 'staff',
+    title: 'จัดการบุคลากร',
+    icon: <User size={20} />,
+    navLink: '/apps/staff'
   },
-
  
 ]

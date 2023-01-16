@@ -6,6 +6,8 @@ import axios from 'axios'
 
 export const getAllData = createAsyncThunk('appUsers/getAllData', async () => {
   const response = await axios.get('/api/users/list/all-data')
+  console.log("get all data ")
+  console.log(response.data)
   return response.data
 })
 
@@ -20,6 +22,8 @@ export const getData = createAsyncThunk('appUsers/getData', async params => {
 
 export const getUser = createAsyncThunk('appUsers/getUser', async id => {
   const response = await axios.get('/api/users/user', { id })
+  console.log("get patient")
+  console.log(response.data.patient)
   return response.data.user
 })
 

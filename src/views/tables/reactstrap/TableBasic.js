@@ -14,23 +14,20 @@ import avatar3 from '@src/assets/images/portrait/small/avatar-s-7.jpg'
 import { MoreVertical, Edit, Trash } from 'react-feather'
 
 // ** Reactstrap Imports
-import { Table, Badge, UncontrolledDropdown, DropdownMenu, DropdownItem, DropdownToggle } from 'reactstrap'
+import { Table, 
+  Badge, 
+  UncontrolledDropdown, 
+  DropdownMenu, 
+  DropdownItem, 
+  DropdownToggle, 
+  Card,
+  CardTitle,
+  CardHeader
+  } from 'reactstrap'
 
 const avatarGroupData1 = [
   {
-    title: 'Lilian',
-    img: avatar1,
-    imgHeight: 26,
-    imgWidth: 26
-  },
-  {
-    title: 'Alberto',
-    img: avatar2,
-    imgHeight: 26,
-    imgWidth: 26
-  },
-  {
-    title: 'Bruce',
+    title: 'Oswald',
     img: avatar3,
     imgHeight: 26,
     imgWidth: 26
@@ -39,19 +36,7 @@ const avatarGroupData1 = [
 
 const avatarGroupData2 = [
   {
-    title: 'Diana',
-    img: avatar1,
-    imgHeight: 26,
-    imgWidth: 26
-  },
-  {
-    title: 'Rey',
-    img: avatar2,
-    imgHeight: 26,
-    imgWidth: 26
-  },
-  {
-    title: 'James',
+    title: 'Oswald',
     img: avatar3,
     imgHeight: 26,
     imgWidth: 26
@@ -59,18 +44,6 @@ const avatarGroupData2 = [
 ]
 
 const avatarGroupData3 = [
-  {
-    title: 'Lee',
-    img: avatar1,
-    imgHeight: 26,
-    imgWidth: 26
-  },
-  {
-    title: 'Mario',
-    img: avatar2,
-    imgHeight: 26,
-    imgWidth: 26
-  },
   {
     title: 'Oswald',
     img: avatar3,
@@ -81,19 +54,7 @@ const avatarGroupData3 = [
 
 const avatarGroupData4 = [
   {
-    title: 'Christie',
-    img: avatar1,
-    imgHeight: 26,
-    imgWidth: 26
-  },
-  {
-    title: 'Barnes',
-    img: avatar2,
-    imgHeight: 26,
-    imgWidth: 26
-  },
-  {
-    title: 'Arthur',
+    title: 'Oswald',
     img: avatar3,
     imgHeight: 26,
     imgWidth: 26
@@ -102,14 +63,18 @@ const avatarGroupData4 = [
 
 const TableBasic = () => {
   return (
-    <Table responsive>
+    <Card>
+      <CardHeader>
+        <CardTitle tag='h4'>บันทึกการรักษา</CardTitle>
+      </CardHeader>
+      <Table responsive>
       <thead>
         <tr>
-          <th>Project</th>
-          <th>Client</th>
-          <th>Users</th>
-          <th>Status</th>
-          <th>Actions</th>
+          <th>การรักษา</th>
+          <th></th>
+          <th>แพทย์</th>
+          <th>สถานะ</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -118,13 +83,13 @@ const TableBasic = () => {
             <img className='me-75' src={angular} alt='angular' height='20' width='20' />
             <span className='align-middle fw-bold'>Angular Project</span>
           </td>
-          <td>Peter Charles</td>
+          <td></td>
           <td>
             <AvatarGroup data={avatarGroupData1} />
           </td>
           <td>
-            <Badge pill color='light-primary' className='me-1'>
-              Active
+            <Badge pill color='light-warning' className='me-1'>
+              กำลังตรวจ
             </Badge>
           </td>
           <td>
@@ -148,13 +113,13 @@ const TableBasic = () => {
             <img className='me-75' src={react} alt='react' height='20' width='20' />
             <span className='align-middle fw-bold'>React Project</span>
           </td>
-          <td>Ronald Frest</td>
+          <td>{/* Ronald Frest */}</td>
           <td>
             <AvatarGroup data={avatarGroupData2} />
           </td>
           <td>
             <Badge pill color='light-success' className='me-1'>
-              Completed
+              เสร็จสิ้น
             </Badge>
           </td>
           <td>
@@ -178,13 +143,13 @@ const TableBasic = () => {
             <img className='me-75' src={vuejs} alt='vuejs' height='20' width='20' />
             <span className='align-middle fw-bold'>Vuejs Project</span>
           </td>
-          <td>Jack Obes</td>
+          <td>{/* Jack Obes */}</td>
           <td>
             <AvatarGroup data={avatarGroupData3} />
           </td>
           <td>
             <Badge pill color='light-info' className='me-1'>
-              Scheduled
+              ทำการนัดแล้ว
             </Badge>
           </td>
           <td>
@@ -208,13 +173,13 @@ const TableBasic = () => {
             <img className='me-75' src={bootstrap} alt='bootstrap' height='20' width='20' />
             <span className='align-middle fw-bold'>Bootstrap Project</span>
           </td>
-          <td>Jerry Milton</td>
+          <td>{/* Jerry Milton */}</td>
           <td>
             <AvatarGroup data={avatarGroupData4} />
           </td>
           <td>
-            <Badge pill color='light-warning' className='me-1'>
-              Pending
+            <Badge pill color='light-info' className='me-1'>
+              ทำการนัดแล้ว
             </Badge>
           </td>
           <td>
@@ -235,6 +200,8 @@ const TableBasic = () => {
         </tr>
       </tbody>
     </Table>
+    </Card>
+    
   )
 }
 

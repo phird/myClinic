@@ -20,9 +20,6 @@ import { fetchEvents, selectEvent, updateEvent, updateFilter, updateAllFilters, 
 // ** Styles
 import '@styles/react/apps/app-calendar.scss'
 
-import Breadcrumbs from '@components/breadcrumbs'
-
-
 // ** CalendarColors
 const calendarsColor = {
   Business: 'primary',
@@ -79,12 +76,8 @@ const CalendarComponent = () => {
   }, [])
 
   return (
-    <Fragment> 
+    <Fragment>
       <div className='app-calendar overflow-hidden border'>
-
-          {/* Breadcrumbs was herer 
-         <Breadcrumbs title='การนัดหมาย' data={[{ title: 'บริการ' }, { title: 'การนัดหมาย' }]} />
-         */}
         <Row className='g-0'>
           <Col
             id='app-calendar-sidebar'

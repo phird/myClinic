@@ -1,6 +1,7 @@
 // ** React Imports
 import { Link } from 'react-router-dom'
 
+
 // ** Custom Components
 import Avatar from '@components/avatar'
 
@@ -9,10 +10,15 @@ import { store } from '@store/store'
 import { getUser, deleteUser } from '../store'
 
 // ** Icons Imports
-import { Slack, User, Settings, Database, Edit2, MoreVertical, FileText, Trash2, Archive } from 'react-feather'
+import { Slack, User, Settings, Database, Edit2, MoreVertical, FileText, Trash2, Archive, Phone } from 'react-feather'
 
 // ** Reactstrap Imports
+import { Row, Col } from 'reactstrap'
+/* import { Tooltip as ReactTooltip } from 'react-tooltip' */
+// ** Reactstrap Imports
 import { Badge, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap'
+
+
 
 // ** Renders Client Columns
 const renderClient = row => {
@@ -59,8 +65,8 @@ const renderRole = row => {
 
   return (
     <span className='text-truncate text-capitalize align-middle'>
-      <Icon size={18} className={`${roleObj[row.role] ? roleObj[row.role].class : ''} me-50`} />
-      {row.role}
+      <Phone size={20} className='me-50'/>
+      {row.contact}
     </span>
   )
 }
@@ -73,7 +79,27 @@ const statusObj = {
 
 export const columns = [
   {
-    name: 'User',
+    name: 'รหัสผู้ป่วย',
+    sortable: true,
+    minWidth: '50px',
+    sortField: 'id',
+    selector: row => row.patientID,
+    cell: row => (
+      <div className='d-flex justify-content-left align-items-center'>
+        <div className='d-flex flex-column'>
+          <Link
+            to={`/apps/user/view/${row.id}`}
+            className='user_name text-truncate text-body'
+            onClick={() => store.dispatch(getUser(row.id))}
+          >
+            <span className='fw-bolder'>{row.patientID}</span>
+          </Link>
+        </div>
+      </div>
+    )
+  },
+  {
+    name: 'ชื่อผู้ป่วย',
     sortable: true,
     minWidth: '300px',
     sortField: 'fullName',
@@ -95,79 +121,79 @@ export const columns = [
     )
   },
   {
-    name: 'Role',
+    name: 'เบอร์โทรคิดค่อ',
     sortable: true,
     minWidth: '172px',
     sortField: 'role',
-    selector: row => row.role,
+    selector: row => row.contact,
     cell: row => renderRole(row)
   },
   {
-    name: 'Plan',
-    minWidth: '138px',
+    name: 'วันที่ลงทะเบียน',
+    minWidth: '338px',
     sortable: true,
-    sortField: 'currentPlan',
-    selector: row => row.currentPlan,
-    cell: row => <span className='text-capitalize'>{row.currentPlan}</span>
+    sortField: 'addedDate',
+    selector: row => row.addedDate,
+    cell: row => <span className='text-capitalize'>{row.addedDate}</span>
   },
+  /*   {
+      name: 'Billing',
+      minWidth: '230px',
+      sortable: true,
+      sortField: 'billing',
+      selector: row => row.billing,
+      cell: row => <span className='text-capitalize'>{row.billing}</span>
+    }, */
+  /*   {
+      name: 'Status',
+      minWidth: '138px',
+      sortable: true,
+      sortField: 'status',
+      selector: row => row.status,
+      cell: row => (
+        <Badge className='text-capitalize' color={statusObj[row.status]} pill>
+          {row.status}
+        </Badge>
+      )
+    }, */
   {
-    name: 'Billing',
-    minWidth: '230px',
-    sortable: true,
-    sortField: 'billing',
-    selector: row => row.billing,
-    cell: row => <span className='text-capitalize'>{row.billing}</span>
-  },
-  {
-    name: 'Status',
-    minWidth: '138px',
-    sortable: true,
-    sortField: 'status',
-    selector: row => row.status,
-    cell: row => (
-      <Badge className='text-capitalize' color={statusObj[row.status]} pill>
-        {row.status}
-      </Badge>
-    )
-  },
-  {
-    name: 'Actions',
-    minWidth: '100px',
+    minWidth: '130px',
+    sortField: 'role',
     cell: row => (
       <div className='column-action'>
-        <UncontrolledDropdown>
-          <DropdownToggle tag='div' className='btn btn-sm'>
-            <MoreVertical size={14} className='cursor-pointer' />
-          </DropdownToggle>
-          <DropdownMenu>
-            <DropdownItem
-              tag={Link}
-              className='w-100'
-              to={`/apps/user/view/${row.id}`}
-              onClick={() => store.dispatch(getUser(row.id))}
-            >
-              <FileText size={14} className='me-50' />
-              <span className='align-middle'>Details</span>
-            </DropdownItem>
-            <DropdownItem tag='a' href='/' className='w-100' onClick={e => e.preventDefault()}>
-              <Archive size={14} className='me-50' />
-              <span className='align-middle'>Edit</span>
-            </DropdownItem>
-            <DropdownItem
-              tag='a'
-              href='/'
-              className='w-100'
-              onClick={e => {
-                e.preventDefault()
-                store.dispatch(deleteUser(row.id))
-              }}
-            >
-              <Trash2 size={14} className='me-50' />
-              <span className='align-middle'>Delete</span>
-            </DropdownItem>
-          </DropdownMenu>
-        </UncontrolledDropdown>
-      </div>
+      <UncontrolledDropdown>
+        <DropdownToggle tag='div' className='btn btn-sm'>
+          <MoreVertical size={14} className='cursor-pointer' />
+        </DropdownToggle>
+        <DropdownMenu>
+          <DropdownItem
+            tag={Link}
+            className='w-100'
+            to={`/apps/user/view/${row.id}`}
+            onClick={() => store.dispatch(getUser(row.id))}
+          >
+            <FileText size={14} className='me-50' />
+            <span className='align-middle'>Details</span>
+          </DropdownItem>
+          <DropdownItem tag='a' href='/' className='w-100' onClick={e => e.preventDefault()}>
+            <Archive size={14} className='me-50' />
+            <span className='align-middle'>Edit</span>
+          </DropdownItem>
+          <DropdownItem
+            tag='a'
+            href='/'
+            className='w-100'
+            onClick={e => {
+              e.preventDefault()
+              store.dispatch(deleteUser(row.id))
+            }}
+          >
+            <Trash2 size={14} className='me-50' />
+            <span className='align-middle'>Delete</span>
+          </DropdownItem>
+        </DropdownMenu>
+      </UncontrolledDropdown>
+    </div>
     )
   }
 ]

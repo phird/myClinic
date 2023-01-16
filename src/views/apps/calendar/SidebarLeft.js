@@ -8,7 +8,7 @@ import classnames from 'classnames'
 import { Card, CardBody, Button, Input, Label } from 'reactstrap'
 
 // ** illustration import
-import illustration from '@src/assets/images/pages/calendar-illustration.png'
+import illustration from '@src/assets/images/pages/calendar-page-cartoon.png'
 
 // ** Filters Checkbox Array
 const filters = [
@@ -34,7 +34,7 @@ const SidebarLeft = props => {
       <Card className='sidebar-wrapper shadow-none'>
         <CardBody className='card-body d-flex justify-content-center my-sm-0 mb-3'>
           <Button color='primary' block onClick={handleAddEventClick}>
-            <span className='align-middle'>Add Event</span>
+            <span className='align-middle'> เพิ่มการนัดหมาย </span>
           </Button>
         </CardBody>
         <CardBody>
@@ -84,9 +84,9 @@ const SidebarLeft = props => {
           </div>
         </CardBody>
       </Card>
-{/*       <div className='mt-auto'>
+      <div className='mt-auto'>
         <img className='img-fluid' src={illustration} alt='illustration' />
-      </div> */}
+      </div>
     </Fragment>
   )
 }

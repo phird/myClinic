@@ -91,7 +91,7 @@ const InvoiceList = () => {
     <div className='invoice-list-wrapper'>
       <Card>
         <CardHeader className='py-1'>
-          <CardTitle tag='h4'>Invoices</CardTitle>
+          <CardTitle tag='h4'>ค่ารักษา</CardTitle>
           <UncontrolledButtonDropdown>
             <DropdownToggle color='secondary' outline caret>
               <ExternalLink className='font-small-4 me-50' />

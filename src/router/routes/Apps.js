@@ -5,11 +5,25 @@ import { Navigate } from 'react-router-dom'
 const Insight = lazy(() => import('../../views/apps/insight'))
 const Appointment = lazy(() => import('../../views/apps/calendar'))
 const Encounter = lazy(()=> import('../../views/apps/encounter/list'))
+const Patient = lazy(()=> import('../../views/apps/patients/list'))
+const PatientView = lazy(()=> import('../../views/apps/patients/view'))
 const Users = lazy(()=> import('../../views/apps/user/list'))
 const UserView = lazy(() => import('../../views/apps/user/view'))
 const Services = lazy(()=> import('../../views/apps/services/list'))
 const Drugs = lazy(()=> import('../../views/apps/drugs/list'))
 const Setting = lazy(()=> import('../../views/apps/setting'))
+
+// * Invoice
+const InvoiceAdd = lazy(() => import('../../views/apps/invoice/add'))
+const InvoiceList = lazy(() => import('../../views/apps/invoice/list'))
+const InvoiceEdit = lazy(() => import('../../views/apps/invoice/edit'))
+const InvoicePrint = lazy(() => import('../../views/apps/invoice/print'))
+const InvoicePreview = lazy(() => import('../../views/apps/invoice/preview'))
+
+// * Permisson
+const Roles = lazy(() => import('../../views/apps/roles-permissions/roles'))
+const Permissions = lazy(() => import('../../views/apps/roles-permissions/permissions'))
+
 
 
 const AppRoutes = [
@@ -24,6 +38,14 @@ const AppRoutes = [
   {
     element: <Encounter />,
     path: '/apps/encounter'
+  },
+  {
+    element: <Patient />,
+    path: '/apps/patient'
+  },
+  {
+    element: <PatientView />,
+    path: '/apps/patient/view/:id'
   },
   {
     element: <Users />,
@@ -45,6 +67,50 @@ const AppRoutes = [
     element: <Setting />,
     path: 'apps/setting'
   },
+
+
+  /* INvoice section */
+  {
+    element: <InvoiceList />,
+    path: '/apps/invoice/list'
+  },
+  {
+    element: <InvoicePreview />,
+    path: '/apps/invoice/preview/:id'
+  },
+  {
+    path: '/apps/invoice/preview',
+    element: <Navigate to='/apps/invoice/preview/4987' />
+  },
+  {
+    element: <InvoiceEdit />,
+    path: '/apps/invoice/edit/:id'
+  },
+  {
+    path: '/apps/invoice/edit',
+    element: <Navigate to='/apps/invoice/edit/4987' />
+  },
+  {
+    element: <InvoiceAdd />,
+    path: '/apps/invoice/add'
+  },
+  {
+    path: '/apps/invoice/print',
+    element: <InvoicePrint />,
+    meta: {
+      layout: 'blank'
+    }
+  },
+
+  /* role & permission */
+  {
+    element: <Roles />,
+    path: '/apps/roles'
+  },
+  {
+    element: <Permissions />,
+    path: '/apps/permissions'
+  }
 ]
 
 export default AppRoutes

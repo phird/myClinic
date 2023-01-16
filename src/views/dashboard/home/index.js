@@ -21,7 +21,7 @@ import { Row, Col, Card, CardHeader, CardTitle, CardBody } from 'reactstrap'
 import OrdersReceived from '@src/views/ui-elements/cards/statistics/OrdersReceived'
 import SubscribersGained from '@src/views/ui-elements/cards/statistics/SubscribersGained'
 import CardCongratulations from '@src/views/ui-elements/cards/advance/CardCongratulations'
-import Calendar from '@src/views/apps/calendar/index'
+import Calendar from '@src/views/apps/calendar_dashboard/index'
 // ** Images
 import jsonImg from '@src/assets/images/icons/json.png'
 

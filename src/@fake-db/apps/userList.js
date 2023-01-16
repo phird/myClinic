@@ -19,148 +19,159 @@ const data = {
   users: [
     {
       id: 1,
+      patientID: '111',
       billing: 'Manual - Credit Card',
       fullName: 'Galen Slixby',
       company: 'Yotz PVT LTD',
-      role: 'editor',
+      role: 'admin',
       username: 'gslixby0',
       country: 'El Salvador',
       contact: '(479) 232-9151',
       email: 'gslixby0@abc.net.au',
-      currentPlan: 'enterprise',
+      addedDate: '19 มิถุนายน 2565',
       status: 'inactive',
       avatar: '',
       avatarColor: 'light-primary'
     },
     {
       id: 2,
+      patientID: '112',
       billing: 'Manual - Paypal',
       fullName: 'Halsey Redmore',
       company: 'Skinder PVT LTD',
-      role: 'author',
+      role: 'admin',
       username: 'hredmore1',
       country: 'Albania',
       contact: '(472) 607-9137',
       email: 'hredmore1@imgur.com',
-      currentPlan: 'team',
+      addedDate: '4 สิงหาคม 2565',
       status: 'pending',
       avatar: avatar10
     },
     {
       id: 3,
+      patientID: '113',
       billing: 'Auto Debit',
       fullName: 'Marjory Sicely',
       company: 'Oozz PVT LTD',
-      role: 'maintainer',
+      role: 'admin',
       username: 'msicely2',
       country: 'Russia',
       contact: '(321) 264-4599',
       email: 'msicely2@who.int',
-      currentPlan: 'enterprise',
+      addedDate: '19 มิถุนายน 2565',
       status: 'active',
       avatar: avatar1
     },
     {
       id: 4,
+      patientID: '114',
       billing: 'Manual - Credit Card',
       fullName: 'Cyrill Risby',
       company: 'Oozz PVT LTD',
-      role: 'maintainer',
+      role: 'admin',
       username: 'crisby3',
       country: 'China',
       contact: '(923) 690-6806',
       email: 'crisby3@wordpress.com',
-      currentPlan: 'team',
+      addedDate: '4 สิงหาคม 2565',
       status: 'inactive',
       avatar: avatar9
     },
     {
       id: 5,
+      patientID: '115',
       billing: 'Auto Debit',
       fullName: 'Maggy Hurran',
       company: 'Aimbo PVT LTD',
-      role: 'subscriber',
+      role: 'admin',
       username: 'mhurran4',
       country: 'Pakistan',
       contact: '(669) 914-1078',
       email: 'mhurran4@yahoo.co.jp',
-      currentPlan: 'enterprise',
+      addedDate: '19 มิถุนายน 2565',
       status: 'pending',
       avatar: avatar10
     },
     {
       id: 6,
+      patientID: '116',
       billing: 'Auto Debit',
       fullName: 'Silvain Halstead',
       company: 'Jaxbean PVT LTD',
-      role: 'author',
+      role: 'admin',
       username: 'shalstead5',
       country: 'China',
       contact: '(958) 973-3093',
       email: 'shalstead5@shinystat.com',
-      currentPlan: 'company',
+      addedDate: '9 พฤษจิกายน 2565',
       status: 'active',
       avatar: '',
       avatarColor: 'light-success'
     },
     {
       id: 7,
+      patientID: '117',
       billing: 'Manual - Paypal',
       fullName: 'Breena Gallemore',
       company: 'Jazzy PVT LTD',
-      role: 'subscriber',
+      role: 'admin',
       username: 'bgallemore6',
       country: 'Canada',
       contact: '(825) 977-8152',
       email: 'bgallemore6@boston.com',
-      currentPlan: 'company',
+      addedDate: '9 พฤษจิกายน 2565',
       status: 'pending',
       avatar: '',
       avatarColor: 'light-danger'
     },
     {
       id: 8,
+      patientID: '118',
       billing: 'Manual - Cash',
       fullName: 'Kathryne Liger',
       company: 'Pixoboo PVT LTD',
-      role: 'author',
+      role: 'admin',
       username: 'kliger7',
       country: 'France',
       contact: '(187) 440-0934',
       email: 'kliger7@vinaora.com',
-      currentPlan: 'enterprise',
+      addedDate: '19 มิถุนายน 2565',
       status: 'pending',
       avatar: avatar9
     },
+    
     {
       id: 9,
+      patientID: '119',
       billing: 'Auto Debit',
       fullName: 'Franz Scotfurth',
       company: 'Tekfly PVT LTD',
-      role: 'subscriber',
+      role: 'admin',
       username: 'fscotfurth8',
       country: 'China',
       contact: '(978) 146-5443',
       email: 'fscotfurth8@dailymotion.com',
-      currentPlan: 'team',
+      addedDate: '4 สิงหาคม 2565',
       status: 'pending',
       avatar: avatar2
     },
     {
       id: 10,
+      patientID: '1110',
       billing: 'Auto Debit',
       fullName: 'Jillene Bellany',
       company: 'Gigashots PVT LTD',
-      role: 'maintainer',
+      role: 'admin',
       username: 'jbellany9',
       country: 'Jamaica',
       contact: '(589) 284-6732',
       email: 'jbellany9@kickstarter.com',
-      currentPlan: 'company',
+      addedDate: '9 พฤษจิกายน 2565',
       status: 'inactive',
       avatar: avatar9
     },
-    {
+    /* {
       id: 11,
       billing: 'Manual - Paypal',
       fullName: 'Jonah Wharlton',
@@ -170,7 +181,7 @@ const data = {
       country: 'United States',
       contact: '(176) 532-6824',
       email: 'jwharltona@oakley.com',
-      currentPlan: 'team',
+      addedDate: '4 สิงหาคม 2565',
       status: 'inactive',
       avatar: avatar4
     },
@@ -184,7 +195,7 @@ const data = {
       country: 'Peru',
       contact: '(234) 464-0600',
       email: 'shallamb@hugedomains.com',
-      currentPlan: 'team',
+      addedDate: '4 สิงหาคม 2565',
       status: 'pending',
       avatar: avatar5
     },
@@ -198,7 +209,7 @@ const data = {
       country: 'Philippines',
       contact: '(907) 284-5083',
       email: 'ypottiec@privacy.gov.au',
-      currentPlan: 'basic',
+      addedDate: 'basic',
       status: 'inactive',
       avatar: avatar7
     },
@@ -212,7 +223,7 @@ const data = {
       country: 'Democratic Republic of the Congo',
       contact: '(167) 135-7392',
       email: 'mkraused@stanford.edu',
-      currentPlan: 'team',
+      addedDate: '4 สิงหาคม 2565',
       status: 'active',
       avatar: avatar9
     },
@@ -226,7 +237,7 @@ const data = {
       country: 'France',
       contact: '(317) 409-6565',
       email: 'zmcclevertye@soundcloud.com',
-      currentPlan: 'enterprise',
+      addedDate: '19 มิถุนายน 2565',
       status: 'active',
       avatar: avatar2
     },
@@ -240,7 +251,7 @@ const data = {
       country: 'Spain',
       contact: '(590) 606-1056',
       email: 'bemblinf@wired.com',
-      currentPlan: 'company',
+      addedDate: 'company',
       status: 'active',
       avatar: avatar6
     },
@@ -254,7 +265,7 @@ const data = {
       country: 'Poland',
       contact: '(553) 225-9905',
       email: 'bmylesg@amazon.com',
-      currentPlan: 'basic',
+      addedDate: 'basic',
       status: 'active',
       avatar: '',
       avatarColor: 'light-warning'
@@ -269,7 +280,7 @@ const data = {
       country: 'Yemen',
       contact: '(901) 916-9287',
       email: 'bbinerh@mozilla.com',
-      currentPlan: 'team',
+      addedDate: '4 สิงหาคม 2565',
       status: 'active',
       avatar: avatar7
     },
@@ -283,7 +294,7 @@ const data = {
       country: 'France',
       contact: '(524) 586-6057',
       email: 'tbruntjeni@sitemeter.com',
-      currentPlan: 'enterprise',
+      addedDate: '19 มิถุนายน 2565',
       status: 'active',
       avatar: '',
       avatarColor: 'light-info'
@@ -298,7 +309,7 @@ const data = {
       country: 'Honduras',
       contact: '(569) 683-1292',
       email: 'wburlandj@uiuc.edu',
-      currentPlan: 'team',
+      addedDate: '4 สิงหาคม 2565',
       status: 'inactive',
       avatar: avatar6
     },
@@ -306,13 +317,13 @@ const data = {
       id: 21,
       billing: 'Auto Debit',
       fullName: 'Selina Kyle',
-      company: 'Wayne Enterprises',
+      company: 'Wayne 19 มิถุนายน 2565s',
       role: 'admin',
       username: 'catwomen1940',
       country: 'USA',
       contact: '(829) 537-0057',
       email: 'irena.dubrovna@wayne.com',
-      currentPlan: 'team',
+      addedDate: '4 สิงหาคม 2565',
       status: 'active',
       avatar: avatar1
     },
@@ -326,7 +337,7 @@ const data = {
       country: 'Ukraine',
       contact: '(593) 624-0222',
       email: 'jlysterl@guardian.co.uk',
-      currentPlan: 'company',
+      addedDate: 'company',
       status: 'inactive',
       avatar: avatar8
     },
@@ -340,7 +351,7 @@ const data = {
       country: 'Poland',
       contact: '(254) 845-4107',
       email: 'kskitterelm@washingtonpost.com',
-      currentPlan: 'basic',
+      addedDate: 'basic',
       status: 'pending',
       avatar: avatar3
     },
@@ -354,7 +365,7 @@ const data = {
       country: 'Brazil',
       contact: '(700) 783-7498',
       email: 'chatherleighn@washington.edu',
-      currentPlan: 'team',
+      addedDate: '4 สิงหาคม 2565',
       status: 'pending',
       avatar: avatar2
     },
@@ -368,7 +379,7 @@ const data = {
       country: 'France',
       contact: '(227) 598-1841',
       email: 'amiccoo@whitehouse.gov',
-      currentPlan: 'enterprise',
+      addedDate: '19 มิถุนายน 2565',
       status: 'pending',
       avatar: '',
       avatarColor: 'light-primary'
@@ -383,7 +394,7 @@ const data = {
       country: 'China',
       contact: '(582) 516-1324',
       email: 'hhassonp@bizjournals.com',
-      currentPlan: 'basic',
+      addedDate: 'basic',
       status: 'inactive',
       avatar: avatar4
     },
@@ -397,7 +408,7 @@ const data = {
       country: 'Zambia',
       contact: '(137) 467-5393',
       email: 'gjacombsq@jigsy.com',
-      currentPlan: 'enterprise',
+      addedDate: '19 มิถุนายน 2565',
       status: 'active',
       avatar: avatar10
     },
@@ -411,7 +422,7 @@ const data = {
       country: 'Portugal',
       contact: '(412) 476-0854',
       email: 'bkildayr@mashable.com',
-      currentPlan: 'team',
+      addedDate: '4 สิงหาคม 2565',
       status: 'active',
       avatar: '',
       avatarColor: 'light-success'
@@ -426,7 +437,7 @@ const data = {
       country: 'Sweden',
       contact: '(170) 683-1520',
       email: 'cpinyons@behance.net',
-      currentPlan: 'team',
+      addedDate: '4 สิงหาคม 2565',
       status: 'active',
       avatar: avatar7
     },
@@ -440,7 +451,7 @@ const data = {
       country: 'Slovenia',
       contact: '(332) 803-1983',
       email: 'imallindinet@shinystat.com',
-      currentPlan: 'team',
+      addedDate: '4 สิงหาคม 2565',
       status: 'pending',
       avatar: '',
       avatarColor: 'light-warning'
@@ -455,7 +466,7 @@ const data = {
       country: 'Moldova',
       contact: '(551) 379-7460',
       email: 'gmeinekenu@hc360.com',
-      currentPlan: 'basic',
+      addedDate: 'basic',
       status: 'pending',
       avatar: avatar1
     },
@@ -469,7 +480,7 @@ const data = {
       country: 'Philippines',
       contact: '(974) 829-0911',
       email: 'rsnowballv@indiegogo.com',
-      currentPlan: 'basic',
+      addedDate: 'basic',
       status: 'pending',
       avatar: avatar5
     },
@@ -483,7 +494,7 @@ const data = {
       country: 'North Korea',
       contact: '(841) 889-3339',
       email: 'remerw@blogtalkradio.com',
-      currentPlan: 'basic',
+      addedDate: 'basic',
       status: 'active',
       avatar: avatar8
     },
@@ -497,7 +508,7 @@ const data = {
       country: 'Indonesia',
       contact: '(764) 885-7351',
       email: 'ofibbensx@booking.com',
-      currentPlan: 'company',
+      addedDate: 'company',
       status: 'active',
       avatar: avatar4
     },
@@ -511,7 +522,7 @@ const data = {
       country: 'Japan',
       contact: '(350) 589-8520',
       email: 'smacgilfoyley@bigcartel.com',
-      currentPlan: 'company',
+      addedDate: 'company',
       status: 'pending',
       avatar: '',
       avatarColor: 'light-danger'
@@ -526,7 +537,7 @@ const data = {
       country: 'Belarus',
       contact: '(882) 933-2180',
       email: 'brosebothamz@tripadvisor.com',
-      currentPlan: 'team',
+      addedDate: '4 สิงหาคม 2565',
       status: 'inactive',
       avatar: '',
       avatarColor: 'light-info'
@@ -541,7 +552,7 @@ const data = {
       country: 'Canada',
       contact: '(610) 343-1024',
       email: 'shebblethwaite10@arizona.edu',
-      currentPlan: 'company',
+      addedDate: 'company',
       status: 'inactive',
       avatar: avatar9
     },
@@ -555,7 +566,7 @@ const data = {
       country: 'Croatia',
       contact: '(365) 277-2986',
       email: 'mpiccard11@vimeo.com',
-      currentPlan: 'enterprise',
+      addedDate: '19 มิถุนายน 2565',
       status: 'inactive',
       avatar: avatar1
     },
@@ -569,7 +580,7 @@ const data = {
       country: 'Finland',
       contact: '(531) 731-0928',
       email: 'twidmore12@bravesites.com',
-      currentPlan: 'team',
+      addedDate: '4 สิงหาคม 2565',
       status: 'pending',
       avatar: '',
       avatarColor: 'light-primary'
@@ -584,7 +595,7 @@ const data = {
       country: 'Ukraine',
       contact: '(312) 104-2638',
       email: 'fdesporte13@omniture.com',
-      currentPlan: 'company',
+      addedDate: 'company',
       status: 'active',
       avatar: avatar6
     },
@@ -598,7 +609,7 @@ const data = {
       country: 'Haiti',
       contact: '(315) 329-3578',
       email: 'ebaldetti14@theguardian.com',
-      currentPlan: 'team',
+      addedDate: '4 สิงหาคม 2565',
       status: 'pending',
       avatar: '',
       avatarColor: 'light-success'
@@ -613,7 +624,7 @@ const data = {
       country: 'Indonesia',
       contact: '(323) 175-6741',
       email: 'brossiter15@craigslist.org',
-      currentPlan: 'team',
+      addedDate: '4 สิงหาคม 2565',
       status: 'inactive',
       avatar: '',
       avatarColor: 'light-danger'
@@ -628,7 +639,7 @@ const data = {
       country: 'Indonesia',
       contact: '(242) 952-0916',
       email: 'mmcnirlan16@hc360.com',
-      currentPlan: 'basic',
+      addedDate: 'basic',
       status: 'inactive',
       avatar: '',
       avatarColor: 'light-warning'
@@ -643,7 +654,7 @@ const data = {
       country: 'Guatemala',
       contact: '(531) 758-8335',
       email: 'vkoschek17@abc.net.au',
-      currentPlan: 'team',
+      addedDate: '4 สิงหาคม 2565',
       status: 'active',
       avatar: '',
       avatarColor: 'light-info'
@@ -658,7 +669,7 @@ const data = {
       country: 'China',
       contact: '(659) 385-6808',
       email: 'cperot18@goo.ne.jp',
-      currentPlan: 'team',
+      addedDate: '4 สิงหาคม 2565',
       status: 'pending',
       avatar: avatar3
     },
@@ -672,7 +683,7 @@ const data = {
       country: 'Poland',
       contact: '(200) 586-2264',
       email: 'soffner19@mac.com',
-      currentPlan: 'enterprise',
+      addedDate: '19 มิถุนายน 2565',
       status: 'pending',
       avatar: '',
       avatarColor: 'light-primary'
@@ -687,7 +698,7 @@ const data = {
       country: 'China',
       contact: '(478) 199-0020',
       email: 'kcourtliff1a@bbc.co.uk',
-      currentPlan: 'basic',
+      addedDate: 'basic',
       status: 'active',
       avatar: avatar1
     },
@@ -701,7 +712,7 @@ const data = {
       country: 'Ukraine',
       contact: '(344) 262-7270',
       email: 'owind1b@yandex.ru',
-      currentPlan: 'basic',
+      addedDate: 'basic',
       status: 'pending',
       avatar: '',
       avatarColor: 'light-success'
@@ -716,7 +727,7 @@ const data = {
       country: 'Sweden',
       contact: '(694) 676-1275',
       email: 'pdurber1c@gov.uk',
-      currentPlan: 'team',
+      addedDate: '4 สิงหาคม 2565',
       status: 'inactive',
       avatar: '',
       avatarColor: 'light-danger'
@@ -731,10 +742,10 @@ const data = {
       country: 'China',
       contact: '(397) 294-5153',
       email: 'bkrabbe1d@home.pl',
-      currentPlan: 'company',
+      addedDate: 'company',
       status: 'active',
       avatar: avatar9
-    }
+    } */
   ]
 }
 
@@ -759,12 +770,12 @@ mock.onGet('/api/users/list/data').reply(config => {
   const {
     q = '',
     page = 1,
-    role = null,
     perPage = 10,
     sort = 'asc',
-    status = null,
-    currentPlan = null,
-    sortColumn = 'fullName'
+    addedDate = '',
+    sortColumn = 'fullName',
+    patientID = '',
+    contact = ''
   } = config
 
   /* eslint-disable  */
@@ -777,11 +788,9 @@ mock.onGet('/api/users/list/data').reply(config => {
   const filteredData = dataToFilter.filter(
     user =>
       (user.email.toLowerCase().includes(queryLowered) ||
-        user.fullName.toLowerCase().includes(queryLowered) ||
-        user.billing.toLowerCase().includes(queryLowered)) &&
-      user.role === (role || user.role) &&
-      user.currentPlan === (currentPlan || user.currentPlan) &&
-      user.status === (status || user.status)
+        user.fullName.toLowerCase().includes(queryLowered)) &&
+      user.patientID === (patientID || user.patientID) &&
+      user.addedDate === (addedDate || user.addedDate)
   )
   /* eslint-enable  */
 

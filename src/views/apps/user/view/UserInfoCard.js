@@ -6,16 +6,12 @@ import { Row, Col, Card, Form, CardBody, Button, Badge, Modal, Input, Label, Mod
 
 // ** Third Party Components
 import Swal from 'sweetalert2'
-import Select from 'react-select'
-import { Check, Briefcase, X } from 'react-feather'
+import { Check, Briefcase, X, User, Loader, Smile} from 'react-feather'
 import { useForm, Controller } from 'react-hook-form'
 import withReactContent from 'sweetalert2-react-content'
 
 // ** Custom Components
 import Avatar from '@components/avatar'
-
-// ** Utils
-import { selectThemeColors } from '@utils'
 
 // ** Styles
 import '@styles/react/libs/react-select/_react-select.scss'
@@ -135,11 +131,11 @@ const UserInfoCard = ({ selectedUser }) => {
 
   const handleSuspendedClick = () => {
     return MySwal.fire({
-      title: 'Are you sure?',
-      text: "You won't be able to revert user!",
+      title: 'แน่ใจหรือไม่?',
+      text: "คุณจะไม่สามารถเรียกคืนรายชื่อผู้ป่วยได้อีก!",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Yes, Suspend user!',
+      confirmButtonText: 'ตกลง, ลบผู้ป่วย!',
       customClass: {
         confirmButton: 'btn btn-primary',
         cancelButton: 'btn btn-outline-danger ms-1'
@@ -149,16 +145,16 @@ const UserInfoCard = ({ selectedUser }) => {
       if (result.value) {
         MySwal.fire({
           icon: 'success',
-          title: 'Suspended!',
-          text: 'User has been suspended.',
+          title: 'เสร็จสิ้น!',
+          text: 'ผู้ป่วยถูกลบจากระบบ.',
           customClass: {
             confirmButton: 'btn btn-success'
           }
         })
       } else if (result.dismiss === MySwal.DismissReason.cancel) {
         MySwal.fire({
-          title: 'Cancelled',
-          text: 'Cancelled Suspension :)',
+          title: 'ยกเลิก',
+          text: 'ยกเลิกการลบผู้ป่วย :)',
           icon: 'error',
           customClass: {
             confirmButton: 'btn btn-success'
@@ -178,11 +174,6 @@ const UserInfoCard = ({ selectedUser }) => {
               <div className='d-flex flex-column align-items-center text-center'>
                 <div className='user-info'>
                   <h4>{selectedUser !== null ? selectedUser.fullName : 'Eleanor Aguilar'}</h4>
-                  {selectedUser !== null ? (
-                    <Badge color={roleColors[selectedUser.role]} className='text-capitalize'>
-                      {selectedUser.role}
-                    </Badge>
-                  ) : null}
                 </div>
               </div>
             </div>
@@ -190,86 +181,86 @@ const UserInfoCard = ({ selectedUser }) => {
           <div className='d-flex justify-content-around my-2 pt-75'>
             <div className='d-flex align-items-start me-2'>
               <Badge color='light-primary' className='rounded p-75'>
-                <Check className='font-medium-2' />
+                <User className='font-medium-2' />
               </Badge>
               <div className='ms-75'>
-                <h4 className='mb-0'>1.23k</h4>
-                <small>Tasks Done</small>
+                <h4 className='mb-0'>28 ปี</h4>
+                <small>อายุ</small>
               </div>
             </div>
             <div className='d-flex align-items-start'>
               <Badge color='light-primary' className='rounded p-75'>
-                <Briefcase className='font-medium-2' />
+                <Smile className='font-medium-2' />
               </Badge>
               <div className='ms-75'>
-                <h4 className='mb-0'>568</h4>
-                <small>Projects Done</small>
+                <h4 className='mb-0'>หญิง</h4>
+                <small>เพศ</small>
               </div>
             </div>
           </div>
-          <h4 className='fw-bolder border-bottom pb-50 mb-1'>Details</h4>
+          <h4 className='fw-bolder border-bottom pb-50 mb-1'>รายละเอียดผู้ป่วย</h4>
           <div className='info-container'>
             {selectedUser !== null ? (
               <ul className='list-unstyled'>
                 <li className='mb-75'>
-                  <span className='fw-bolder me-25'>Username:</span>
-                  <span>{selectedUser.username}</span>
+                  <span className='fw-bolder me-25'>เพศ:</span>
+                  <span> หญิง {/* {selectedUser.email} */}</span>
                 </li>
                 <li className='mb-75'>
-                  <span className='fw-bolder me-25'>Billing Email:</span>
-                  <span>{selectedUser.email}</span>
+                  <span className='fw-bolder me-25'>วัน/เดือน/ปี เกิด:</span>
+                  <span className='text-capitalize' >
+                    1 มกราคม 2538
+                    {/* {selectedUser.status} */}
+                  </span>
                 </li>
                 <li className='mb-75'>
-                  <span className='fw-bolder me-25'>Status:</span>
-                  <Badge className='text-capitalize' color={statusColors[selectedUser.status]}>
-                    {selectedUser.status}
-                  </Badge>
+                  <span className='fw-bolder me-25'>อายุ:</span>
+                  <span className='text-capitalize'> 28 ปี {/* {selectedUser.role} */}</span>
                 </li>
                 <li className='mb-75'>
-                  <span className='fw-bolder me-25'>Role:</span>
-                  <span className='text-capitalize'>{selectedUser.role}</span>
+                  <span className='fw-bolder me-25'>กรุ๊ปเลือด:</span>
+                  <span> O {/* Tax-{selectedUser.contact.substr(selectedUser.contact.length - 4)} */}</span>
                 </li>
                 <li className='mb-75'>
-                  <span className='fw-bolder me-25'>Tax ID:</span>
-                  <span>Tax-{selectedUser.contact.substr(selectedUser.contact.length - 4)}</span>
-                </li>
-                <li className='mb-75'>
-                  <span className='fw-bolder me-25'>Contact:</span>
+                  <span className='fw-bolder me-25'>ข้อมูลติดต่อ:</span>
                   <span>{selectedUser.contact}</span>
                 </li>
                 <li className='mb-75'>
-                  <span className='fw-bolder me-25'>Language:</span>
-                  <span>English</span>
-                </li>
-                <li className='mb-75'>
-                  <span className='fw-bolder me-25'>Country:</span>
-                  <span>England</span>
+                  <span className='fw-bolder me-25'>ที่อยู่:</span>
+                  <span>
+                    58/7 New Phetburi Bang Kapi Huai Khwang
+                    City:   Bangkok
+                    State/province/area:    Bangkok
+                    Zip code  10310
+                    </span>
                 </li>
               </ul>
             ) : null}
           </div>
           <div className='d-flex justify-content-center pt-2'>
             <Button color='primary' onClick={() => setShow(true)}>
-              Edit
+              แก้ไขข้อมูลผู้ป่วย
             </Button>
-            <Button className='ms-1' color='danger' outline onClick={handleSuspendedClick}>
+{/*             <Button className='ms-1' color='danger' outline onClick={handleSuspendedClick}>
               Suspended
-            </Button>
+            </Button> */}
           </div>
         </CardBody>
       </Card>
+
+
       <Modal isOpen={show} toggle={() => setShow(!show)} className='modal-dialog-centered modal-lg'>
         <ModalHeader className='bg-transparent' toggle={() => setShow(!show)}></ModalHeader>
         <ModalBody className='px-sm-5 pt-50 pb-5'>
           <div className='text-center mb-2'>
-            <h1 className='mb-1'>Edit User Information</h1>
+            <h1 className='mb-1'>แก้ไขข้อมูลผู้ป่วย</h1>
             <p>Updating user details will receive a privacy audit.</p>
           </div>
           <Form onSubmit={handleSubmit(onSubmit)}>
             <Row className='gy-1 pt-75'>
               <Col md={6} xs={12}>
                 <Label className='form-label' for='firstName'>
-                  First Name
+                  ชื่อจริง
                 </Label>
                 <Controller
                   defaultValue=''
@@ -283,7 +274,7 @@ const UserInfoCard = ({ selectedUser }) => {
               </Col>
               <Col md={6} xs={12}>
                 <Label className='form-label' for='lastName'>
-                  Last Name
+                  นามสกุล
                 </Label>
                 <Controller
                   defaultValue=''
@@ -295,23 +286,9 @@ const UserInfoCard = ({ selectedUser }) => {
                   )}
                 />
               </Col>
-              <Col xs={12}>
-                <Label className='form-label' for='username'>
-                  Username
-                </Label>
-                <Controller
-                  defaultValue=''
-                  control={control}
-                  id='username'
-                  name='username'
-                  render={({ field }) => (
-                    <Input {...field} id='username' placeholder='john.doe.007' invalid={errors.username && true} />
-                  )}
-                />
-              </Col>
               <Col md={6} xs={12}>
                 <Label className='form-label' for='billing-email'>
-                  Billing Email
+                  เพศ
                 </Label>
                 <Input
                   type='email'
@@ -322,21 +299,17 @@ const UserInfoCard = ({ selectedUser }) => {
               </Col>
               <Col md={6} xs={12}>
                 <Label className='form-label' for='status'>
-                  Status:
+                  วันเดือนปีเกิด:
                 </Label>
-                <Select
-                  id='status'
-                  isClearable={false}
-                  className='react-select'
-                  classNamePrefix='select'
-                  options={statusOptions}
-                  theme={selectThemeColors}
-                  defaultValue={statusOptions[statusOptions.findIndex(i => i.value === selectedUser.status)]}
+                <Input
+                  id='tax-id'
+                  placeholder='Tax-1234'
+                  defaultValue={selectedUser.contact.substr(selectedUser.contact.length - 4)}
                 />
               </Col>
               <Col md={6} xs={12}>
                 <Label className='form-label' for='tax-id'>
-                  Tax ID
+                  กรุ๊ปเลือด
                 </Label>
                 <Input
                   id='tax-id'
@@ -346,38 +319,21 @@ const UserInfoCard = ({ selectedUser }) => {
               </Col>
               <Col md={6} xs={12}>
                 <Label className='form-label' for='contact'>
-                  Contact
+                  ข้อมูลติดต่อ
                 </Label>
                 <Input id='contact' defaultValue={selectedUser.contact} placeholder='+1 609 933 4422' />
               </Col>
-              <Col md={6} xs={12}>
+              <Col md={12} xs={12}>
                 <Label className='form-label' for='language'>
-                  language
+                  ที่อยู่
                 </Label>
-                <Select
-                  id='language'
-                  isClearable={false}
-                  className='react-select'
-                  classNamePrefix='select'
-                  options={languageOptions}
-                  theme={selectThemeColors}
-                  defaultValue={languageOptions[0]}
+                <Input
+                  id='tax-id'
+                  placeholder='Tax-1234'
+                  defaultValue={selectedUser.contact.substr(selectedUser.contact.length - 4)}
                 />
               </Col>
-              <Col md={6} xs={12}>
-                <Label className='form-label' for='country'>
-                  Country
-                </Label>
-                <Select
-                  id='country'
-                  isClearable={false}
-                  className='react-select'
-                  classNamePrefix='select'
-                  options={countryOptions}
-                  theme={selectThemeColors}
-                  defaultValue={countryOptions[0]}
-                />
-              </Col>
+             
               <Col xs={12}>
                 <div className='d-flex align-items-center mt-1'>
                   <div className='form-switch'>

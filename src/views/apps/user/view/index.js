@@ -1,6 +1,6 @@
 // ** React Imports
-import { useEffect, useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { useParams, Link,} from 'react-router-dom'
 
 // ** Store & Actions
 import { getUser } from '../store'
@@ -11,8 +11,9 @@ import { Row, Col, Alert } from 'reactstrap'
 
 // ** User View Components
 import UserTabs from './Tabs'
-import PlanCard from './PlanCard'
 import UserInfoCard from './UserInfoCard'
+import { Button } from 'reactstrap'
+import { ChevronLeft } from 'react-feather'
 
 // ** Styles
 import '@styles/react/apps/app-users.scss'
@@ -40,11 +41,25 @@ const UserView = () => {
 
   return store.selectedUser !== null && store.selectedUser !== undefined ? (
     <div className='app-user-view'>
+       
       <Row>
+        <Col>
+          <React.Fragment>
+            <a href='/apps/users'>
+              <Button.Ripple className='btn-icon' color='flat-success' >
+                <ChevronLeft size={24} />
+              </Button.Ripple>
+            </a>
+          </React.Fragment>
+        </Col>
+      </Row>
+     
+      <Row>
+
         <Col xl='4' lg='5' xs={{ order: 1 }} md={{ order: 0, size: 5 }}>
           <UserInfoCard selectedUser={store.selectedUser} />
-          <PlanCard />
         </Col>
+
         <Col xl='8' lg='7' xs={{ order: 0 }} md={{ order: 1, size: 7 }}>
           <UserTabs active={active} toggleTab={toggleTab} />
         </Col>
