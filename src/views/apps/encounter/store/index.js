@@ -5,12 +5,12 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 
 export const getAllData = createAsyncThunk('appUsers/getAllData', async () => {
-  const response = await axios.get('/api/users/list/all-data')
+  const response = await axios.get('/api/encounters/list/all-data')
   return response.data
 })
 
 export const getData = createAsyncThunk('appUsers/getData', async params => {
-  const response = await axios.get('/api/users/list/data', params)
+  const response = await axios.get('/api/encounters/list/data', params)
   return {
     params,
     data: response.data.users,
@@ -19,23 +19,24 @@ export const getData = createAsyncThunk('appUsers/getData', async params => {
 })
 
 export const getUser = createAsyncThunk('appUsers/getUser', async id => {
-  const response = await axios.get('/api/users/user', { id })
+  const response = await axios.get('/api/encounters/encounter', { id })
   return response.data.user
 })
 
 export const addUser = createAsyncThunk('appUsers/addUser', async (user, { dispatch, getState }) => {
-  await axios.post('/apps/users/add-user', user)
+  await axios.post('/apps/encounters/add-encounter', user)
   await dispatch(getData(getState().users.params))
   await dispatch(getAllData())
   return user
 })
 
 export const deleteUser = createAsyncThunk('appUsers/deleteUser', async (id, { dispatch, getState }) => {
-  await axios.delete('/apps/users/delete', { id })
+  await axios.delete('/apps/encounter/delete', { id })
   await dispatch(getData(getState().users.params))
   await dispatch(getAllData())
   return id
 })
+
 
 export const appUsersSlice = createSlice({
   name: 'appUsers',

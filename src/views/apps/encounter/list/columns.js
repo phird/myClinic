@@ -22,9 +22,6 @@ import { Badge, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem
 
 // ** Renders Client Columns
 const renderClient = row => {
-  if (row.avatar.length) {
-    return <Avatar className='me-1' img={row.avatar} width='32' height='32' />
-  } else {
     return (
       <Avatar
         initials
@@ -33,42 +30,6 @@ const renderClient = row => {
         content={row.fullName || 'John Doe'}
       />
     )
-  }
-}
-
-// ** Renders Role Columns
-const renderRole = row => {
-  const roleObj = {
-    subscriber: {
-      class: 'text-primary',
-      icon: User
-    },
-    maintainer: {
-      class: 'text-success',
-      icon: Database
-    },
-    editor: {
-      class: 'text-info',
-      icon: Edit2
-    },
-    author: {
-      class: 'text-warning',
-      icon: Settings
-    },
-    admin: {
-      class: 'text-danger',
-      icon: Slack
-    }
-  }
-
-  const Icon = roleObj[row.role] ? roleObj[row.role].icon : Edit2
-
-  return (
-    <span className='text-truncate text-capitalize align-middle'>
-      <Phone size={20} className='me-50'/>
-      {row.contact}
-    </span>
-  )
 }
 
 const statusObj = {
@@ -79,20 +40,20 @@ const statusObj = {
 
 export const columns = [
   {
-    name: 'รหัสผู้ป่วย',
+    name: 'รหัสการรักษา',
     sortable: true,
     minWidth: '50px',
     sortField: 'id',
-    selector: row => row.patientID,
+    selector: row => row.encounterID,
     cell: row => (
       <div className='d-flex justify-content-left align-items-center'>
         <div className='d-flex flex-column'>
           <Link
-            to={`/apps/user/view/${row.id}`}
+            to={`/apps/user/view/${row.encounterID}`}
             className='user_name text-truncate text-body'
-            onClick={() => store.dispatch(getUser(row.id))}
+            onClick={() => store.dispatch(getUser(row.encounterID))}
           >
-            <span className='fw-bolder'>{row.patientID}</span>
+            <span className='fw-bolder'>{row.encounterID}</span>
           </Link>
         </div>
       </div>
@@ -121,41 +82,22 @@ export const columns = [
     )
   },
   {
-    name: 'เบอร์โทรคิดค่อ',
-    sortable: true,
-    minWidth: '172px',
-    sortField: 'role',
-    selector: row => row.contact,
-    cell: row => renderRole(row)
-  },
-  {
-    name: 'วันนัดหมาย',
+    name: 'วันที่ทำการตรวจ',
     minWidth: '138px',
     sortable: true,
     sortField: 'addedDate',
     selector: row => row.addedDate,
     cell: row => <span className='text-capitalize'>{row.addedDate}</span>
+  }, 
+  {
+    name: 'ค่ารักษา',
+    sortable: true,
+    minWidth: '172px',
+    sortField: 'role',
+    selector: row => row.contact,
+    cell: row => {row.contact}
   },
-  /*   {
-      name: 'Billing',
-      minWidth: '230px',
-      sortable: true,
-      sortField: 'billing',
-      selector: row => row.billing,
-      cell: row => <span className='text-capitalize'>{row.billing}</span>
-    }, */
-     {
-      name: 'สถานะ',
-      minWidth: '138px',
-      sortable: true,
-      sortField: 'status',
-      selector: row => row.status,
-      cell: row => (
-        <Badge className='text-capitalize' color={statusObj[row.status]} pill>
-          {row.status}
-        </Badge>
-      )
-    }, 
+
   {
     minWidth: '130px',
     sortField: 'role',
