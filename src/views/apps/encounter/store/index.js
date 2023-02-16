@@ -1,67 +1,77 @@
+///**  Fix call encounter Here ! 
 // ** Redux Imports
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
 // ** Axios Imports
 import axios from 'axios'
 
-export const getAllData = createAsyncThunk('appUsers/getAllData', async () => {
-  const response = await axios.get('/api/encounters/list/all-data')
-  return response.data
+export const getAllEncounter = createAsyncThunk('appEncounters/getAllEncounter', async () => {
+  const response = await axios.get('http://localhost:8000/app/Encounter/list/data')
+  console.log(response.data.encounter)
+  return response.data.encounter
 })
 
-export const getData = createAsyncThunk('appUsers/getData', async params => {
-  const response = await axios.get('/api/encounters/list/data', params)
+export const getEncounterData = createAsyncThunk('appEncounters/getEncounterData', async params => {
+  const response = await axios.get('http://localhost:8000/app/Encounter/list/getdata', params)
   return {
     params,
-    data: response.data.users,
-    totalPages: response.data.total
+    data: response.data.encounters,
+    totalPage: 10
   }
 })
 
-export const getUser = createAsyncThunk('appUsers/getUser', async id => {
-  const response = await axios.get('/api/encounters/encounter', { id })
-  return response.data.user
+//** get specific encounter for patient  */
+
+//** ⭐️ legacy get encounter  */
+
+export const getEncounter = createAsyncThunk('appEncounter/getEncounter', async id => {
+  const response = await axios.get(`http://localhost:8000/app/Encounter/encounters/encounter/${id}`)
+  return response.data.encounter[0]
 })
 
-export const addUser = createAsyncThunk('appUsers/addUser', async (user, { dispatch, getState }) => {
-  await axios.post('/apps/encounters/add-encounter', user)
-  await dispatch(getData(getState().users.params))
+//** end of code encounter */
+
+export const addEncounter = createAsyncThunk('appEncounters/addEncounter', async (encounter, { dispatch, getState }) => {
+  await axios.post('/apps/encounters/add-encounter', encounter)
+  await dispatch(getData(getState().encounters.params))
   await dispatch(getAllData())
-  return user
+  return encounter
 })
 
-export const deleteUser = createAsyncThunk('appUsers/deleteUser', async (id, { dispatch, getState }) => {
+export const deleteEncounter = createAsyncThunk('appEncounters/deleteEncounter', async (id, { dispatch, getState }) => {
   await axios.delete('/apps/encounter/delete', { id })
-  await dispatch(getData(getState().users.params))
+  await dispatch(getData(getState().encounters.params))
   await dispatch(getAllData())
   return id
 })
 
-
-export const appUsersSlice = createSlice({
-  name: 'appUsers',
+export const appEncountersSlice = createSlice({
+  name: 'appEncounters',
   initialState: {
     data: [],
+    encounter: [],
     total: 1,
+    etotal: 1,
     params: {},
     allData: [],
-    selectedUser: null
+    selectedEncounter: null
   },
   reducers: {},
   extraReducers: builder => {
     builder
-      .addCase(getAllData.fulfilled, (state, action) => {
+      .addCase(getAllEncounter.fulfilled, (state, action) => {
         state.allData = action.payload
       })
-      .addCase(getData.fulfilled, (state, action) => {
+      .addCase(getEncounterData.fulfilled, (state, action) => {
         state.data = action.payload.data
         state.params = action.payload.params
-        state.total = action.payload.totalPages
+        state.total = action.payload.totalPage
       })
-      .addCase(getUser.fulfilled, (state, action) => {
-        state.selectedUser = action.payload
+      .addCase(getEncounter.fulfilled, (state,action) =>{
+        state.selectedEncounter = action.payload
       })
+
   }
 })
 
-export default appUsersSlice.reducer
+export default appEncountersSlice.reducer

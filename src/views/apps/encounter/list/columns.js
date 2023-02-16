@@ -1,42 +1,19 @@
 // ** React Imports
 import { Link } from 'react-router-dom'
 
-
-// ** Custom Components
-import Avatar from '@components/avatar'
-
 // ** Store & Actions
 import { store } from '@store/store'
-import { getUser, deleteUser } from '../store'
+import { getAllEncounter, deleteEncounter,} from '../store'
 
 // ** Icons Imports
-import { Slack, User, Settings, Database, Edit2, MoreVertical, FileText, Trash2, Archive, Phone } from 'react-feather'
+import { MoreVertical, FileText, Trash2, Archive } from 'react-feather'
 
 // ** Reactstrap Imports
-import { Row, Col } from 'reactstrap'
-/* import { Tooltip as ReactTooltip } from 'react-tooltip' */
-// ** Reactstrap Imports
-import { Badge, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap'
+import { UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap'
 
+//** dateFormat imports */
+import dateFormat from 'dateformat'
 
-
-// ** Renders Client Columns
-const renderClient = row => {
-    return (
-      <Avatar
-        initials
-        className='me-1'
-        color={row.avatarColor || 'light-primary'}
-        content={row.fullName || 'John Doe'}
-      />
-    )
-}
-
-const statusObj = {
-  pending: 'light-warning',
-  active: 'light-success',
-  inactive: 'light-secondary'
-}
 
 export const columns = [
   {
@@ -44,16 +21,15 @@ export const columns = [
     sortable: true,
     minWidth: '50px',
     sortField: 'id',
-    selector: row => row.encounterID,
+    selector: row => row.epID,
     cell: row => (
       <div className='d-flex justify-content-left align-items-center'>
         <div className='d-flex flex-column'>
           <Link
-            to={`/apps/user/view/${row.encounterID}`}
+            to={`/apps/encounter/view/${row.epID}`}
             className='user_name text-truncate text-body'
-            onClick={() => store.dispatch(getUser(row.encounterID))}
-          >
-            <span className='fw-bolder'>{row.encounterID}</span>
+            >
+            <span className='fw-bolder'>#ENC-{row.epID}</span>
           </Link>
         </div>
       </div>
@@ -64,19 +40,18 @@ export const columns = [
     sortable: true,
     minWidth: '300px',
     sortField: 'fullName',
-    selector: row => row.fullName,
+    selector: row => row.patientID,
     cell: row => (
       <div className='d-flex justify-content-left align-items-center'>
-        {renderClient(row)}
+
         <div className='d-flex flex-column'>
           <Link
-            to={`/apps/user/view/${row.id}`}
+            to={`/apps/user/view/${row.encounterID}`}
             className='user_name text-truncate text-body'
-            onClick={() => store.dispatch(getUser(row.id))}
+            onClick={() => store.dispatch(getEncounter(row.encounterID))}
           >
-            <span className='fw-bolder'>{row.fullName}</span>
+            <span className='fw-bolder'>{row.fname + ' ' + row.lname}</span>
           </Link>
-          <small className='text-truncate text-muted mb-0'>{row.email}</small>
         </div>
       </div>
     )
@@ -87,15 +62,17 @@ export const columns = [
     sortable: true,
     sortField: 'addedDate',
     selector: row => row.addedDate,
-    cell: row => <span className='text-capitalize'>{row.addedDate}</span>
-  }, 
+    cell: row => <span className='text-capitalize'>{dateFormat(row.addedDate, "dd/mm/yyyy")}</span>
+  },
   {
-    name: 'ค่ารักษา',
+    name: 'ษา',
     sortable: true,
     minWidth: '172px',
     sortField: 'role',
-    selector: row => row.contact,
-    cell: row => {row.contact}
+    selector: row => row.prescriptionID,
+    cell: row => <Link>
+      ดูรายการยา
+    </Link>
   },
 
   {
@@ -103,39 +80,38 @@ export const columns = [
     sortField: 'role',
     cell: row => (
       <div className='column-action'>
-      <UncontrolledDropdown>
-        <DropdownToggle tag='div' className='btn btn-sm'>
-          <MoreVertical size={14} className='cursor-pointer' />
-        </DropdownToggle>
-        <DropdownMenu>
-          <DropdownItem
-            tag={Link}
-            className='w-100'
-            to={`/apps/user/view/${row.id}`}
-            onClick={() => store.dispatch(getUser(row.id))}
-          >
-            <FileText size={14} className='me-50' />
-            <span className='align-middle'>Details</span>
-          </DropdownItem>
-          <DropdownItem tag='a' href='/' className='w-100' onClick={e => e.preventDefault()}>
-            <Archive size={14} className='me-50' />
-            <span className='align-middle'>Edit</span>
-          </DropdownItem>
-          <DropdownItem
-            tag='a'
-            href='/'
-            className='w-100'
-            onClick={e => {
-              e.preventDefault()
-              store.dispatch(deleteUser(row.id))
-            }}
-          >
-            <Trash2 size={14} className='me-50' />
-            <span className='align-middle'>Delete</span>
-          </DropdownItem>
-        </DropdownMenu>
-      </UncontrolledDropdown>
-    </div>
+        <UncontrolledDropdown>
+          <DropdownToggle tag='div' className='btn btn-sm'>
+            <MoreVertical size={14} className='cursor-pointer' />
+          </DropdownToggle>
+          <DropdownMenu>
+            <DropdownItem
+              tag={Link}
+              className='w-100'
+              to={`/apps/user/view/${row.id}`}
+            >
+              <FileText size={14} className='me-50' />
+              <span className='align-middle'>รายละเอียด</span>
+            </DropdownItem>
+            <DropdownItem tag='a' href='/' className='w-100' onClick={e => e.preventDefault()}>
+              <Archive size={14} className='me-50' />
+              <span className='align-middle'>แก้ไข</span>
+            </DropdownItem>
+            <DropdownItem
+              tag='a'
+              href='/'
+              className='w-100'
+              onClick={e => {
+                e.preventDefault()
+                store.dispatch(deleteEncounter(row.encounterID))
+              }}
+            >
+              <Trash2 size={14} className='me-50' />
+              <span className='align-middle'>ลบ</span>
+            </DropdownItem>
+          </DropdownMenu>
+        </UncontrolledDropdown>
+      </div>
     )
   }
 ]

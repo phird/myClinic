@@ -2,15 +2,12 @@
 import { 
   PieChart,
   PenTool,
-  MessageSquare, 
   CheckSquare, 
   Calendar,  
   UserCheck,
   Box,
-  Settings,
-  Shield,
-  Circle,
-  User
+  User,
+  Paperclip
 } from 'react-feather'
 
 export default [
@@ -41,6 +38,13 @@ export default [
     icon: <PenTool size={20} />,
     navLink: '/apps/encounter'
   },
+  {
+    id: 'invoices',
+    title: 'จัดการค่ารักษา',
+    icon: <Paperclip size={20} />,
+    navLink: ''
+  },
+
 
   {
     id: 'services',

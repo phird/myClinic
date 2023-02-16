@@ -4,53 +4,37 @@ import { Link } from 'react-router-dom'
 
 // ** Custom Components
 import Avatar from '@components/avatar'
+import dateFormat from 'dateformat'
 
 // ** Store & Actions
 import { store } from '@store/store'
-import { getUser, deleteUser } from '../store'
+import { getPatient, deleteUser } from '../store'
 
 // ** Icons Imports
-import { Search, Inbox, Camera, Slack, User, Settings, Database, Edit2, MoreVertical, FileText, Trash2, Archive, Phone, Cpu } from 'react-feather'
+import {FileText, Trash2, Archive, Phone } from 'react-feather'
 
 // ** Reactstrap Imports
-import { Nav, NavItem, NavLink, Row, Col, Button,UncontrolledTooltip } from 'reactstrap'
-/* import { Tooltip as ReactTooltip } from 'react-tooltip' */
-// ** Reactstrap Imports
-import { Badge, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap'
-import { Fragment } from 'react'
+import { Button,UncontrolledTooltip } from 'reactstrap'
 
 // ** Renders Client Columns
 const renderClient = row => {
-  const fullName = row.firstname + ' ' + row.lastname
-  if (row.avatar.length) {
-    return <Avatar className='me-1' img={row.avatar} width='32' height='32' />
-  } else {
+  const fullName = row.fname +' '+ row.lname
     return (
-      <Avatar
-        initials
-        className='me-1'
-        color={row.avatarColor || 'light-primary'}
-        content={fullName || 'John Doe'}
+      <Avatar initials className='me-1'
+        color={'light-primary'}
+        content={fullName}
       />
     )
-  }
 }
 
 // ** Renders Role Columns
 const renderRole = row => {
-
   return (
     <span className='text-truncate text-capitalize align-middle'>
       <Phone size={20} className='me-50' />
       {row.phoneNo}
     </span>
   )
-}
-
-const statusObj = {
-  pending: 'light-warning',
-  active: 'light-success',
-  inactive: 'light-secondary'
 }
 
 export const columns = [
@@ -66,9 +50,9 @@ export const columns = [
           <Link
             to={`/apps/patient/view/${row.patientID}`}
             className='user_name text-truncate text-body'
-            onClick={() => store.dispatch(getUser(row.patientID))}
+            onClick={() => store.dispatch(getPatient(row.patientID))}
           >
-            <span className='fw-bolder center'>{row.patientID}</span>
+            <span className='fw-bolder center'>#PT-{row.patientID}</span>
           </Link>
         </div>
       </div>
@@ -87,9 +71,9 @@ export const columns = [
           <Link
             to={`/apps/patient/view/${row.patientID}`}
             className='user_name text-truncate text-body'
-            onClick={() => store.dispatch(getUser(row.patientID))}
+            onClick={() => store.dispatch(getPatient(row.patientID))}
           >
-            <span className='fw-bolder'>{row.firstname + ' ' + row.lastname} </span>
+            <span className='fw-bolder'>{row.fname + ' ' + row.lname} </span>
           </Link>
         </div>
       </div>
@@ -109,7 +93,7 @@ export const columns = [
     sortable: true,
     sortField: 'addedDate',
     selector: row => row.addedDate,
-    cell: row => <span className='text-capitalize'>{row.addedDate}</span>
+    cell: row => <span className='text-capitalize'>{dateFormat(row.addedDate, "dd/mm/yyyy")}</span>
   },
   {
     minWidth: '230px',
@@ -117,7 +101,7 @@ export const columns = [
     cell: row => (
       <div className='column-action'>
         <>
-          <Link id='detail' to={`/apps/patient/view/${row.patientID}`} onClick={() => { store.dispatch(getUser(row.patientID)) }}>
+          <Link id='detail' to={`/apps/patient/view/${row.patientID}`} onClick={() => { getUser(row.patientID)}}>
             <Button.Ripple className='btn-icon' outline color='flat-success'>
               <FileText size={16} />
             </Button.Ripple>
@@ -127,13 +111,18 @@ export const columns = [
           </UncontrolledTooltip>
         </>
 
-
-        <Link onClick={e => e.preventDefault()}>
+      <>
+       <Link id='encounter' onClick={e => e.preventDefault()}>
           <Button.Ripple className='btn-icon' color='flat-success'>
             <Archive size={16} />
           </Button.Ripple>
         </Link>
-        <Link onClick={e => {
+        <UncontrolledTooltip placement='top' target='encounter'>
+            ประวัติการรักษา
+          </UncontrolledTooltip>
+      </>
+       <>
+       <Link id='delete' onClick={e => {
           e.preventDefault()
           store.dispatch(deleteUser(row.id))
         }}>
@@ -141,6 +130,11 @@ export const columns = [
             <Trash2 size={16} />
           </Button.Ripple>
         </Link>
+        <UncontrolledTooltip placement='top' target='delete'>
+            ลบผู้ป่วย
+          </UncontrolledTooltip>
+       </>
+        
       </div>
     )
   }

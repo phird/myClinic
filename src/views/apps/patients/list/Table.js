@@ -11,6 +11,7 @@ import { columns } from './columns'
 import { getAllData, getData } from '../store'
 import { useDispatch, useSelector } from 'react-redux'
 
+
 // ** Third Party Components
 import ReactPaginate from 'react-paginate'
 import DataTable from 'react-data-table-component'
@@ -22,11 +23,7 @@ import {
   Col,
   Card,
   Input,
-  Label,
   Button,
-  CardBody,
-  CardTitle,
-  CardHeader,
   DropdownMenu,
   DropdownItem,
   DropdownToggle,
@@ -42,7 +39,6 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
   // ** Converts table to CSV
   function convertArrayOfObjectsToCSV(array) {
     let result
-
     const columnDelimiter = ','
     const lineDelimiter = '\n'
     const keys = Object.keys(store.data[0])
@@ -87,7 +83,7 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
       <Row>
         <Col xl='6' className='d-flex align-items-center p-0'>
           <div className='d-flex align-items-center w-100'>
-            <label htmlFor='rows-per-page'>Show</label>
+            <label htmlFor='rows-per-page'>แสดง</label>
             <Input
               className='mx-50'
               type='select'
@@ -100,7 +96,7 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
               <option value='25'>25</option>
               <option value='50'>50</option>
             </Input>
-            <label htmlFor='rows-per-page'>Entries</label>
+            <label htmlFor='rows-per-page'>รายการ</label>
           </div>
         </Col>
         <Col
@@ -109,7 +105,7 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
         >
           <div className='d-flex align-items-center mb-sm-0 mb-1 me-1'>
             <label className='mb-0' htmlFor='search-invoice'>
-              Search:
+              ค้นหา:
             </label>
             <Input
               id='search-invoice'
@@ -160,11 +156,12 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
   )
 }
 
-const UsersList = () => {
+const PatientsList = () => {
   // ** Store Vars
   const dispatch = useDispatch()
-  const store = useSelector(state => state.users)
-
+  const store = useSelector(state => state.patients)
+  console.log("this is store")
+  console.log(store)
   // ** States
   const [sort, setSort] = useState('desc')
   const [searchTerm, setSearchTerm] = useState('')
@@ -172,35 +169,27 @@ const UsersList = () => {
   const [sortColumn, setSortColumn] = useState('id')
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [patientID, setPatientID] = useState('')
   // ** Function to toggle sidebar
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen)
-
   // ** Get data on mount
   useEffect(() => {
     dispatch(getAllData())
     dispatch(
       getData({
         sort,
-        sortColumn,
         q: searchTerm,
         page: currentPage,
-        perPage: rowsPerPage,
-        patientID: patientID
       })
     )
-  }, [dispatch, store.data.length, sort, sortColumn, currentPage])
+  }, [dispatch, store.data.length, sort, currentPage])
 
   // ** Function in get data on page change
   const handlePagination = page => {
     dispatch(
       getData({
         sort,
-        sortColumn,
         q: searchTerm,
-        perPage: rowsPerPage,
         page: page.selected + 1,
-        patientID: patientID
       })
     )
     setCurrentPage(page.selected + 1)
@@ -212,10 +201,8 @@ const UsersList = () => {
     dispatch(
       getData({
         sort,
-        sortColumn,
         q: searchTerm,
-        perPage: value,
-        patientID: patientID
+        page: page.selected + 1,
       })
     )
     setRowsPerPage(value)
@@ -227,10 +214,8 @@ const UsersList = () => {
     dispatch(
       getData({
         sort,
-        q: val,
-        sortColumn,
-        page: currentPage,
-        perPage: rowsPerPage,
+        q: searchTerm,
+        page: page.selected + 1,
       })
     )
   }
@@ -261,7 +246,6 @@ const UsersList = () => {
   // ** Table data to render
   const dataToRender = () => {
     const filters = {
-      patientID: patientID,
       q: searchTerm
     }
 
@@ -284,13 +268,8 @@ const UsersList = () => {
     dispatch(
       getData({
         sort,
-        sortColumn,
         q: searchTerm,
-        page: currentPage,
-        perPage: rowsPerPage,
-        role: currentRole.value,
-        status: currentStatus.value,
-        currentPlan: currentPlan.value
+        page: page.selected + 1,
       })
     )
   }
@@ -331,4 +310,4 @@ const UsersList = () => {
   )
 }
 
-export default UsersList
+export default PatientsList

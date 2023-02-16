@@ -8,14 +8,14 @@ import Sidebar from './Sidebar'
 import { columns } from './columns'
 
 // ** Store & Actions
-import { getAllData, getData } from '../store'
+import { getAllEncounter, getEncounterData } from '../store'
 import { useDispatch, useSelector } from 'react-redux'
 
 // ** Third Party Components
 import ReactPaginate from 'react-paginate'
 import DataTable from 'react-data-table-component'
 import { ChevronDown, Share, Printer, FileText, File, Grid, Copy } from 'react-feather'
-
+import { appEncountersSlice } from '../store'
 // ** Reactstrap Imports
 import {
   Row,
@@ -24,9 +24,6 @@ import {
   Input,
   Label,
   Button,
-  CardBody,
-  CardTitle,
-  CardHeader,
   DropdownMenu,
   DropdownItem,
   DropdownToggle,
@@ -151,7 +148,7 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
             </UncontrolledDropdown>
 
             <Button className='add-new-user' color='primary' onClick={toggleSidebar}>
-              เพิ่มผู้ป่วย
+              เพิ่มการรักษา
             </Button>
           </div>
         </Col>
@@ -160,11 +157,15 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
   )
 }
 
-const UsersList = () => {
+
+const handleReset = () => {
+  dispatch(appEncountersSlice.actions.reset());
+};
+
+const EncountersList = () => {
   // ** Store Vars
   const dispatch = useDispatch()
-  const store = useSelector(state => state.users)
-
+  const store = useSelector(state => state.encounters)
   // ** States
   const [sort, setSort] = useState('desc')
   const [searchTerm, setSearchTerm] = useState('')
@@ -172,21 +173,19 @@ const UsersList = () => {
   const [sortColumn, setSortColumn] = useState('id')
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [patientID, setPatientID] = useState('')
   // ** Function to toggle sidebar
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen)
 
   // ** Get data on mount
   useEffect(() => {
-    dispatch(getAllData())
+    dispatch(getAllEncounter())
     dispatch(
-      getData({
+      getEncounterData({
         sort,
         sortColumn,
         q: searchTerm,
         page: currentPage,
         perPage: rowsPerPage,
-        patientID: patientID
       })
     )
   }, [dispatch, store.data.length, sort, sortColumn, currentPage])
@@ -194,13 +193,12 @@ const UsersList = () => {
   // ** Function in get data on page change
   const handlePagination = page => {
     dispatch(
-      getData({
+      getEncounterData({
         sort,
         sortColumn,
         q: searchTerm,
         perPage: rowsPerPage,
         page: page.selected + 1,
-        patientID: patientID
       })
     )
     setCurrentPage(page.selected + 1)
@@ -210,12 +208,11 @@ const UsersList = () => {
   const handlePerPage = e => {
     const value = parseInt(e.currentTarget.value)
     dispatch(
-      getData({
+      getEncounterData({
         sort,
         sortColumn,
         q: searchTerm,
         perPage: value,
-        patientID: patientID
       })
     )
     setRowsPerPage(value)
@@ -225,7 +222,7 @@ const UsersList = () => {
   const handleFilter = val => {
     setSearchTerm(val)
     dispatch(
-      getData({
+      getEncounterData({
         sort,
         q: val,
         sortColumn,
@@ -261,7 +258,6 @@ const UsersList = () => {
   // ** Table data to render
   const dataToRender = () => {
     const filters = {
-      patientID: patientID,
       q: searchTerm
     }
 
@@ -282,15 +278,12 @@ const UsersList = () => {
     setSort(sortDirection)
     setSortColumn(column.sortField)
     dispatch(
-      getData({
+      getEncounterData({
         sort,
         sortColumn,
         q: searchTerm,
         page: currentPage,
         perPage: rowsPerPage,
-        role: currentRole.value,
-        status: currentStatus.value,
-        currentPlan: currentPlan.value
       })
     )
   }
@@ -331,4 +324,4 @@ const UsersList = () => {
   )
 }
 
-export default UsersList
+export default EncountersList

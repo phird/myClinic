@@ -16,7 +16,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { Button, Label, FormText, Form, Input } from 'reactstrap'
 
 // ** Store & Actions
-import { addUser } from '../store'
+import { addEncounter } from '../store'
 import { useDispatch } from 'react-redux'
 
 
@@ -85,7 +85,7 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
     if (checkIsValid(data)) {
       toggleSidebar()
       dispatch(
-        addUser({
+        addEncounter({
           role,
           avatar: '',
           status: 'active',

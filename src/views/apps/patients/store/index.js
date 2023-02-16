@@ -1,56 +1,94 @@
 // ** Redux Imports
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-
 // ** Axios Imports
 import axios from 'axios'
 
-export const getAllData = createAsyncThunk('appUsers/getAllData', async () => {
-  const response = await axios.get('/api/patients/list/all-data')
-  console.log("get all data ")
-  console.log(response.data)
-  return response.data
-})
 
-export const getData = createAsyncThunk('appUsers/getData', async params => {
-  const response = await axios.get('/api/patients/list/data', params)
-  return {
-    params,
-    data: response.data.users,
-    totalPages: response.data.total
+//* Here should get all data from Patient table 
+export const getAllData = createAsyncThunk('appPatients/getAllData', async () => {
+  try {
+    const response = await axios.get('http://localhost:8000/app/Patient/list/data/')
+    console.log("getAllData is working")
+    console.log(response.data)
+    return response.data
+  } catch (err) {
+    console.log(err)
   }
 })
 
-export const getUser = createAsyncThunk('appUsers/getUser', async patientID => {
-  const response = await axios.get('/api/patients/patient', { patientID })
-  console.log("get patient")
-  console.log(response.data)
-  return response.data.user
+export const getData = createAsyncThunk('appPatients/getData', async params => {
+  const response = await axios.get('http://localhost:8000/app/Patient/list/getdata', params)
+  console.log("get data is working ")
+  console.log(response.data.patients)
+  return {
+    params: params,
+    data: response.data.patients,
+    totalPages: 10,
+  }
 })
 
-export const addUser = createAsyncThunk('appUsers/addUser', async (user, { dispatch, getState }) => {
-  await axios.post('/apps/patients/add-patient', user)
+//* This one need to receive id from user to get user info 
+export const getPatient = createAsyncThunk('appPatients/getPatient', async id => {
+  const response = await axios.get(`http://localhost:8000/app/Patient/patients/patient/${id}`)
+  /* const response = await axios.get('http://localhost:8000/app/Patient/patients/patient/${id}') */
+  console.log("this is getPatient")
+  return response.data.patient[0]
+})
+
+export const addUser = createAsyncThunk('appPatients/addUser', async (user, { dispatch, getState }) => {
+  await axios.post('/apps/patients/add-patient', patient)
   await dispatch(getData(getState().users.params))
   await dispatch(getAllData())
-  return user
+  return patient
 })
 
-export const deleteUser = createAsyncThunk('appUsers/deleteUser', async (id, { dispatch, getState }) => {
+export const deleteUser = createAsyncThunk('appPatients/deleteUser', async (id, { dispatch, getState }) => {
   await axios.delete('/apps/patient/delete', { id })
   await dispatch(getData(getState().users.params))
   await dispatch(getAllData())
   return id
 })
 
-export const appUsersSlice = createSlice({
-  name: 'appPatient',
+// *** call getEncounter here //
+
+export const getEncounter = createAsyncThunk('appPatient/getEncounter', async id => {
+  const response = await axios.get(`http://localhost:8000/app/Encounter/list/getdata/${id}`)
+ 
+  console.log("get encounter -> ")
+  console.log(response.data.encounter)
+  if (response.status === 200) {
+    return {
+      data: response.data.encounter,
+      totalPage: 10
+    }
+  }else if (response.status === 404){
+    return {
+      data: null,
+      totalPage: 1,
+    }
+  }
+}
+)
+//* end of getEncounter
+
+
+export const appPatientsSlice = createSlice({
+  name: 'appPatients',
   initialState: {
     data: [],
     total: 1,
+    encounter: [],
+    etotal: 1,
     params: {},
     allData: [],
-    selectedUser: null
+    selectedPatient: null,
   },
-  reducers: {},
+  reducers: {
+    resetEncounterData : state => {
+      state.encounter = [],
+      state.etotal = 1
+    }
+  },
   extraReducers: builder => {
     builder
       .addCase(getAllData.fulfilled, (state, action) => {
@@ -61,10 +99,17 @@ export const appUsersSlice = createSlice({
         state.params = action.payload.params
         state.total = action.payload.totalPages
       })
-      .addCase(getUser.fulfilled, (state, action) => {
-        state.selectedUser = action.payload
+      .addCase(getPatient.fulfilled, (state, action) => {
+        state.selectedPatient = action.payload
+        state.patient = action.payload
+      })
+      .addCase(getEncounter.fulfilled, (state, action) => {
+        state.encounter = action.payload.data
+        state.etotal = action.payload.totalPage
       })
   }
 })
 
-export default appUsersSlice.reducer
+export const { resetEncounterData } = appPatientsSlice.actions
+
+export default appPatientsSlice.reducer

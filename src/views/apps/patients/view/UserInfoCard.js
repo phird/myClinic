@@ -6,16 +6,12 @@ import { Row, Col, Card, Form, CardBody, Button, Badge, Modal, Input, Label, Mod
 
 // ** Third Party Components
 import Swal from 'sweetalert2'
-import Select from 'react-select'
 import { Check, Briefcase, X, User, Loader, Smile} from 'react-feather'
 import { useForm, Controller } from 'react-hook-form'
 import withReactContent from 'sweetalert2-react-content'
 
 // ** Custom Components
 import Avatar from '@components/avatar'
-
-// ** Utils
-import { selectThemeColors } from '@utils'
 
 // ** Styles
 import '@styles/react/libs/react-select/_react-select.scss'
@@ -58,7 +54,7 @@ const languageOptions = [
 
 const MySwal = withReactContent(Swal)
 
-const UserInfoCard = ({ selectedUser }) => {
+const UserInfoCard = ({ selectedPatient }) => {
   // ** State
   const [show, setShow] = useState(false)
 
@@ -71,31 +67,21 @@ const UserInfoCard = ({ selectedUser }) => {
     formState: { errors }
   } = useForm({
     defaultValues: {
-      patientID: selectedUser.patientID,
-      lastName: selectedUser.lastname,
-      firstName: selectedUser.firstname
+      patientID: selectedPatient.patientID,
+      lastName: selectedPatient.lname,
+      firstName: selectedPatient.fname 
     }
   })
 
   // ** render user img
   const renderUserImg = () => {
-    if (selectedUser !== null && selectedUser.avatar.length) {
-      return (
-        <img
-          height='110'
-          width='110'
-          alt='user-avatar'
-          src={selectedUser.avatar}
-          className='img-fluid rounded mt-3 mb-2'
-        />
-      )
-    } else {
+    const fullName = selectedPatient.fname +' '+ selectedPatient.lname
       return (
         <Avatar
           initials
-          color={selectedUser.avatarColor || 'light-primary'}
+          color={'light-primary'}
           className='rounded mt-3 mb-2'
-          content={selectedUser.firstname}
+          content={fullName}
           contentStyles={{
             borderRadius: 0,
             fontSize: 'calc(48px)',
@@ -108,7 +94,7 @@ const UserInfoCard = ({ selectedUser }) => {
           }}
         />
       )
-    }
+    
   }
 
   const onSubmit = data => {
@@ -127,8 +113,8 @@ const UserInfoCard = ({ selectedUser }) => {
 
   const handleReset = () => {
     reset({
-      firstname: selectedUser.firstname,
-      lastName: selectedUser.lastname
+      firstname: selectedPatient.fname,
+      lastName: selectedPatient.lname
     })
   }
 
@@ -176,7 +162,7 @@ const UserInfoCard = ({ selectedUser }) => {
               {renderUserImg()}
               <div className='d-flex flex-column align-items-center text-center'>
                 <div className='user-info'>
-                  <h4>{selectedUser !== null ? selectedUser.firstname + " " +selectedUser.lastname : 'Eleanor Aguilar'}</h4>
+                  <h4>{selectedPatient !== null ? selectedPatient.fname + " " +selectedPatient.lname : 'Eleanor Aguilar'}</h4>
                 </div>
               </div>
             </div>
@@ -187,7 +173,7 @@ const UserInfoCard = ({ selectedUser }) => {
                 <User className='font-medium-2' />
               </Badge>
               <div className='ms-75'>
-                <h4 className='mb-0'>{ selectedUser.age }</h4>
+                <h4 className='mb-0'>{ selectedPatient.age }</h4>
                 <small>อายุ</small>
               </div>
             </div>
@@ -196,23 +182,23 @@ const UserInfoCard = ({ selectedUser }) => {
                 <Smile className='font-medium-2' />
               </Badge>
               <div className='ms-75'>
-                <h4 className='mb-0'>{selectedUser.gender}</h4>
+                <h4 className='mb-0'>{selectedPatient.gender}</h4>
                 <small>เพศ</small>
               </div>
             </div>
           </div>
           <h4 className='fw-bolder border-bottom pb-50 mb-1'>รายละเอียดผู้ป่วย</h4>
           <div className='info-container'>
-            {selectedUser !== null ? (
+            {selectedPatient !== null ? (
               <ul className='list-unstyled'>
                 <li className='mb-75'>
                   <span className='fw-bolder me-25'>เพศ:</span>
-                  <span> {selectedUser.gender}</span>
+                  <span> {selectedPatient.gender}</span>
                 </li>
                 <li className='mb-75'>
                   <span className='fw-bolder me-25'>วัน/เดือน/ปี เกิด:</span>
                   <span className='text-capitalize' >
-                    {selectedUser.dob}
+                    {selectedPatient.dob}
                     
                   </span>
                 </li>
@@ -222,20 +208,20 @@ const UserInfoCard = ({ selectedUser }) => {
                 </li>
                 <li className='mb-75'>
                   <span className='fw-bolder me-25'>กรุ๊ปเลือด:</span>
-                  <span> {selectedUser.bloodtype} </span>
+                  <span> {selectedPatient.bloodtype} </span>
                 </li>
                 <li className='mb-75'>
                   <span className='fw-bolder me-25'>ข้อมูลติดต่อ:</span>
-                  <span>{selectedUser.phoneNo}</span>
+                  <span>{selectedPatient.phoneNo}</span>
                 </li>
                 <li className='mb-75'>
                   <span className='fw-bolder me-25'>ที่อยู่:</span>
                   <span>
-                    {selectedUser.address + ', ' +
-                     selectedUser.district + ', '+ 
-                     selectedUser.subdistrict + ', '+
-                     selectedUser.province + ', '+
-                     selectedUser.postalcode}
+                    {selectedPatient.address + ', ' +
+                     selectedPatient.district + ', '+ 
+                     selectedPatient.subdistrict + ', '+
+                     selectedPatient.province + ', '+
+                     selectedPatient.postalcode}
                     </span>
                 </li>
               </ul>
@@ -297,7 +283,7 @@ const UserInfoCard = ({ selectedUser }) => {
                 <Input
                   type='email'
                   id='billing-email'
-                  defaultValue={selectedUser.gender}
+                  defaultValue={selectedPatient.gender}
                   placeholder= 'Male / Female'
                 />
               </Col>
@@ -308,7 +294,7 @@ const UserInfoCard = ({ selectedUser }) => {
                 <Input
                   id='tax-id'
                   placeholder='DD/MM/YYYY'
-                  defaultValue={selectedUser.dob}
+                  defaultValue={selectedPatient.dob}
                 />
               </Col>
               <Col md={6} xs={12}>
@@ -318,7 +304,7 @@ const UserInfoCard = ({ selectedUser }) => {
                 <Input
                   id='tax-id'
                   placeholder='O,A,B,AB'
-                  defaultValue={selectedUser.bloodtype}
+                  defaultValue={selectedPatient.bloodtype}
                 />
               </Col>
               <Col md={6} xs={12}>
@@ -326,7 +312,7 @@ const UserInfoCard = ({ selectedUser }) => {
                   ข้อมูลติดต่อ
                 </Label>
                 <Input id='contact' 
-                defaultValue={selectedUser.phoneNo} 
+                defaultValue={selectedPatient.phoneNo} 
                 placeholder='(+66) 87 545 1234' />
               </Col>
               <Col md={12} xs={12}>
@@ -336,7 +322,7 @@ const UserInfoCard = ({ selectedUser }) => {
                 <Input
                   id='tax-id'
                   placeholder='บ้่านเลขที่ xx หมู่ xx'
-                  defaultValue={selectedUser.address}
+                  defaultValue={selectedPatient.address}
                 />
               </Col>
              

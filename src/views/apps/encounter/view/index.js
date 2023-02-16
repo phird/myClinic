@@ -1,25 +1,29 @@
 // ** React Imports
 import { useEffect, useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate, } from 'react-router-dom'
 
 // ** Store & Actions
-import { getUser } from '../store'
+import { getEncounter } from '../store'
 import { useSelector, useDispatch } from 'react-redux'
 
 // ** Reactstrap Imports
-import { Row, Col, Alert } from 'reactstrap'
+import { Row, Col, Alert, Button } from 'reactstrap'
 
 // ** User View Components
 import UserTabs from './Tabs'
-import PlanCard from './PlanCard'
 import UserInfoCard from './UserInfoCard'
 
 // ** Styles
+import { ChevronLeft } from 'react-feather'
 import '@styles/react/apps/app-users.scss'
 
 const UserView = () => {
   // ** Store Vars
-  const store = useSelector(state => state.users)
+  const store = useSelector(state => state.encounters)
+  console.log("this is store")
+  console.log(store)
+
+
   const dispatch = useDispatch()
 
   // ** Hooks
@@ -27,7 +31,7 @@ const UserView = () => {
 
   // ** Get suer on mount
   useEffect(() => {
-    dispatch(getUser(parseInt(id)))
+    dispatch(getEncounter(parseInt(id)))
   }, [dispatch])
 
   const [active, setActive] = useState('1')
@@ -38,14 +42,35 @@ const UserView = () => {
     }
   }
 
-  return store.selectedUser !== null && store.selectedUser !== undefined ? (
+  const navigate = useNavigate()
+  // ** Handles Label Update
+  const handleGoBack = (e) => {
+    e.preventDefault()
+    navigate("/apps/encounter")
+  }
+
+  return store.selectedEncounter !== null && store.selectedEncounter !== undefined ? (
     <div className='app-user-view'>
       <Row>
-        <Col xl='4' lg='5' xs={{ order: 1 }} md={{ order: 0, size: 5 }}>
-          <UserInfoCard selectedUser={store.selectedUser} />
-          <PlanCard />
+          <Col>
+            <div>
+              <Button.Ripple
+                className='btn-icon'
+                color='flat-success'
+                onClick={e => handleGoBack(e)}
+              >
+                <ChevronLeft size={24} />
+                กลับ
+              </Button.Ripple>
+            </div>
+          </Col>
+        </Row>
+      
+      <Row>
+        <Col xl='3' lg='5' xs={{ order: 0 }} md={{ order: 0, size: 5 }}>
+          <UserInfoCard selectedEncounter={store.selectedEncounter} />
         </Col>
-        <Col xl='8' lg='7' xs={{ order: 0 }} md={{ order: 1, size: 7 }}>
+        <Col xl='9' lg='7' xs={{ order: 1 }} md={{ order: 1, size: 7 }}>
           <UserTabs active={active} toggleTab={toggleTab} />
         </Col>
       </Row>

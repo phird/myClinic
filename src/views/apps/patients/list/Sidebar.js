@@ -19,8 +19,6 @@ import { Button, Label, FormText, Form, Input } from 'reactstrap'
 import { addUser } from '../store'
 import { useDispatch } from 'react-redux'
 
-
-
 const defaultValues = {
   email: '',
   contact: '',

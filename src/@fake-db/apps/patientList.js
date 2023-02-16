@@ -20,7 +20,7 @@ const data = {
       province: 'New York',
       postalcode: '10002',
       personalID: '987-65-4321',
-      addedDate: '15/01/2023',
+      addedDate: '18/01/2023',
       avatar: '',
     },
     {
@@ -99,7 +99,6 @@ const data = {
 
   ]
 }
-
 // GET ALL DATA
 mock.onGet('/api/patients/list/all-data').reply(200, data.users)
 
@@ -167,8 +166,7 @@ mock.onDelete('/apps/patient/delete').reply(config => {
 
   // Convert Id to number
   pID = Number(pID)
-
-  const userIndex = data.users.findIndex(t => t.patientID === patientID)
+  const userIndex = data.users.findIndex(t => t.patientID === pID)
   data.users.splice(userIndex, 1)
 
   return [200]

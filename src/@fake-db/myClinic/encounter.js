@@ -1,7 +1,9 @@
+import { MoreVertical } from 'react-feather'
 import mock from '../mock'
 
 // * import utils 
 import { paginateArray } from '../utils'
+
 
 const data = {
     encounters: [
@@ -12,8 +14,8 @@ const data = {
             prescriptionID: 1,
             appoinmentID: 1,
             symptom: '',
-            treatmentNote: '',
-            addedDate: '17/1/2566'
+            treatmentNote: 'note note note note',
+            addedDate: '233/1/2566'
         },
         {
             encounterID: 2,
@@ -22,7 +24,7 @@ const data = {
             prescriptionID: 1,
             appoinmentID: 1,
             symptom: '',
-            treatmentNote: '',
+            treatmentNote: 'note note note note',
             addedDate: '17/1/2566'
         },
         {
@@ -32,7 +34,7 @@ const data = {
             prescriptionID: 1,
             appoinmentID: 1,
             symptom: '',
-            treatmentNote: '',
+            treatmentNote: 'note note note note',
             addedDate: '17/1/2566'
         },
         {
@@ -42,7 +44,7 @@ const data = {
             prescriptionID: 1,
             appoinmentID: 1,
             symptom: '',
-            treatmentNote: '',
+            treatmentNote: 'note note note note',
             addedDate: '17/1/2566'
         },
         {
@@ -52,7 +54,7 @@ const data = {
             prescriptionID: 1,
             appoinmentID: 1,
             symptom: '',
-            treatmentNote: '',
+            treatmentNote: 'note note note note',
             addedDate: '17/1/2566'
         },
     ]
@@ -62,7 +64,7 @@ const data = {
 // GET ALL DATA
 mock.onGet('/api/encounters/list/all-data').reply(200, data.encounters)
 
-// POST: add new user 
+// POST: add new Encounter
 mock.onPost('/apps/encounters/add-encounter').reply(config => {
     // Get event from post data
     const encounter = JSON.parse(config.data)
@@ -85,6 +87,7 @@ mock.onGet('/api/encounters/list/data').reply(config => {
         patientID = '',
         addedDate = '',
         encounterID = '',
+        sortColumn = ''
     } = config
 
     /* eslint0disable */
@@ -96,9 +99,7 @@ mock.onGet('/api/encounters/list/data').reply(config => {
 
     const filteredData = dataToFilter.filter(
         encounter =>
-        (encounter.symptom.toLowerCase().includes(queryLowered) ||
-         encounter.treatmentNote.toLowerCase().includes(queryLowered)) &&
-            encounter.encounterID === (encounterID || encounter.appoinmentID) &&
+            encounter.encounterID === (encounterID || encounter.encounterID) &&
             encounter.addedDate === (addedDate || encounter.addedDate) &&
             encounter.patientID === (patientID || encounter.patientID)
     )
@@ -113,11 +114,12 @@ mock.onGet('/api/encounters/list/data').reply(config => {
     ]
 })
 
-// GETENCOUNTER
+
+// GET ENCOUNTER
 mock.onGet('/api/encounters/encounter').reply(
     config => {
         const { id } = config
-        const encounter = data.encounters.find(i => i.id == data.encounters.encounterID)
+        const encounter = data.encounters.find(i => i.encounterID === id)
         return [200, (encounter)]
     })
 
@@ -134,6 +136,7 @@ mock.onDelete('/apps/encounter/delete').reply(config => {
 
     return [200]
 })
+
 
 
 

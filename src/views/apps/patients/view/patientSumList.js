@@ -6,57 +6,60 @@ import { columns } from './columns'
 
 // ** Third Party Components
 import DataTable from 'react-data-table-component'
-import { ChevronDown, ExternalLink, Printer, FileText, File, Clipboard, Copy } from 'react-feather'
+import { ChevronDown } from 'react-feather'
 
 // ** Reactstrap Imports
 import {
   Card,
   CardTitle,
   CardHeader,
-  DropdownMenu,
-  DropdownItem,
-  DropdownToggle,
-  UncontrolledButtonDropdown,
   Button
 } from 'reactstrap'
 
 // ** Store & Actions
-import { getData } from '@src/views/apps/invoice/store'
+
 import { useDispatch, useSelector } from 'react-redux'
 
 // ** Styles
 import '@styles/react/apps/app-invoice.scss'
 import '@styles/react/libs/tables/react-dataTable-component.scss'
+import { getEncounter } from '../../patients/store'
+import { useParams } from 'react-router-dom'
+
 
 const patientSumList = () => {
   // ** Store Vars
   const dispatch = useDispatch()
-  const store = useSelector(state => state.invoice)
+  const store = useSelector(state => state.patients)
+
+  console.log("this is store in PatientSumList")
+  console.log(store)
 
   // ** States
   const [value] = useState('')
   const [rowsPerPage] = useState(6)
   const [currentPage] = useState(1)
-  const [statusValue] = useState('')
   const [sort, setSort] = useState('desc')
   const [sortColumn, setSortColumn] = useState('id')
 
+  //* Hooks
+  const { id } = useParams()
+
   useEffect(() => {
-    dispatch(
-      getData({
-        sort,
-        q: value,
-        sortColumn,
-        page: currentPage,
-        perPage: rowsPerPage,
-        status: statusValue
-      })
+    fetch(
+      dispatch(
+        getEncounter(parseInt(id))
+      )
     )
   }, [dispatch, store.data.length])
 
+  console.log("store.encounter")
+  console.log(store.encounter)
+  console.log("length : ")
+  console.log(store.encounter.length)
+
   const dataToRender = () => {
     const filters = {
-      status: statusValue,
       q: value
     }
 
@@ -64,12 +67,12 @@ const patientSumList = () => {
       return filters[k].length > 0
     })
 
-    if (store.data.length > 0) {
-      return store.data.slice(0, rowsPerPage)
-    } else if (store.data.length === 0 && isFiltered) {
+    if (store.encounter.length > 0) {
+      return store.encounter.slice(0, rowsPerPage)
+    } else if (store.encounter.length === 0 && isFiltered) {
       return []
     } else {
-      return store.allData.slice(0, rowsPerPage)
+      return store.encounter.slice(0, rowsPerPage)
     }
   }
 
@@ -77,13 +80,8 @@ const patientSumList = () => {
     setSort(sortDirection)
     setSortColumn(column.sortField)
     dispatch(
-      getData({
+      getEncounter({
         q: value,
-        page: currentPage,
-        sort: sortDirection,
-        status: statusValue,
-        perPage: rowsPerPage,
-        sortColumn: column.sortField
       })
     )
   }
@@ -94,7 +92,7 @@ const patientSumList = () => {
         <CardHeader className='py-1'>
           <CardTitle tag='h4'>ประวัติการรักษา</CardTitle>
           <Button className='add-new-user' color='primary'>
-              เพิ่มการรักษา
+            เพิ่มการรักษา
           </Button>
         </CardHeader>
         <div className='invoice-list-dataTable react-dataTable'>

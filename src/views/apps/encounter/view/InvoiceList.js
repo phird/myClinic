@@ -138,5 +138,4 @@ const InvoiceList = () => {
     </div>
   )
 }
-
 export default InvoiceList

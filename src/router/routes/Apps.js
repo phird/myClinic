@@ -5,6 +5,7 @@ import { Navigate } from 'react-router-dom'
 const Insight = lazy(() => import('../../views/apps/insight'))
 const Appointment = lazy(() => import('../../views/apps/calendar'))
 const Encounter = lazy(()=> import('../../views/apps/encounter/list'))
+const EncounterView = lazy(()=> import('../../views/apps/encounter/view'))
 const Patient = lazy(()=> import('../../views/apps/patients/list'))
 const PatientView = lazy(()=> import('../../views/apps/patients/view'))
 const Users = lazy(()=> import('../../views/apps/user/list'))
@@ -38,6 +39,10 @@ const AppRoutes = [
   {
     element: <Encounter />,
     path: '/apps/encounter'
+  },
+  {
+    element: <EncounterView />,
+    path: '/apps/encounter/view/:id'
   },
   {
     element: <Patient />,
