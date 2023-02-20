@@ -111,7 +111,7 @@ export const columns = [
           </UncontrolledTooltip>
         </>
 
-      <>
+      {/* <>
        <Link id='encounter' onClick={e => e.preventDefault()}>
           <Button.Ripple className='btn-icon' color='flat-success'>
             <Archive size={16} />
@@ -120,8 +120,8 @@ export const columns = [
         <UncontrolledTooltip placement='top' target='encounter'>
             ประวัติการรักษา
           </UncontrolledTooltip>
-      </>
-       <>
+      </>*/}
+       <> 
        <Link id='delete' onClick={e => {
           e.preventDefault()
           store.dispatch(deleteUser(row.id))

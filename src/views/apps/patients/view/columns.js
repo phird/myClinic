@@ -20,7 +20,7 @@ export const columns = [
     sortField: 'id',
     minWidth: '107px',
     selector: row => row.epID,
-    cell: row => <Link className='fw-bolder' to={`/apps/invoice/preview/${row.epID}`}>#ENC{row.epID}</Link>
+    cell: row => <Link className='fw-bolder' to={`/apps/encounter/view/${row.epID}`}>#ENC{row.epID}</Link>
   },
   {
     name: 'วันที่ทำการตรวจ',

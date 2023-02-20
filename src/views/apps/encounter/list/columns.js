@@ -46,7 +46,7 @@ export const columns = [
 
         <div className='d-flex flex-column'>
           <Link
-            to={`/apps/user/view/${row.encounterID}`}
+            to={`/apps/encounter/view/${row.epID}`}
             className='user_name text-truncate text-body'
             onClick={() => store.dispatch(getEncounter(row.encounterID))}
           >
@@ -74,9 +74,9 @@ export const columns = [
       ดูรายการยา
     </Link>
   },
-
   {
-    minWidth: '130px',
+    name: 'เมนู',
+    minWidth: '140px',
     sortField: 'role',
     cell: row => (
       <div className='column-action'>
@@ -88,12 +88,17 @@ export const columns = [
             <DropdownItem
               tag={Link}
               className='w-100'
-              to={`/apps/user/view/${row.id}`}
+              to={`/apps/encounter/view/${row.epID}`}
             >
               <FileText size={14} className='me-50' />
               <span className='align-middle'>รายละเอียด</span>
             </DropdownItem>
-            <DropdownItem tag='a' href='/' className='w-100' onClick={e => e.preventDefault()}>
+            <DropdownItem 
+            tag='a'
+            className='w-100' 
+            onClick={e => e.preventDefault()}
+            to={`/apps/encounter/view/${row.epID}`}
+            >
               <Archive size={14} className='me-50' />
               <span className='align-middle'>แก้ไข</span>
             </DropdownItem>

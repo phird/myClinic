@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from 'react-redux'
 // ** Third Party Components
 import ReactPaginate from 'react-paginate'
 import DataTable from 'react-data-table-component'
+import { useForm, Controller } from 'react-hook-form'
 import { ChevronDown, Share, Printer, FileText, File, Grid, Copy } from 'react-feather'
 
 // ** Reactstrap Imports
@@ -27,7 +28,15 @@ import {
   DropdownMenu,
   DropdownItem,
   DropdownToggle,
-  UncontrolledDropdown
+  UncontrolledDropdown,
+  Form,
+  CardBody,
+  CardHeader,
+  CardTitle,
+  Modal,
+  ModalBody,
+  ModalHeader,
+  Label,
 } from 'reactstrap'
 
 // ** Styles
@@ -36,6 +45,19 @@ import '@styles/react/libs/tables/react-dataTable-component.scss'
 
 // ** Table Header
 const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handleFilter, searchTerm }) => {
+  const [show, setShow] = useState(false)
+
+  // ** Hook
+  const {
+    reset,
+    control,
+    setError,
+    handleSubmit,
+    formState: { errors }
+  } = useForm({
+    defaultValues: {
+    }
+  })
   // ** Converts table to CSV
   function convertArrayOfObjectsToCSV(array) {
     let result
@@ -79,6 +101,7 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
     link.click()
   }
   return (
+    <Fragment>
     <div className='invoice-list-table-header w-100 me-1 ms-50 mt-2 mb-75'>
       <Row>
         <Col xl='6' className='d-flex align-items-center p-0'>
@@ -146,15 +169,69 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
               </DropdownMenu>
             </UncontrolledDropdown>
 
-            <Button className='add-new-user' color='primary' onClick={toggleSidebar}>
+            <Button 
+              className='add-new-user' 
+              color='primary' 
+              onClick={() => setShow(true)}
+            >
               เพิ่มผู้ป่วย
             </Button>
           </div>
         </Col>
       </Row>
     </div>
+          {/* MODAL SECTION  */}
+          <Modal isOpen={show} toggle={() => setShow(!show)} className='modal-dialog-centered modal-lg'>
+        <ModalHeader className='bg-transparent' toggle={() => setShow(!show)}></ModalHeader>
+        <ModalBody className='px-sm-5 pt-50 pb-5'>
+          <div className='text-center mb-2'>
+            <h1 className='mb-1'>เพิ่มผู้ป่วย</h1>
+            <p>🚨</p>
+          </div>
+          <Form onSubmit={handleSubmit(onSubmit)}>
+            <Row className='gy-1 pt-75'>
+              <Row md={6} xs={12}>
+                <Label className='form-label font-weight-bold' for='firstName'>
+                  text:
+                </Label>
+              </Row>
+              <Row md={6} xs={12}>
+                <Label className='h4 form-label font-weight-bold' for='lastName'>
+                  text:
+                </Label>
+
+              </Row>
+              <Col md={6} xs={12}>
+                <Label className='h4 form-label font-weight-bold' for='billing-email'>
+                  text:
+                </Label>
+
+              </Col>
+              <Row md={6} xs={12}>
+                <Label className='h4 form-label font-weight-bold' for='status'>
+                  text:
+                </Label>
+
+              </Row>
+              <Col xs={12} className='text-center mt-2 pt-50'>
+                <Button type='submit' className='me-1' color='primary'>
+                  เพิ่ม
+                </Button>
+              </Col>
+            </Row>
+          </Form>
+        </ModalBody>
+      </Modal>
+  </Fragment>
   )
 }
+
+const onSubmit = data => {
+}
+
+const handleReset = () => {
+  dispatch(appEncountersSlice.actions.reset());
+};
 
 const PatientsList = () => {
   // ** Store Vars
