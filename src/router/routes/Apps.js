@@ -6,6 +6,7 @@ const Insight = lazy(() => import('../../views/apps/insight'))
 const Appointment = lazy(() => import('../../views/apps/calendar'))
 const Encounter = lazy(()=> import('../../views/apps/encounter/list'))
 const EncounterView = lazy(()=> import('../../views/apps/encounter/view'))
+const UploadList = lazy(()=> import('../../views/apps/encounter/view/upload'))
 const Patient = lazy(()=> import('../../views/apps/patients/list'))
 const PatientView = lazy(()=> import('../../views/apps/patients/view'))
 const Users = lazy(()=> import('../../views/apps/user/list'))
@@ -45,6 +46,10 @@ const AppRoutes = [
     path: '/apps/encounter/view/:id'
   },
   {
+    element: <UploadList />,
+    path: '/apps/encounter/view/:id/upload'
+  },
+  {
     element: <Patient />,
     path: '/apps/patient'
   },
@@ -72,6 +77,7 @@ const AppRoutes = [
     element: <Setting />,
     path: 'apps/setting'
   },
+
 
 
   /* INvoice section */

@@ -11,20 +11,20 @@ import { store } from '@store/store'
 import { getPatient, deleteUser } from '../store'
 
 // ** Icons Imports
-import {FileText, Trash2, Archive, Phone } from 'react-feather'
+import { FileText, Trash2, Archive, Phone } from 'react-feather'
 
 // ** Reactstrap Imports
-import { Button,UncontrolledTooltip } from 'reactstrap'
+import { Button, UncontrolledTooltip } from 'reactstrap'
 
 // ** Renders Client Columns
 const renderClient = row => {
-  const fullName = row.fname +' '+ row.lname
-    return (
-      <Avatar initials className='me-1'
-        color={'light-primary'}
-        content={fullName}
-      />
-    )
+  const fullName = row.fname + ' ' + row.lname
+  return (
+    <Avatar initials className='me-1'
+      color={'light-primary'}
+      content={fullName}
+    />
+  )
 }
 
 // ** Renders Role Columns
@@ -101,7 +101,7 @@ export const columns = [
     cell: row => (
       <div className='column-action'>
         <>
-          <Link id='detail' to={`/apps/patient/view/${row.patientID}`} onClick={() => { getUser(row.patientID)}}>
+          <Link id='detail' to={`/apps/patient/view/${row.patientID}`} onClick={() => { getUser(row.patientID) }}>
             <Button.Ripple className='btn-icon' outline color='flat-success'>
               <FileText size={16} />
             </Button.Ripple>
@@ -111,7 +111,7 @@ export const columns = [
           </UncontrolledTooltip>
         </>
 
-      {/* <>
+        {/* <>
        <Link id='encounter' onClick={e => e.preventDefault()}>
           <Button.Ripple className='btn-icon' color='flat-success'>
             <Archive size={16} />
@@ -121,20 +121,20 @@ export const columns = [
             ประวัติการรักษา
           </UncontrolledTooltip>
       </>*/}
-       <> 
-       <Link id='delete' onClick={e => {
-          e.preventDefault()
-          store.dispatch(deleteUser(row.id))
-        }}>
-          <Button.Ripple className='btn-icon' color='flat-success'>
-            <Trash2 size={16} />
-          </Button.Ripple>
-        </Link>
-        <UncontrolledTooltip placement='top' target='delete'>
+        <>
+          <Link id='delete' onClick={e => {
+            e.preventDefault()
+            store.dispatch(deleteUser(row.id))
+          }}>
+            <Button.Ripple className='btn-icon' color='flat-warning'>
+              <Trash2 size={16} />
+            </Button.Ripple>
+          </Link>
+          <UncontrolledTooltip placement='top' target='delete'>
             ลบผู้ป่วย
           </UncontrolledTooltip>
-       </>
-        
+        </>
+
       </div>
     )
   }

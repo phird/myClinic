@@ -1,6 +1,6 @@
 // ** React Imports
 import { useEffect, useState } from 'react'
-import { useParams, Link, useNavigate, } from 'react-router-dom'
+import { useParams, Link, useNavigate,} from 'react-router-dom'
 
 // ** Store & Actions
 import { getEncounter } from '../store'
@@ -17,11 +17,10 @@ import UserInfoCard from './UserInfoCard'
 import { ChevronLeft } from 'react-feather'
 import '@styles/react/apps/app-users.scss'
 
+
 const UserView = () => {
   // ** Store Vars
   const store = useSelector(state => state.encounters)
-  console.log("this is store")
-  console.log(store)
 
 
   const dispatch = useDispatch()
@@ -46,7 +45,7 @@ const UserView = () => {
   // ** Handles Label Update
   const handleGoBack = (e) => {
     e.preventDefault()
-    navigate("/apps/encounter")
+    navigate(-1)
   }
 
   return store.selectedEncounter !== null && store.selectedEncounter !== undefined ? (

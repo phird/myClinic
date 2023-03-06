@@ -145,55 +145,24 @@ const DoctorBoxs = () => {
                   <CardTitle> บันทึก </CardTitle>
                 </CardHeader>
 
-                <div className="my-2 mx-1 align-items-center justify-content-center">
+                <div className=" mx-1 align-items-center justify-content-center">
                   {/* Here is list of Symptom Shows */}
-                  <div>
-                    <ul className='list-unstyled align-items-center justify-content-between' >
-                      {notes.map((note, index) => (
-                        <li className='mb-75' key={index}>
-                          <Row className="align-items-center justify-content-between">
-                            <Col xs="8" md="8" sm="10" style={{ textOverflow: "ellipsis", overflow: "hidden", }}>
-                              <div className="d-flex align-items-center justify-content-start">
-                                <span style={{ textOverflow: "ellipsis", overflow: "hidden", maxWidth: "100%" }}>
-                                  {note}
-                                </span>
-                              </div>
-                            </Col>
-                            <Col xs="auto" md="4">
-                              <div className="d-flex align-items-center justify-content-end">
-                                <Button.Ripple
-                                  className='btn-icon rounded-circle'
-                                  color='flat-danger'
-                                  onClick={() => handleNoteDelete(index)}
-                                >
-                                  <X size={16} />
-                                </Button.Ripple>
-                              </div>
-                            </Col>
-                          </Row>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
 
-                  <div className="my-3">
-                    {/*  Here is submit Button */}
-                    <form onSubmit={handleNoteSubmit}>
-                      <div className='d-flex form-floating align-items-center justify-content-center'>
-                        <Input
-                          type='text'
-                          name="note"
-                          id='floatingInput'
-                          placeholder='เพิ่มโน้ต'
-                          style={{ textOverflow: "ellipsis", overflow: "hidden", maxWidth: "100%" }}
-                        />
-                        <label htmlFor='floatingInput'>เพิ่มบันทึก</label>
-                      </div>
-                      <div>
-                        <Button className="my-2" type="submit" color='relief-success' block>เพิ่ม</Button>
-                      </div>
-                    </form>
-                  </div>
+                  {/*  Here is submit Button */}
+                  <form onSubmit={handleNoteSubmit}>
+                    <div className='d-flex form-floating align-items-center justify-content-center'>
+                      <Input
+                        type="textarea"
+                        name="note"
+                        placeholder='เพิ่มโน้ต'
+                        rows='5'
+                        style={{ textOverflow: "ellipsis", overflow: "hidden", maxWidth: "100%", minHeight:"150px"}}
+                      />
+
+                    </div>
+                    
+                  </form>
+
                 </div>
               </Card>
             </Col>

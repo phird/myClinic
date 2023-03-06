@@ -1,9 +1,9 @@
 // ** React Imports
 import { useState, useEffect } from 'react'
-
+import { Link } from 'react-router-dom'
 // ** Third Party Components
 import DataTable from 'react-data-table-component'
-import { Plus, X, ChevronDown, ExternalLink, Printer, FileText, File, Clipboard, Copy } from 'react-feather'
+import { Plus, ChevronDown, ExternalLink, Printer, FileText, File, Clipboard, Copy, Trash2, Circle } from 'react-feather'
 
 // ** Reactstrap Imports
 import {
@@ -22,20 +22,14 @@ import {
   InputGroupText,
   Modal,
   ModalBody,
-  ModalFooter,
   ModalHeader,
   FormFeedback,
   FormGroup,
+  UncontrolledTooltip,
 } from 'reactstrap'
 
 import Select from 'react-select'
 
-// ** Custom Components
-import Repeater from '@components/repeater'
-
-//** Third Party Component
-import { useForm, Controller } from 'react-hook-form'
-import { SlideDown } from 'react-slidedown'
 
 // ** Styles
 import '@styles/react/libs/tables/react-dataTable-component.scss'
@@ -45,43 +39,87 @@ import axios from 'axios'
 
 const MySwal = withReactContent(Swal)
 
-//** Column */
-
-export const columns = [
-  {
-    sortable: true,
-    minWidth: '300px',
-    name: 'ชื่อยา',
-    selector: row => row.drugName,
-  },
-  {
-    sortable: true,
-    minWidth: '300px',
-    name: 'จำนวน',
-    selector: row => row.quantity,
-  },
-  {
-    sortable: true,
-    name: 'หมายเหตุ',
-    selector: row => row.note,
-  }
-]
 
 
+
+export function handleDelete(drugID, drugList, setDrugList) {
+  const filterDrugs = drugList.filter(drug => drug.drugID !== drugID);
+  setDrugList(filterDrugs);
+}
 
 
 const PrescriptionList = () => {
+  
+  //** Column */
+  const columns = [
+    {
+      name: 'ชื่อยา',
+      sortable: true,
+      minWidth: '300px',
+      selector: row => row.drugName,
+      cell: row => {
+        return (
+          <div className='d-flex justify-content-center align-items-center'>
+            <div className='d-flex flex-column'>
+              <span className='fw-bolder'> {row.drugName}</span>
+            </div>
+          </div>
+        )
+      }
+    },
+    {
+      sortable: true,
+      minWidth: '200px',
+      name: 'จำนวน',
+      selector: row => row.quantity,
+    },
+    {
+      name: 'หมายเหตุ',
+      selector: row => row.note,
+    },
+    {
+      sortField: 'role',
+      cell: row => {
+        return (
+          <div className='column-action'>
+            <>
+              <Link id='delete' onClick={e => {
+                e.preventDefault()
+              }}>
+                <Button.Ripple
+                  className='btn-icon'
+                  color='flat-warning'
+                  onClick={() => handleDelete(row.drugID)}
+                >
+                  <Trash2 size={16} />
+                </Button.Ripple>
+              </Link>
+              <UncontrolledTooltip placement='top' target='delete'>
+                ลบรายการยา
+              </UncontrolledTooltip>
+            </>
+          </div>
+        )
+      }
+    }
+  ]
+  //** Column */
+
   // ** State
-  const [show, setShow] = useState(true)
+  const [show, setShow] = useState(false);
   const [drugs, setDrugs] = useState([]);
   const [selectedDrugs, setSelectedDrugs] = useState([]);
   const [drugList, setDrugList] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredData, setFilteredData] = useState([]);
+  //* Validation
+  const [validated, setValidated] = useState(false);
 
-  console.log("here is druglist")
+
+  console.log("here is DrugList")
   console.log(drugList)
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -89,13 +127,15 @@ const PrescriptionList = () => {
   //** HANDLE MODAL */
   const handleSubmit = (event) => {
     event.preventDefault();
+    
     // Retrieve the values of the form Field
-    const drugName = selectedDrugs.value;
+    const drugID = selectedDrugs.value
+    const drugName = selectedDrugs.label;
     const quantity = document.getElementById('quantity').value;
     const note = document.getElementById('note').value;
     // Store the data in an appropriate data Structure (object)
-    const newData = { drugName, quantity, note };
-    
+    const newData = { drugID, drugName, quantity, note };
+
     // Update state
     if (!quantity || !drugName) {
       handleError();
@@ -110,22 +150,32 @@ const PrescriptionList = () => {
   }
 
   const handleInputChange = (e) => {
-    setInputValue(e.target.value)
+    const value = e.target.value;
+    setInputValue(value)
+
   }
 
   const handleDrugChange = (selectedOption) => {
-    console.log("here is a selected option")
-    console.log(selectedOption)
     setSelectedDrugs(selectedOption);
   }
 
+  const handleModalClosed = () => {
+    setSelectedDrugs([]);
+    setInputValue('');
+  }
   //** HANLDE MODAL */
+
+  function handleDelete(drugID) {
+    const filterDrugs = drugList.filter(drug => drug.drugID !== drugID);
+    setDrugList(filterDrugs)
+  }
+
 
   //* Error Alert
   const handleError = () => {
     return MySwal.fire({
       title: 'เกิดข้อผิดพลาด!',
-      text: ' กรุณาตรวจสอบยาที่เลือก หรือ จำนานยา!',
+      text: ' กรุณาตรวจสอบ ชื่อยา ปริมาณ ยาให้ครบถ้วน',
       icon: 'error',
       customClass: {
         confirmButton: 'btn btn-primary'
@@ -139,11 +189,6 @@ const PrescriptionList = () => {
     console.log(response.data)
     setDrugs(response.data);
     setFilteredData(response.data);
-  };
-
-  const handleSearchQueryChange = (event) => {
-    setSearchQuery(event.target.value);
-    filterData(event.target.value);
   };
 
   const filterData = (query) => {
@@ -166,7 +211,7 @@ const PrescriptionList = () => {
               <Col sm="6" className='d-flex justify-content-end align-items-center'>
                 <Button className='btn-icon' color='primary' onClick={() => setShow(true)}>
                   <Plus size={14} />
-                  <span className='align-middle ms-25'>สั่งยา</span>
+                  <span className='align-middle ms-25'>เพิ่มรายการยา</span>
                 </Button>
               </Col>
             </Row>
@@ -174,21 +219,24 @@ const PrescriptionList = () => {
         </CardHeader>
         <CardBody>
           {/* table of drug  */}
-          <DataTable
-            noHeader
-            responsive
-            columns={columns}
-            data={drugList}
-            className='react-dataTable'
-            sortIcon={<ChevronDown size={10} />}
-          />
+          <div className='react-dataTable'>
+            <DataTable
+              noHeader
+              responsive
+              columns={columns}
+              data={drugList}
+              className='react-dataTable'
+              sortIcon={<ChevronDown size={10} />}
+            />
+
+          </div>
 
           {/* end of table of drug  */}
         </CardBody>
       </Card>
 
       {/* MODAL SECTION  */}
-      <Modal isOpen={show} toggle={() => setShow(!show)} className='modal-dialog-centered modal-lg' backdrop="static">
+      <Modal isOpen={show} toggle={() => setShow(!show)} className='modal-dialog-centered modal-lg' onClosed={handleModalClosed} backdrop="static">
         <ModalHeader className='bg-transparent' toggle={() => setShow(!show)}></ModalHeader>
         <ModalBody className='px-sm-5 pt-50 pb-5'>
           <div className='text-center mb-2'>
@@ -199,19 +247,20 @@ const PrescriptionList = () => {
             <Row className='gy-1 pt-75' >
               <Row md={12} xs={12} style={{ marginBottom: '10px' }}>
                 <Col>
-                  <Label className='form-label font-weight-bold' for='firstName'>
-                    ชื่อยา
-                  </Label>
-
-                  <FormGroup valid={selectedDrugs !== ''} invalid={selectedDrugs === ''}>
+                  <FormGroup>
+                    <Label className='form-label font-weight-bold' for='firstName'>
+                      ชื่อยา
+                    </Label>
                     <Select
                       id="drugName"
                       placeholder="เลือก หรือ ค้นหายา"
-                      options={drugs.map((drug) => ({ value: drug.name, label: drug.name }))}
+                      options={drugs.map((drug) => ({ value: drug.drugID, label: drug.name }))}
                       value={selectedDrugs}
                       onChange={handleDrugChange}
+                      required
+                      defaultValue=""
                     />
-                    <FormFeedback invalid>
+                    <FormFeedback >
                       กรุณาเลือกยา
                     </FormFeedback>
                   </FormGroup>
@@ -220,22 +269,24 @@ const PrescriptionList = () => {
 
               <Row md={3} xs={12} style={{ marginBottom: '10px' }}>
                 <Col sm={4}>
-                  <Label className='h4 form-label font-weight-bold' for='lastName'>
-                    ปริมาณ
-                  </Label>
-                  <FormGroup valid={inputValue !== ''} invalid={inputValue === ''}>
+                  <FormGroup>
+                    <Label className='h4 form-label font-weight-bold' for='lastName'>
+                      ปริมาณ
+                    </Label>
                     <InputGroup>
                       <Input
+                        required
                         id='quantity'
+                        type='number'
                         value={inputValue}
                         onChange={handleInputChange}
                         placeholder='ตัวอย่าง: 10'
                       />
                       <InputGroupText> เม็ด </InputGroupText>
+                      <FormFeedback >
+                        กรุณากรอกปริมาณยา
+                      </FormFeedback>
                     </InputGroup>
-                    <FormFeedback invalid>
-                      กรุณากรอกปริมาณยา
-                    </FormFeedback>
                   </FormGroup>
 
                 </Col>

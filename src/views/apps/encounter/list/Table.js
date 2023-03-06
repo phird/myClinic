@@ -1,6 +1,6 @@
 // ** React Imports
 import { Fragment, useState, useEffect } from 'react'
-
+import { useParams, useNavigate } from 'react-router-dom'
 // ** Invoice List Sidebar
 import Sidebar from './Sidebar'
 
@@ -46,7 +46,7 @@ import '@styles/react/libs/tables/react-dataTable-component.scss'
 // ** Table Header
 const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handleFilter, searchTerm }) => {
   const [show, setShow] = useState(false)
-
+  
   // ** Hook
   const {
     reset,
@@ -64,6 +64,7 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
     const columnDelimiter = ','
     const lineDelimiter = '\n'
     const keys = Object.keys(store.data[0])
+    const {id} = useParams(); 
 
     result = ''
     result += keys.join(columnDelimiter)
