@@ -26,6 +26,12 @@ export const getData = createAsyncThunk('appPatients/getData', async params => {
     totalPages: 10,
   }
 })
+// * INSERT NEW PATIENT TO DATABASE
+export const postPatient = createAsyncThunk('appPatients/postPatient', async (newData) => {
+  console.log("postPatient has been called");
+  const response = await axios.post('http://localhost:8000/app/Patient/createPatient', newData)
+  return response.data
+})
 
 //* This one need to receive id from user to get user info 
 export const getPatient = createAsyncThunk('appPatients/getPatient', async id => {

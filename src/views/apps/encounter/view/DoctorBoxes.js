@@ -29,7 +29,7 @@ const MOCKDISEASE = {
 
 const DoctorBoxs = () => {
   const [symptoms, setSymptoms] = useState([]);
-  const [notes, setNotes] = useState([]);
+  const [notes, setNotes] = useState('');
   const [disease, setDisease] = useState('');
 
 
@@ -54,17 +54,8 @@ const DoctorBoxs = () => {
   const handleNoteSubmit = (event) => {
     event.preventDefault();
     const newNote = event.target.elements.note.value;
-    setNotes((prevNotes) => [
-      ...prevNotes,
-      newNote,
-    ]);
+    setNotes(newNote);
     event.target.reset();
-  };
-
-  const handleNoteDelete = (index) => {
-    setNotes((prevNotes) =>
-      prevNotes.filter((note, i) => i !== index)
-    );
   };
 
   const handleDiseaseClick = (disease) => {

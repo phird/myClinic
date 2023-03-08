@@ -5,10 +5,11 @@ import { Fragment } from 'react'
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap'
 
 // ** Icons Imports
-import { User, } from 'react-feather'
+import { User,Image } from 'react-feather'
 
 // ** User Components
 import PatientSumList from './patientSumList'
+import UploadImageList from './uploadedImage'
 const UserTabs = ({ active, toggleTab }) => {
   return (
     <Fragment>
@@ -19,13 +20,21 @@ const UserTabs = ({ active, toggleTab }) => {
             <span className='fw-bold'>รายละเอียดผู้ป่วย</span>
           </NavLink>
         </NavItem>
-
+        <NavItem>
+          <NavLink active={active === '2'} onClick={() => toggleTab('2')}>
+            <Image className='font-medium-3 me-50' />
+            <span className='fw-bold'>รูปภาพที่อัปโหลด</span>
+          </NavLink>
+        </NavItem>
       </Nav>
       <TabContent activeTab={active}>
         <TabPane tabId='1'>
           <PatientSumList />
         </TabPane>
-        
+        <TabPane tabId='2'>
+          <UploadImageList />
+        </TabPane>
+
       </TabContent>
     </Fragment>
   )

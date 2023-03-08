@@ -3,13 +3,20 @@ import { Link } from 'react-router-dom'
 
 // ** Store & Actions
 import { store } from '@store/store'
-import { getAllEncounter, deleteEncounter,} from '../store'
+import { getAllEncounter, deleteEncounter, } from '../store'
 
 // ** Icons Imports
-import { MoreVertical, FileText, Trash2, Archive } from 'react-feather'
+import { MoreVertical, FileText, Trash2, Archive, Camera } from 'react-feather'
 
 // ** Reactstrap Imports
-import { UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap'
+import {
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  Button, 
+  UncontrolledTooltip,
+} from 'reactstrap'
 
 //** dateFormat imports */
 import dateFormat from 'dateformat'
@@ -21,15 +28,15 @@ export const columns = [
     sortable: true,
     minWidth: '50px',
     sortField: 'id',
-    selector: row => row.epID,
+    selector: row => row.encounterID,
     cell: row => (
       <div className='d-flex justify-content-left align-items-center'>
         <div className='d-flex flex-column'>
           <Link
-            to={`/apps/encounter/view/${row.epID}`}
+            to={`/apps/encounter/view/${row.encounterID}`}
             className='user_name text-truncate text-body'
-            >
-            <span className='fw-bolder'>#ENC-{row.epID}</span>
+          >
+            <span className='fw-bolder'>#ENC-{row.encounterID}</span>
           </Link>
         </div>
       </div>
@@ -46,9 +53,9 @@ export const columns = [
 
         <div className='d-flex flex-column'>
           <Link
-            to={`/apps/encounter/view/${row.epID}`}
+            to={`/apps/encounter/view/${row.encounterID}`}
             className='user_name text-truncate text-body'
-            onClick={() => store.dispatch(getEncounter(row.encounterID))}
+            onClick={() => store.dispatch(getAllEncounter(row.encounterID))}
           >
             <span className='fw-bolder'>{row.fname + ' ' + row.lname}</span>
           </Link>
@@ -80,42 +87,16 @@ export const columns = [
     sortField: 'role',
     cell: row => (
       <div className='column-action'>
-        <UncontrolledDropdown>
-          <DropdownToggle tag='div' className='btn btn-sm'>
-            <MoreVertical size={14} className='cursor-pointer' />
-          </DropdownToggle>
-          <DropdownMenu>
-            <DropdownItem
-              tag={Link}
-              className='w-100'
-              to={`/apps/encounter/view/${row.epID}`}
-            >
-              <FileText size={14} className='me-50' />
-              <span className='align-middle'>รายละเอียด</span>
-            </DropdownItem>
-            <DropdownItem 
-            tag='a'
-            className='w-100' 
-            onClick={e => e.preventDefault()}
-            to={`/apps/encounter/view/${row.epID}`}
-            >
-              <Archive size={14} className='me-50' />
-              <span className='align-middle'>แก้ไข</span>
-            </DropdownItem>
-            <DropdownItem
-              tag='a'
-              href='/'
-              className='w-100'
-              onClick={e => {
-                e.preventDefault()
-                store.dispatch(deleteEncounter(row.encounterID))
-              }}
-            >
-              <Trash2 size={14} className='me-50' />
-              <span className='align-middle'>ลบ</span>
-            </DropdownItem>
-          </DropdownMenu>
-        </UncontrolledDropdown>
+        <>
+          <Link to={`/apps/encounter/view/${row.encounterID}`}>
+            <Button.Ripple id='view' className='btn-icon' color='flat-success'>
+              <FileText size={16} />
+            </Button.Ripple>
+          </Link>
+          <UncontrolledTooltip placement='top' target='view'>
+            ดูบันทึก
+          </UncontrolledTooltip>
+        </>
       </div>
     )
   }

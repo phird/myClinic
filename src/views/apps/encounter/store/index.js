@@ -20,6 +20,15 @@ export const getEncounterData = createAsyncThunk('appEncounters/getEncounterData
   }
 })
 
+export const postEncounter = createAsyncThunk('appEncounter/postEncounter', async (newData) => {
+  console.log("postEncounter has been called")
+  const response = await axios.post('http://localhost:8000/app/Encounter/createEncounter', newData)
+  console.log("i Insert new data")
+  console.log(response.data)
+  return response.data
+})
+
+
 //** get specific encounter for patient  */
 
 //** ⭐️ legacy get encounter  */
@@ -45,6 +54,9 @@ export const deleteEncounter = createAsyncThunk('appEncounters/deleteEncounter',
   return id
 })
 
+
+
+
 export const appEncountersSlice = createSlice({
   name: 'appEncounters',
   initialState: {
@@ -67,8 +79,12 @@ export const appEncountersSlice = createSlice({
         state.params = action.payload.params
         state.total = action.payload.totalPage
       })
-      .addCase(getEncounter.fulfilled, (state,action) =>{
+      .addCase(getEncounter.fulfilled, (state, action) => {
         state.selectedEncounter = action.payload
+      })
+      .addCase(postEncounter.fulfilled, (state, action) => {
+        state.data.push(action.payload)
+        state.total = state.total + 1;
       })
 
   }

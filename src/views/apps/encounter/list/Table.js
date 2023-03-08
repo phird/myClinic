@@ -1,22 +1,29 @@
 // ** React Imports
 import { Fragment, useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 // ** Invoice List Sidebar
-import Sidebar from './Sidebar'
 
 // ** Table Columns
 import { columns } from './columns'
 
 // ** Store & Actions
-import { getAllEncounter, getEncounterData } from '../store'
-import { useDispatch, useSelector } from 'react-redux'
+import { getAllEncounter, getEncounterData, postEncounter } from '../store';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllData } from '../../patients/store'
 
 // ** Third Party Components
 import ReactPaginate from 'react-paginate'
 import DataTable from 'react-data-table-component'
-import { useForm, Controller } from 'react-hook-form'
 import { ChevronDown, Share, Printer, FileText, File, Grid, Copy } from 'react-feather'
 import { appEncountersSlice } from '../store'
+import Swal from 'sweetalert2'
+
+
+const MySwal = withReactContent(Swal)
+import withReactContent from 'sweetalert2-react-content'
+import Select from 'react-select'
+
+
 // ** Reactstrap Imports
 import {
   Row,
@@ -30,13 +37,10 @@ import {
   DropdownToggle,
   UncontrolledDropdown,
   Form,
-  CardBody,
-  CardHeader,
-  CardTitle,
   Modal,
   ModalBody,
   ModalHeader,
-                                           
+
 } from 'reactstrap'
 
 // ** Styles
@@ -45,26 +49,76 @@ import '@styles/react/libs/tables/react-dataTable-component.scss'
 
 // ** Table Header
 const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handleFilter, searchTerm }) => {
+
+  // ** Current Date
+  const currentDate = new Date().toISOString().slice(0,10);
+
+  // ** useDispatch 
+  const dispatch = useDispatch()
+
+  // ** State
   const [show, setShow] = useState(false)
-  
-  // ** Hook
-  const {
-    reset,
-    control,
-    setError,
-    handleSubmit,
-    formState: { errors }
-  } = useForm({
-    defaultValues: {
+  const [patient, setPatient] = useState([]);
+  const [allPatients, setAllPatients] = useState([]);
+  const [patientEn, setPatientEn] = useState([]);
+  // ** in this case use patient instead of doctor  -> please fix
+  const [doctor, setDoctor] = useState([]);
+
+
+
+  // ** Get Patient Data 
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await dispatch(getAllData());
+      setAllPatients(data.payload)
+    };
+    fetchData();
+  }, [dispatch])
+
+
+  const handleSubmitEncounter = (event) => {
+    event.preventDefault();
+    // retrieve the values of the form field 
+    const patientID = patient.value;
+    const staffID = doctor.value;
+    const note = document.getElementById('note').value;
+    const addedDate = currentDate;
+    const newData = { patientID, staffID, note, addedDate };
+    // update state 
+    if (!patientID || !staffID) {
+      return;
     }
-  })
+    try {
+      dispatch(  postEncounter(newData) );
+      setShow(false);
+      setPatient([]);
+      setDoctor([]);
+      console.log("end of trying")
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+
+  const handlePatientChange = (selectedOption) => {
+    setPatient(selectedOption);
+  }
+  const handleDoctorChange = (selectedOption) => {
+    console.log("here is selected Option")
+    console.log(selectedOption)
+    setDoctor(selectedOption);
+  }
+
+  const handleModalClosed = () => {
+    setPatient([]);
+  }
   // ** Converts table to CSV
   function convertArrayOfObjectsToCSV(array) {
     let result
     const columnDelimiter = ','
     const lineDelimiter = '\n'
     const keys = Object.keys(store.data[0])
-    const {id} = useParams(); 
+    const { id } = useParams();
 
     result = ''
     result += keys.join(columnDelimiter)
@@ -106,7 +160,7 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
         <Row>
           <Col xl='6' className='d-flex align-items-center p-0'>
             <div className='d-flex align-items-center w-100'>
-              <label htmlFor='rows-per-page'>Show</label>
+              <label htmlFor='rows-per-page'>แสดง</label>
               <Input
                 className='mx-50'
                 type='select'
@@ -119,7 +173,7 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
                 <option value='25'>25</option>
                 <option value='50'>50</option>
               </Input>
-              <label htmlFor='rows-per-page'>Entries</label>
+              <label htmlFor='rows-per-page'>รายการ</label>
             </div>
           </Col>
           <Col
@@ -127,11 +181,11 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
             className='d-flex align-items-sm-center justify-content-xl-end justify-content-start flex-xl-nowrap flex-wrap flex-sm-row flex-column pe-xl-1 p-0 mt-xl-0 mt-1'
           >
             <div className='d-flex align-items-center mb-sm-0 mb-1 me-1'>
-              <label className='mb-0' htmlFor='search-invoice'>
-                Search:
+              <label className='mb-0' htmlFor='search-encounter'>
+                ค้นหา:
               </label>
               <Input
-                id='search-invoice'
+                id='search-encounter'
                 className='ms-50 w-100'
                 type='text'
                 value={searchTerm}
@@ -181,41 +235,63 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
         </Row>
       </div>
       {/* MODAL SECTION  */}
-      <Modal isOpen={show} toggle={() => setShow(!show)} className='modal-dialog-centered modal-lg'>
+      <Modal isOpen={show} toggle={() => setShow(!show)} className='modal-dialog-centered modal-lg' onClosed={handleModalClosed} backdrop="static" >
         <ModalHeader className='bg-transparent' toggle={() => setShow(!show)}></ModalHeader>
         <ModalBody className='px-sm-5 pt-50 pb-5'>
           <div className='text-center mb-2'>
             <h1 className='mb-1'>เพิ่มการรักษา</h1>
-            <p>🚨</p>
           </div>
-          <Form onSubmit={handleSubmit(onSubmit)}>
+          <Form onSubmit={handleSubmitEncounter}>
             <Row className='gy-1 pt-75'>
-              <Row md={6} xs={12}>
-                <Label className='form-label font-weight-bold' for='firstName'>
-                  text:
+              <Row md={12} xs={12} style={{ marginBottom: '20px' }}>
+                <Label className='form-label font-weight-bold h-3' for='firstName'>
+                  ผู้ป่วย
                 </Label>
+                <Select
+                  id="patientName"
+                  placeholder="เลือก หรือ ค้นผู้ป่วย"
+                  options={allPatients.map((patient) => ({ value: patient.patientID, label: patient.fname + "  " + patient.lname }))}
+                  value={patient}
+                  onChange={handlePatientChange}
+                  required
+                  defaultValue=""
+                />
               </Row>
-              <Row md={6} xs={12}>
+              <Row md={12} xs={12} style={{ marginBottom: '20px' }}>
                 <Label className='h4 form-label font-weight-bold' for='lastName'>
-                  text:
+                  แพทย์ผู้ทำการรักษา:
                 </Label>
-
+                <Select
+                  id="patientName"
+                  placeholder="เลือก หรือ ค้นแพทย์"
+                  options={allPatients.map((patient) => ({ value: patient.patientID, label: patient.fname + "  " + patient.lname }))}
+                  required
+                  value={doctor}
+                  onChange={handleDoctorChange}
+                  defaultValue=""
+                  style={{ maxWidth: '100%' }}
+                />
               </Row>
-              <Col md={6} xs={12}>
-                <Label className='h4 form-label font-weight-bold' for='billing-email'>
-                  text:
-                </Label>
-
+              <Row md={12} xs={12} style={{ marginBottom: '20px' }}>
+                <Input
+                  id="note"
+                  type="textarea"
+                  placeholder='หมายเหตุ'
+                  rows='5'
+                  style={{ textOverflow: "ellipsis", overflow: "hidden", maxWidth: "100%", minHeight: "120px" }}
+                />
+              </Row>
+              <Col md={12} xs={12} style={{ marginBottom: '20px' }}>
+                <Row style={{ marginBottom: '20px' }}>
+                  <Label className='h4 form-label font-weight-bold' for='billing-email'>
+                    วันที่:
+                  </Label>
+                  <span>    {currentDate}    </span>
+                </Row>
               </Col>
-              <Row md={6} xs={12}>
-                <Label className='h4 form-label font-weight-bold' for='status'>
-                  text:
-                </Label>
-
-              </Row>
               <Col xs={12} className='text-center mt-2 pt-50'>
                 <Button type='submit' className='me-1' color='primary'>
-                  เพิ่ม
+                  เพิ่มการตรวจผู้ป่วย
                 </Button>
               </Col>
             </Row>
@@ -223,12 +299,12 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
         </ModalBody>
       </Modal>
     </Fragment>
+
   )
 }
 
 
-const onSubmit = data => {
-}
+
 
 const handleReset = () => {
   dispatch(appEncountersSlice.actions.reset());

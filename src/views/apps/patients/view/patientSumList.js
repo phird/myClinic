@@ -53,11 +53,6 @@ const patientSumList = () => {
     )
   }, [dispatch, store.data.length])
 
-  console.log("store.encounter")
-  console.log(store.encounter)
-  console.log("length : ")
-  console.log(store.encounter.length)
-
   const dataToRender = () => {
     const filters = {
       q: value

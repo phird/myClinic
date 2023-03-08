@@ -102,6 +102,10 @@ const UserTabs = ({ active, toggleTab }) => {
 
   }
 
+  const handleEndEncounter = () => {
+
+  }
+
   /*  const handleUploadClick = (id) => {
      console.log("click it ")
      navigate(`/apps/encounter/view/${id}/upload`)
@@ -125,7 +129,7 @@ const UserTabs = ({ active, toggleTab }) => {
                     onClick={() => setShow(true)}
                     block
                   >
-                    อัปโหลดอัปโหลดรูปภาพ
+                    อัปโหลดรูปภาพ
                   </Button.Ripple>
                   <Button.Ripple color='danger' outline className="d-flex justify-content-center" block>
                     เสร็จสิ้นการตรวจ
@@ -134,11 +138,15 @@ const UserTabs = ({ active, toggleTab }) => {
               </Col>
             </Row>
           </Container>
+
+
           <div>
             <DoctorBoxs />
             <Prescription />
             <Invoice />
           </div>
+
+
         </CardBody>
       </Card>
 
