@@ -5,6 +5,7 @@ import { useParams, Link, useNavigate, } from 'react-router-dom'
 // ** Store & Actions
 import {
   getPatient,
+  getPatientEncounter,
   resetEncounterData,
 } from '../store'
 import { useSelector, useDispatch } from 'react-redux'
@@ -23,8 +24,10 @@ import '@styles/react/apps/app-users.scss'
 
 const UserView = props => {
   // ** Store Vars
+
   const store = useSelector(state => state.patients)
   const dispatch = useDispatch()
+  const [active, setActive] = useState('1')
 
   // ** Hooks
   const { id } = useParams()
@@ -32,10 +35,8 @@ const UserView = props => {
   // ** Get suer on mount
   useEffect(() => {
     dispatch(getPatient(parseInt(id)))
+    dispatch(getPatientEncounter(parseInt(id)))
   }, [dispatch])
-
-
-  const [active, setActive] = useState('1')
 
   const toggleTab = tab => {
     if (active !== tab) {
@@ -48,13 +49,10 @@ const UserView = props => {
   const handleGoBack = (e) => {
     e.preventDefault()
     console.log("im in handdleGoBack")
-    navigate("/apps/patient")
     dispatch(resetEncounterData())
+    navigate("/apps/patient")
+    
   }
-
-  console.log("this is store.selectedPatient")
-  console.log(store.selectedPatient)
-
 
   return store.selectedPatient !== null && store.selectedPatient !== undefined ?
     (
@@ -76,19 +74,19 @@ const UserView = props => {
 
         <Row>
           <Col xl='4' lg='5' xs={{ order: 1 }} md={{ order: 0, size: 5 }}>
-            <UserInfoCard selectedPatient={store.selectedPatient} />
+            <UserInfoCard selectedPatient={store.selectedPatient} onC />
           </Col>
           <Col xl='8' lg='7' xs={{ order: 0 }} md={{ order: 1, size: 7 }}>
-            <UserTabs active={active} toggleTab={toggleTab} />
+            <UserTabs active={active} toggleTab={toggleTab} selectedPatient={store.selectedPatient} />
           </Col>
         </Row>
       </div>
     ) :
     (
       <Alert color='danger'>
-        <h4 className='alert-heading'>User not found</h4>
+        <h4 className='alert-heading'>ไม่พบผู้ป่วย</h4>
         <div className='alert-body'>
-          Patient with id: {id} doesn't exist. Check list of all Patient: <Link to='/apps/patient'>Patient List</Link>
+          ไม่พบผู้ป่วยรหัส {id}. ดูรายชื่อผู้ป่วยทั้งหมดได้ที่นี่: <Link to='/apps/patient'>รายชื่อผู้ป่วย</Link>
         </div>
       </Alert>
     )

@@ -19,8 +19,8 @@ export const columns = [
     sortable: true,
     sortField: 'id',
     minWidth: '107px',
-    selector: row => row.epID,
-    cell: row => <Link className='fw-bolder' to={`/apps/encounter/view/${row.epID}`}>#ENC{row.epID}</Link>
+    selector: row => row.encounterID,
+    cell: row => <Link className='fw-bolder' to={`/apps/encounter/view/${row.encounterID}`}>#ENC{row.encounterID}</Link>
   },
   {
     name: 'วันที่ทำการตรวจ',

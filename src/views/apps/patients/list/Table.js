@@ -1,25 +1,22 @@
 // ** React Imports
 import { Fragment, useState, useEffect } from 'react'
 
-// ** Invoice List Sidebar
-import Sidebar from './Sidebar'
-
 // ** Table Columns
 import { columns } from './columns'
 
 // ** Store & Actions
-import { getAllData, getData } from '../store'
+import { getAllData, getData, postPatient } from '../store'
 import { useDispatch, useSelector } from 'react-redux'
 
 
 // ** Third Party Components
 import ReactPaginate from 'react-paginate'
 import DataTable from 'react-data-table-component'
-import { useForm } from 'react-hook-form'
-import { ChevronDown, Share, Printer, FileText, File, Grid, Copy } from 'react-feather'
+import { ChevronDown, Share, Printer, FileText, File, Grid, Copy, CheckCircle } from 'react-feather'
 import Flatpickr from 'react-flatpickr'
 import Select from 'react-select'
 import InputAddress from 'react-thailand-address-autocomplete'
+import toast from 'react-hot-toast'
 
 
 // ** Reactstrap Imports
@@ -45,6 +42,7 @@ import '@styles/react/libs/react-select/_react-select.scss'
 import '@styles/react/libs/tables/react-dataTable-component.scss'
 import 'flatpickr/dist/themes/dark.css';
 
+
 // ** Utils
 import { selectThemeColors } from '@utils'
 
@@ -64,34 +62,97 @@ const bloodTypeOption = [
 ];
 
 // ** Table Header
-const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handleFilter, searchTerm }) => {
-
+const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchTerm }) => {
+  const dispatch = useDispatch()
   // ** Current Date
   const currentDate = new Date().toISOString().slice(0, 10);
-
   const [show, setShow] = useState(false);
-  const [name, setName] = useState([{ fname: '', lname: '' }]); // Fname and Lname
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState(''); // Fname and Lname
   const [picker, setPicker] = useState(new Date()); // DOB
   const [gender, setGender] = useState([]); // Gender
   const [bloodType, setBloofType] = useState([]); // Blood Type
   const [houseNo, setHouseNo] = useState('') //House No.
-  const [address, setAddress] = useState([{ addr: '', district: '', subdistrict: '', province: '', zipcode: '' }]);
-  const [phoneNO, setPhoneNo] = useState(''); // Phone NO.
-  const [personalID, setPersonalID] = useState('');
+  const [address, setAddress] = useState([{ district: '', subdistrict: '', province: '', zipcode: '' }]);
+  const [telNo, setTelNo] = useState(''); // Phone NO.
+  const [perID, setPerID] = useState('');
 
 
 
   const handleSubmit = (event) => {
-   
+    event.preventDefault();
+    console.log("button has been click")
+    const fname = firstName;
+    const lname = lastName;
+    const phoneNo = telNo;
+    const DateOfBirth = new Date(picker);
+    const month = DateOfBirth.getMonth();
+    const day = DateOfBirth.getDate();
+    const year = DateOfBirth.getFullYear();
+    const dob = `${year}-${month}-${day}`;
+    const bloodtype = bloodType.value;
+    const pgender = gender.value;
+    const paddress = address.addr;
+    const district = address.district;
+    const subdistrict = address.subdistrict;
+    const province = address.province
+    const postalCode = address.zipcode;
+    const personalID = perID
+    const addedDate = currentDate;
+
+    const newData = {
+      fname,
+      lname,
+      phoneNo,
+      dob,
+      bloodtype,
+      pgender,
+      paddress,
+      district,
+      subdistrict,
+      province,
+      postalCode,
+      personalID,
+      addedDate
+    }
+    console.log("here is newData")
+    console.log(newData)
+    if (!fname || !lname || !personalID) {
+      return;
+    }
+    try {
+      console.log("im trying")
+      dispatch(postPatient(newData));
+      setShow(false);
+      toast.success("เพิ่มผู้ป่วยสำเร็จ ! ", { duration: 5000 })
+      setFirstName('');
+      setLastName('');
+      setTelNo('');
+      setPicker(new Date());
+      setBloofType([]);
+      setGender([]);
+      setAddress([{ district: '', subdistrict: '', province: '', zipcode: '' }]);
+      setPerID('');
+      setHouseNo('');
+
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   const handlePIDChange = (e) => {
     const ID = e.target.value;
-    setPersonalID(ID);
+    setPerID(ID);
   }
-  const handleNameChange = (targetName) => (e) => {
-    setName({ [targetName]: e.target.value });
+
+  const handelNameChange = (e) => {
+    setFirstName(e.target.value)
   }
+
+  const handleLnameChange = (e) => {
+    setLastName(e.target.value)
+  }
+
   const handleGenderChange = (selectedOption) => {
     setGender(selectedOption)
   }
@@ -100,16 +161,14 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
   }
 
   const handlePhoneChange = (e) => {
-    e.preventDefault();
     const no = e.target.value;
-    setPhoneNo(no);
+    setTelNo(no);
   }
 
   const handleHouseNoChange = (e) => {
     setHouseNo(e.target.value)
   }
   const handleAddressChange = (targetName) => (targetValue) => {
-    console.log(targetName, targetValue.value);
     setAddress({ [targetName]: targetValue.target.value });
   };
 
@@ -118,8 +177,6 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
     const { subdistrict, district, province, zipcode } = fullAddress;
     setAddress({ addr, subdistrict, district, province, zipcode });
   }
-
-  console.log(address)
   // ** Converts table to CSV
   function convertArrayOfObjectsToCSV(array) {
     let result
@@ -163,9 +220,11 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
   }
 
   return (
+
     <Fragment>
       <div className='invoice-list-table-header w-100 me-1 ms-50 mt-2 mb-75'>
         <Row>
+
           <Col xl='6' className='d-flex align-items-center p-0'>
             <div className='d-flex align-items-center w-100'>
               <label htmlFor='rows-per-page'>แสดง</label>
@@ -243,14 +302,14 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
         </Row>
       </div>
       {/* MODAL SECTION  */}
-      <Modal isOpen={show} toggle={() => setShow(!show)} className='modal-dialog-centered modal-lg'  backdrop='static' >
+      <Modal isOpen={show} toggle={() => setShow(!show)} className='modal-dialog-centered modal-lg' backdrop='static' >
         <ModalHeader className='bg-transparent' toggle={() => setShow(!show)}></ModalHeader>
         <ModalBody className='px-sm-5 pt-50 pb-5'>
           <div className='text-center mb-2'>
             <h1 className='mb-1'>ลงทะเบียนผู้ป่วย</h1>
             <h5> วันที่ลงทะเบียน {currentDate} </h5>
           </div>
-          <Form onSubmit={handleSubmit(onSubmit)}>
+          <Form onSubmit={handleSubmit}>
             <Row className='gy-1 pt-75'>
               <Col>
                 <Label className='form-label font-weight-bold' for='firstName'>
@@ -260,7 +319,8 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
                   required
                   type='number'
                   placeholder='15xxxxxxxxxxx'
-                  maxLength={13}
+                  pattern='[0-9]{13}'
+                  value={perID}
                   onChange={handlePIDChange}
                 />
               </Col>
@@ -272,20 +332,20 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
                   <Row>
                     <Col>
                       <Input
-                        onChange={handleNameChange('fname')}
-                        value={name.fname}
+                        value={firstName}
                         id='patientName'
                         placeholder='ชื่อจริง'
                         required
+                        onChange={handelNameChange}
                       />
                     </Col>
                     <Col>
                       <Input
-                        onChange={handleNameChange('lname')}
-                        value={name.lname}
-                        id='patientName'
+                        value={lastName}
+                        id='patientLastName'
                         placeholder='นามสกุล'
                         required
+                        onChange={handleLnameChange}
                       />
                     </Col>
                   </Row>
@@ -352,7 +412,7 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
                       </Label>
                       <Input
                         type='number'
-                        value={phoneNO}
+                        value={telNo}
                         maxLength={10}
                         placeholder='087xxxxxxx'
                         style={{ maxWidth: '100%' }}
@@ -441,7 +501,12 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
                 </div>
               </Row>
               <Col xs={12} className='text-center mt-2 pt-50'>
-                <Button type='submit' className='me-1' color='primary'>
+
+                <Button
+                  type='submit'
+                  className='me-1'
+                  color='primary'
+                >
                   เพิ่ม
                 </Button>
               </Col>
@@ -450,6 +515,7 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
         </ModalBody>
       </Modal>
     </Fragment>
+
   )
 }
 
@@ -464,17 +530,13 @@ const PatientsList = () => {
   // ** Store Vars
   const dispatch = useDispatch()
   const store = useSelector(state => state.patients)
-  console.log("this is store")
-  console.log(store)
   // ** States
   const [sort, setSort] = useState('desc')
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [sortColumn, setSortColumn] = useState('id')
   const [rowsPerPage, setRowsPerPage] = useState(10)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  // ** Function to toggle sidebar
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen)
+
   // ** Get data on mount
   useEffect(() => {
     dispatch(getAllData())
@@ -602,14 +664,12 @@ const PatientsList = () => {
                 rowsPerPage={rowsPerPage}
                 handleFilter={handleFilter}
                 handlePerPage={handlePerPage}
-                toggleSidebar={toggleSidebar}
+                
               />
             }
           />
         </div>
       </Card>
-
-      <Sidebar open={sidebarOpen} toggleSidebar={toggleSidebar} />
     </Fragment>
   )
 }

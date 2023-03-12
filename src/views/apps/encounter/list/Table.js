@@ -17,6 +17,7 @@ import DataTable from 'react-data-table-component'
 import { ChevronDown, Share, Printer, FileText, File, Grid, Copy } from 'react-feather'
 import { appEncountersSlice } from '../store'
 import Swal from 'sweetalert2'
+import toast from 'react-hot-toast'
 
 
 const MySwal = withReactContent(Swal)
@@ -83,14 +84,15 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
     const staffID = doctor.value;
     const note = document.getElementById('note').value;
     const addedDate = currentDate;
-    const newData = { patientID, staffID, note, addedDate };
+    const newData = { patientID, staffID, note, addedDate};
     // update state 
     if (!patientID || !staffID) {
       return;
     }
     try {
-      dispatch(  postEncounter(newData) );
+      dispatch(postEncounter(newData) );
       setShow(false);
+      toast.success("เพิ่มบันทึกการตรวจสำเร็จ ! ", { duration: 5000 })
       setPatient([]);
       setDoctor([]);
       console.log("end of trying")

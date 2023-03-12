@@ -8,7 +8,7 @@ import dateFormat from 'dateformat'
 
 // ** Store & Actions
 import { store } from '@store/store'
-import { getPatient, deleteUser } from '../store'
+import { getPatient} from '../store'
 
 // ** Icons Imports
 import { FileText, Trash2, Archive, Phone } from 'react-feather'
@@ -124,7 +124,7 @@ export const columns = [
         <>
           <Link id='delete' onClick={e => {
             e.preventDefault()
-            store.dispatch(deleteUser(row.id))
+            /* store.dispatch(deleteUser(row.id)) */
           }}>
             <Button.Ripple className='btn-icon' color='flat-warning'>
               <Trash2 size={16} />

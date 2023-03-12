@@ -21,8 +21,6 @@ import '@styles/react/apps/app-users.scss'
 const UserView = () => {
   // ** Store Vars
   const store = useSelector(state => state.encounters)
-
-
   const dispatch = useDispatch()
 
   // ** Hooks
@@ -34,12 +32,6 @@ const UserView = () => {
   }, [dispatch])
 
   const [active, setActive] = useState('1')
-
-  const toggleTab = tab => {
-    if (active !== tab) {
-      setActive(tab)
-    }
-  }
 
   const navigate = useNavigate()
   // ** Handles Label Update
@@ -70,7 +62,7 @@ const UserView = () => {
           <UserInfoCard selectedEncounter={store.selectedEncounter} />
         </Col>
         <Col xl='9' lg='7' xs={{ order: 1 }} md={{ order: 1, size: 7 }}>
-          <UserTabs active={active} toggleTab={toggleTab} />
+          <UserTabs selectedEncounter={store.selectedEncounter} />
         </Col>
       </Row>
     </div>

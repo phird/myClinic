@@ -8,8 +8,6 @@ import axios from 'axios'
 export const getAllData = createAsyncThunk('appPatients/getAllData', async () => {
   try {
     const response = await axios.get('http://localhost:8000/app/Patient/list/data/')
-    console.log("getAllData is working")
-    console.log(response.data)
     return response.data
   } catch (err) {
     console.log(err)
@@ -18,8 +16,6 @@ export const getAllData = createAsyncThunk('appPatients/getAllData', async () =>
 
 export const getData = createAsyncThunk('appPatients/getData', async params => {
   const response = await axios.get('http://localhost:8000/app/Patient/list/getdata', params)
-  console.log("get data is working ")
-  console.log(response.data.patients)
   return {
     params: params,
     data: response.data.patients,
@@ -28,9 +24,16 @@ export const getData = createAsyncThunk('appPatients/getData', async params => {
 })
 // * INSERT NEW PATIENT TO DATABASE
 export const postPatient = createAsyncThunk('appPatients/postPatient', async (newData) => {
-  console.log("postPatient has been called");
   const response = await axios.post('http://localhost:8000/app/Patient/createPatient', newData)
   return response.data
+})
+
+export const updatePatient = createAsyncThunk('appPatients/updatePatient', async (newData, { dispatch, getState }) => {
+  const { id, ...updatedPatient } = newData
+  console.log("updatePatient has been called");
+  await axios.put(`http://localhost:8000/app/Patient/editPatient/${id}`, updatedPatient);
+  const refresh = await dispatch(getPatient(id))
+  return refresh.data.patient[0]
 })
 
 //* This one need to receive id from user to get user info 
@@ -41,37 +44,35 @@ export const getPatient = createAsyncThunk('appPatients/getPatient', async id =>
   return response.data.patient[0]
 })
 
-export const addUser = createAsyncThunk('appPatients/addUser', async (user, { dispatch, getState }) => {
-  await axios.post('/apps/patients/add-patient', patient)
-  await dispatch(getData(getState().users.params))
-  await dispatch(getAllData())
-  return patient
-})
-
-export const deleteUser = createAsyncThunk('appPatients/deleteUser', async (id, { dispatch, getState }) => {
-  await axios.delete('/apps/patient/delete', { id })
-  await dispatch(getData(getState().users.params))
-  await dispatch(getAllData())
-  return id
-})
 
 // *** call getEncounter here //
+export const postPatientEncounter = createAsyncThunk('appEncounter/postEncounter', async (newData, { dispatch, getState }) => {
+  const { PatientID, ...postEncounter } = newData
+  await axios.post('http://localhost:8000/app/Encounter/createEncounter', newData)
+  try {
+    const refresh = await dispatch(getPatientEncounter(PatientID))
+    console.log("refresh data")
+    console.log(refresh.data)
+  } catch (error) {
+    console.log("facing some error")
+    console.log(error)
+  }
+  return refresh.data
+})
 
-export const getEncounter = createAsyncThunk('appPatient/getEncounter', async id => {
-  const response = await axios.get(`http://localhost:8000/app/Encounter/list/getdata/${id}`)
- 
-  console.log("get encounter -> ")
+export const getPatientEncounter = createAsyncThunk('appPatient/getEncounter', async (id) => {
+  console.log("Call get Encounter")
+  const response = await axios.get(`http://localhost:8000/app/Patient/list/getPatientEncounter/${id}`)
+  console.log("getPTEncounter");
   console.log(response.data.encounter)
-  if (response.status === 200) {
+  if (response.status == 200) {
     return {
       data: response.data.encounter,
       totalPage: 10
     }
-  }else if (response.status === 404){
-    return {
-      data: null,
-      totalPage: 1,
-    }
+  } return {
+    data: null,
+    totalPage: 1
   }
 }
 )
@@ -81,18 +82,21 @@ export const getEncounter = createAsyncThunk('appPatient/getEncounter', async id
 export const appPatientsSlice = createSlice({
   name: 'appPatients',
   initialState: {
-    data: [],
+    data: [], //* ALL PATIENT HERE
     total: 1,
-    encounter: [],
+    encounter: [], //* WHERE ENCOUNTER FROM PATIENT BELONG
     etotal: 1,
     params: {},
     allData: [],
-    selectedPatient: null,
+    selectedPatient: null, //* PATIENT FROM SPECIFIC ID
   },
   reducers: {
-    resetEncounterData : state => {
+    resetEncounterData: state => {
+      console.log("reseting")
       state.encounter = [],
-      state.etotal = 1
+        state.etotal = 1
+      console.log("now encounterPatient Are: ")
+      console.log(state.encounter)
     }
   },
   extraReducers: builder => {
@@ -109,9 +113,20 @@ export const appPatientsSlice = createSlice({
         state.selectedPatient = action.payload
         state.patient = action.payload
       })
-      .addCase(getEncounter.fulfilled, (state, action) => {
+      .addCase(getPatientEncounter.fulfilled, (state, action) => {
         state.encounter = action.payload.data
         state.etotal = action.payload.totalPage
+      })
+      .addCase(postPatientEncounter.fulfilled, (state, action) => {
+        state.encounter.push(action.payload);
+        state.etotal = state.etotal + 1;
+      })
+      .addCase(postPatient.fulfilled, (state, action) => {
+        state.data.push(action.payload);
+        state.total = state.total + 1;
+      })
+      .addCase(updatePatient.fulfilled, (state, action) => {
+        state.selectedPatient = action.payload
       })
   }
 })

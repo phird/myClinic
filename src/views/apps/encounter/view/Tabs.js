@@ -1,34 +1,26 @@
 // ** React Imports
 import { Fragment, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+
 // ** Reactstrap Imports
 import {
-  Nav,
-  NavItem,
-  NavLink,
   Row,
   Col,
-  TabContent,
-  TabPane,
   Card,
   CardBody,
   CardTitle,
   CardHeader,
   Button,
-  ButtonGroup,
+  Badge,
   Container,
   Modal,
   ModalBody,
   ModalHeader,
-  FormGroup,
-  InputGroup,
-  InputGroupText,
   ListGroupItem,
   ListGroup,
 } from 'reactstrap'
 
 // ** Icons Imports
-import { User, Lock, Bookmark, Bell, DownloadCloud, X } from 'react-feather'
+import { DownloadCloud, X, Save, Plus } from 'react-feather'
 
 // ** Third Party Components
 import { useDropzone } from 'react-dropzone'
@@ -38,15 +30,25 @@ import Prescription from './Prescription'
 import DoctorBoxs from './DoctorBoxes'
 import Invoice from './Invoice'
 
+//** Import from REDUX */
+import { useDispatch } from 'react-redux'
+
+//* STORE imports
+import { addSymptom, addNote } from '../store'
 
 
 
-
-
-const UserTabs = ({ active, toggleTab }) => {
-  const { id } = useParams();
+const UserTabs = ({ selectedEncounter }) => {
   const [show, setShow] = useState(false);
+  const [symptoms, setSymptoms] = useState([]);
+  const [doctorNote, setDoctorNote] = useState('');
+  const [drugsList, setDrugsList] = useState([]);
+  const [invoiceList, setInvoiceList] = useState([]);
   const [files, setFiles] = useState([])
+  const dispatch = useDispatch();
+  const eStatus = selectedEncounter.eStatus
+  console.log('delStatus,', eStatus)
+
   const { getRootProps, getInputProps } = useDropzone({
     multiple: false,
     onDrop: acceptedFiles => {
@@ -95,21 +97,35 @@ const UserTabs = ({ active, toggleTab }) => {
     setFiles([])
   }
 
-  const handleSubmit = () => {
-
-  }
   const handleModalClosed = () => {
 
   }
 
-  const handleEndEncounter = () => {
+  const handleSaveEncounter = (e) => {
+    e.preventDefault();
+    // POST EACH SYMPTOM
+    /* symptoms['encounterID'] =  */
+    const encounterID = selectedEncounter.encounterID
+    symptoms.forEach(symptom => {
+      dispatch(addSymptom({ encounterID, symptom }));
+    });
+    dispatch(addNote({ encounterID, doctorNote }))
 
   }
 
-  /*  const handleUploadClick = (id) => {
-     console.log("click it ")
-     navigate(`/apps/encounter/view/${id}/upload`)
-   } */
+  function handleSymptom(newSymptom) {
+    setSymptoms(newSymptom);
+  }
+  function handleNoteAdded(note) {
+    setDoctorNote(note);
+  }
+  function handleDrugSelected(drugList) {
+    setDrugsList(drugList);
+  }
+  function handleInvoiceAdded(invoice) {
+    setInvoiceList(invoice);
+  }
+
   return (
     <Fragment>
       <Card>
@@ -125,32 +141,57 @@ const UserTabs = ({ active, toggleTab }) => {
                 <div className="d-flex justify-content-end align-items-center">
                   <Button.Ripple
                     color='success'
-                    className="d-flex mx-2 justify-content-center"
+                    outline
+                    className="d-flex  justify-content-center"
                     onClick={() => setShow(true)}
                     block
                   >
-                    อัปโหลดรูปภาพ
-                  </Button.Ripple>
-                  <Button.Ripple color='danger' outline className="d-flex justify-content-center" block>
-                    เสร็จสิ้นการตรวจ
+                    <Plus size={16} />
+                    {/* be back */}
+                    <span className='align-middle ms-25'> อัปโหลดรูปภาพ </span>
+                    {/* be back */}
                   </Button.Ripple>
                 </div>
               </Col>
+
             </Row>
+            <div className='my-2'>
+              {eStatus == 0 ? (
+                <>
+                  <Badge color='danger' className='d-block'>
+                    <span>การตรวจเสร็จสิ้น</span>
+                  </Badge>
+                </>
+              )
+                :
+                (null)
+              }
+            </div>
+
           </Container>
-
-
           <div>
-            <DoctorBoxs />
-            <Prescription />
-            <Invoice />
+            <DoctorBoxs onSymptomChange={handleSymptom} onNoteAdded={handleNoteAdded} selectedEncounter={selectedEncounter} />
+            <Prescription onDrugSelected={handleDrugSelected} selectedEncounter={selectedEncounter} />
+            <Invoice onInvoiceAdded={handleInvoiceAdded} selectedEncounter={selectedEncounter} />
           </div>
-
-
+          <div>
+            {eStatus == 0 ? (
+              <>
+                <Badge color='danger' className='d-block'>
+                  <span>การตรวจเสร็จสิ้น</span>
+                </Badge>
+              </>
+            )
+              :
+              (<Button.Ripple onClick={handleSaveEncounter} color='danger' outline className="d-flex justify-content-center" block>
+                เสร็จสิ้นการตรวจ
+              </Button.Ripple>)
+            }
+          </div>
         </CardBody>
       </Card>
 
-      {/* MODAL */}
+      {/* MODAL FOR UPLOADING PICTURE */}
       <Modal isOpen={show} toggle={() => setShow(!show)} className='modal-dialog-centered modal-lg' onClosed={handleModalClosed} backdrop="static">
         <ModalHeader className='bg-transparent' toggle={() => setShow(!show)}></ModalHeader>
         <ModalBody className='px-sm-5 pb-5'>
@@ -180,7 +221,7 @@ const UserTabs = ({ active, toggleTab }) => {
                     <Button className='me-1' color='danger' outline onClick={handleRemoveAllFiles}>
                       ลบทั้งหมด
                     </Button>
-                    
+
                   </div>
                 </Fragment>
               ) : null}
@@ -189,8 +230,6 @@ const UserTabs = ({ active, toggleTab }) => {
         </ModalBody>
       </Modal>
       {/* MODAL END  */}
-
-
     </Fragment>
   )
 }

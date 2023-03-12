@@ -1,20 +1,28 @@
 // ** React Imports
-import { useState, Fragment } from 'react'
-
+import { useState, Fragment, useEffect } from 'react'
+import { useDispatch } from 'react-redux'
 // ** Reactstrap Imports
-import { Row, Col, Card, Form, CardBody, Button, Badge, Modal, Input, Label, ModalBody, ModalHeader } from 'reactstrap'
+import { Row, Col, Card, Form, CardBody, Button, Badge, Modal, Input, Label, ModalBody, ModalHeader, Spinner } from 'reactstrap'
 
 // ** Third Party Components
 import Swal from 'sweetalert2'
-import { Check, Briefcase, X, User, Loader, Smile} from 'react-feather'
-import { useForm, Controller } from 'react-hook-form'
+import { Check, Briefcase, X, User, Loader, Smile } from 'react-feather'
 import withReactContent from 'sweetalert2-react-content'
+import Flatpickr from 'react-flatpickr'
+import Select from 'react-select'
+import InputAddress from 'react-thailand-address-autocomplete'
+import toast from 'react-hot-toast'
 
 // ** Custom Components
 import Avatar from '@components/avatar'
 
 // ** Styles
 import '@styles/react/libs/react-select/_react-select.scss'
+import 'flatpickr/dist/themes/dark.css';
+
+// ** STORE
+import { updatePatient } from '../store'
+
 
 const roleColors = {
   editor: 'light-info',
@@ -30,71 +38,207 @@ const statusColors = {
   inactive: 'light-secondary'
 }
 
-const statusOptions = [
-  { value: 'active', label: 'Active' },
-  { value: 'inactive', label: 'Inactive' },
-  { value: 'suspended', label: 'Suspended' }
-]
-
-const countryOptions = [
-  { value: 'uk', label: 'UK' },
-  { value: 'usa', label: 'USA' },
-  { value: 'france', label: 'France' },
-  { value: 'russia', label: 'Russia' },
-  { value: 'canada', label: 'Canada' }
-]
-
-const languageOptions = [
-  { value: 'english', label: 'English' },
-  { value: 'spanish', label: 'Spanish' },
-  { value: 'french', label: 'French' },
-  { value: 'german', label: 'German' },
-  { value: 'dutch', label: 'Dutch' }
-]
-
 const MySwal = withReactContent(Swal)
 
+// ** Utils
+import { selectThemeColors } from '@utils'
+
+const genderOptions = [
+  { value: 'ชาย', label: 'ชาย' },
+  { value: 'หญิง', label: 'หญิง' }
+]
+const bloodTypeOption = [
+  { value: "A+", label: "A+" },
+  { value: "A-", label: "A-" },
+  { value: "B+", label: "B+" },
+  { value: "B-", label: "B-" },
+  { value: "O+", label: "O+" },
+  { value: "O-", label: "O-" },
+  { value: "AB+", label: "AB+" },
+  { value: "AB-", label: "AB-" }
+];
+
 const UserInfoCard = ({ selectedPatient }) => {
+
+  // * DATA OF SELECTED_PATIENT
+  console.log(" *************** SELECTED PATIENT ************** ")
+  console.log(selectedPatient)
+  console.log(" *************** SELECTED PATIENT ************** ")
   // ** State
   const [show, setShow] = useState(false)
+  // * Reserve for Edit data 
+  const dispatch = useDispatch()
+  // ** Current Date
 
-  // ** Hook
-  const {
-    reset,
-    control,
-    setError,
-    handleSubmit,
-    formState: { errors }
-  } = useForm({
-    defaultValues: {
-      patientID: selectedPatient.patientID,
-      lastName: selectedPatient.lname,
-      firstName: selectedPatient.fname 
+  const currentDate = new Date().toISOString().slice(0, 10);
+  const [editMode, setEditMode] = useState(false);
+  const [firstName, setFirstName] = useState(selectedPatient.fname);
+  const [lastName, setLastName] = useState(selectedPatient.lname); // Fname and Lname
+  const [picker, setPicker] = useState(selectedPatient.dob); // DOB
+  const [gender, setGender] = useState({ value: selectedPatient.gender, label: selectedPatient.gender }); // Gender
+  const [bloodType, setBloofType] = useState({ value: selectedPatient.bloodtype, label: selectedPatient.bloodtype }); // Blood Type
+  const [houseNo, setHouseNo] = useState(selectedPatient.address) //House No.
+  const [address, setAddress] = useState({ district: selectedPatient.district, subdistrict: selectedPatient.subdistrict, province: selectedPatient.province, zipcode: selectedPatient.postalCode });
+  const [telNo, setTelNo] = useState(selectedPatient.phoneNo); // Phone NO. 
+  const [perID, setPerID] = useState(selectedPatient.personalID);
+
+  const option = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  };
+
+  const regist = new Date(selectedPatient.addedDate);
+  const registDate = regist.toLocaleDateString('th-TH', option);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const id = selectedPatient.patientID
+    const fname = firstName;
+    const lname = lastName;
+    const phoneNo = telNo;
+    const DateOfBirth = new Date(picker);
+    const month = DateOfBirth.getMonth();
+    const day = DateOfBirth.getDate();
+    const year = DateOfBirth.getFullYear();
+    const dob = `${year}-${month}-${day}`;
+    const bloodtype = bloodType.value;
+    const pgender = gender.value;
+    const paddress = houseNo;
+    const district = address.district;
+    const subdistrict = address.subdistrict;
+    const province = address.province
+    const postalCode = address.zipcode;
+    const personalID = perID
+    const editDate = currentDate;
+
+    const newData = {
+      id,
+      fname,
+      lname,
+      phoneNo,
+      dob,
+      bloodtype,
+      pgender,
+      paddress,
+      district,
+      subdistrict,
+      province,
+      postalCode,
+      personalID,
+      editDate
     }
-  })
+    console.log("here is newData")
+    console.log(newData)
+    if (!fname || !lname || !personalID) {
+      return;
+    }
+    try {
+      dispatch(updatePatient(newData))
+      setShow(false);
 
-  // ** render user img
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handlePIDChange = (e) => {
+    const ID = e.target.value;
+    setPerID(ID);
+  }
+
+  const handelNameChange = (e) => {
+    setFirstName(e.target.value)
+  }
+
+  const handleLnameChange = (e) => {
+    setLastName(e.target.value)
+  }
+
+  const handleGenderChange = (selectedOption) => {
+    setGender(selectedOption)
+  }
+  const handleBloodChange = (selectedOption) => {
+    setBloofType(selectedOption)
+  }
+
+  const handlePhoneChange = (e) => {
+    const no = e.target.value;
+    setTelNo(no);
+  }
+
+  const handleHouseNoChange = (e) => {
+    setHouseNo(e.target.value)
+  }
+  const handleAddressChange = (targetName) => (targetValue) => {
+    console.log(targetName, targetValue.value);
+    setAddress({ [targetName]: targetValue.target.value });
+  };
+
+  const handleAdressSelect = (fullAddress) => {
+    const addr = houseNo
+    const { subdistrict, district, province, zipcode } = fullAddress;
+    setAddress({ addr, subdistrict, district, province, zipcode });
+  }
+
+  //** END OF RESERVATION */
+
+  // * Convert Age and Date
+  const dob = new Date(selectedPatient.dob);
+  const birthday = dob.toLocaleDateString('th-TH', option);
+  const addedDate = new Date(selectedPatient.addedDate).toLocaleDateString('th-TH', option)
+  const editDate = new Date(selectedPatient.editDate).toLocaleDateString('th-TH', option)
+  const today = new Date();
+
+  const diffTime = Math.abs(today - dob);
+  const Age = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 365.25));
+
+
+  //** Handle Confirm Edit */
+  const handleConfirmSubmit = (event) => {
+    event.preventDefault();
+    return MySwal.fire({
+      title: 'ยืนยันการแก้ไขข้อมูลผู้ป่วย?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'ยืนยันการแก้ไข',
+      cancelButtonText: 'ยกเลิก',
+      customClass: {
+        confirmButton: 'btn btn-primary',
+        cancelButton: 'btn btn-outline-danger ms-1'
+      },
+      buttonsStyling: false
+    }).then(function (result) {
+      if (result.value) {
+        handleSubmit(event)
+        toast.success('แก้ไขผู้ป่วยสำเร็จ');
+        
+      }
+    })
+  }
+
+  // ** render user img  
+  const fullName = selectedPatient.fname + ' ' + selectedPatient.lname
   const renderUserImg = () => {
-    const fullName = selectedPatient.fname +' '+ selectedPatient.lname
-      return (
-        <Avatar
-          initials
-          color={'light-primary'}
-          className='rounded mt-3 mb-2'
-          content={fullName}
-          contentStyles={{
-            borderRadius: 0,
-            fontSize: 'calc(48px)',
-            width: '100%',
-            height: '100%'
-          }}
-          style={{
-            height: '110px',
-            width: '110px'
-          }}
-        />
-      )
-    
+    return (
+      <Avatar
+        initials
+        color={'light-primary'}
+        className='rounded mt-3 mb-2'
+        content={fullName}
+        contentStyles={{
+          borderRadius: 0,
+          fontSize: 'calc(48px)',
+          width: '100%',
+          height: '100%'
+        }}
+        style={{
+          height: '110px',
+          width: '110px'
+        }}
+      />
+    )
+
   }
 
   const onSubmit = data => {
@@ -118,51 +262,17 @@ const UserInfoCard = ({ selectedPatient }) => {
     })
   }
 
-  const handleSuspendedClick = () => {
-    return MySwal.fire({
-      title: 'แน่ใจหรือไม่?',
-      text: "คุณจะไม่สามารถเรียกคืนรายชื่อผู้ป่วยได้อีก!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'ตกลง, ลบผู้ป่วย!',
-      customClass: {
-        confirmButton: 'btn btn-primary',
-        cancelButton: 'btn btn-outline-danger ms-1'
-      },
-      buttonsStyling: false
-    }).then(function (result) {
-      if (result.value) {
-        MySwal.fire({
-          icon: 'success',
-          title: 'เสร็จสิ้น!',
-          text: 'ผู้ป่วยถูกลบจากระบบ.',
-          customClass: {
-            confirmButton: 'btn btn-success'
-          }
-        })
-      } else if (result.dismiss === MySwal.DismissReason.cancel) {
-        MySwal.fire({
-          title: 'ยกเลิก',
-          text: 'ยกเลิกการลบผู้ป่วย :)',
-          icon: 'error',
-          customClass: {
-            confirmButton: 'btn btn-success'
-          }
-        })
-      }
-    })
-  }
-
   return (
     <Fragment>
       <Card>
+
         <CardBody>
           <div className='user-avatar-section'>
             <div className='d-flex align-items-center flex-column'>
               {renderUserImg()}
               <div className='d-flex flex-column align-items-center text-center'>
                 <div className='user-info'>
-                  <h4>{selectedPatient !== null ? selectedPatient.fname + " " +selectedPatient.lname : 'Eleanor Aguilar'}</h4>
+                  <h4>{selectedPatient !== null ? selectedPatient.fname + " " + selectedPatient.lname : 'Eleanor Aguilar'}</h4>
                 </div>
               </div>
             </div>
@@ -173,7 +283,7 @@ const UserInfoCard = ({ selectedPatient }) => {
                 <User className='font-medium-2' />
               </Badge>
               <div className='ms-75'>
-                <h4 className='mb-0'>{ selectedPatient.age }</h4>
+                <h4 className='mb-0'>{Age}</h4>
                 <small>อายุ</small>
               </div>
             </div>
@@ -198,31 +308,38 @@ const UserInfoCard = ({ selectedPatient }) => {
                 <li className='mb-75'>
                   <span className='fw-bolder me-25'>วัน/เดือน/ปี เกิด:</span>
                   <span className='text-capitalize' >
-                    {selectedPatient.dob}
-                    
+                    {birthday}
                   </span>
                 </li>
                 <li className='mb-75'>
                   <span className='fw-bolder me-25'>อายุ:</span>
-                  <span className='text-capitalize'> 28 ปี </span>
+                  <span className='text-capitalize'> {Age} ปี</span>
                 </li>
                 <li className='mb-75'>
                   <span className='fw-bolder me-25'>กรุ๊ปเลือด:</span>
                   <span> {selectedPatient.bloodtype} </span>
                 </li>
                 <li className='mb-75'>
-                  <span className='fw-bolder me-25'>ข้อมูลติดต่อ:</span>
+                  <span className='fw-bolder me-25'>เบอร์โทรติดต่อ:</span>
                   <span>{selectedPatient.phoneNo}</span>
                 </li>
                 <li className='mb-75'>
                   <span className='fw-bolder me-25'>ที่อยู่:</span>
                   <span>
                     {selectedPatient.address + ', ' +
-                     selectedPatient.district + ', '+ 
-                     selectedPatient.subdistrict + ', '+
-                     selectedPatient.province + ', '+
-                     selectedPatient.postalcode}
-                    </span>
+                      selectedPatient.district + ', ' +
+                      selectedPatient.subdistrict + ', ' +
+                      selectedPatient.province + ', ' +
+                      selectedPatient.postalCode}
+                  </span>
+                </li>
+                <li className='mb-75'>
+                  <span className='fw-bolder me-25'>ลงทะเบียนเมื่อวันที่:</span>
+                  <span>{addedDate}</span>
+                </li>
+                <li className='mb-75'>
+                  <span className='fw-bolder me-25'>แก้ไขเมื่อวันที่:</span>
+                  <span>{editDate}</span>
                 </li>
               </ul>
             ) : null}
@@ -231,133 +348,214 @@ const UserInfoCard = ({ selectedPatient }) => {
             <Button color='primary' onClick={() => setShow(true)}>
               แก้ไขข้อมูลผู้ป่วย
             </Button>
-{/*             <Button className='ms-1' color='danger' outline onClick={handleSuspendedClick}>
+            {/*             <Button className='ms-1' color='danger' outline onClick={handleSuspendedClick}>
               Suspended
             </Button> */}
           </div>
         </CardBody>
       </Card>
-
-
-      <Modal isOpen={show} toggle={() => setShow(!show)} className='modal-dialog-centered modal-lg'>
+      {/* MODAL FOR EDIT PATIENT */}
+      <Modal isOpen={show} toggle={() => setShow(!show)} className='modal-dialog-centered modal-lg' backdrop='static' >
         <ModalHeader className='bg-transparent' toggle={() => setShow(!show)}></ModalHeader>
         <ModalBody className='px-sm-5 pt-50 pb-5'>
           <div className='text-center mb-2'>
             <h1 className='mb-1'>แก้ไขข้อมูลผู้ป่วย</h1>
-            <p>Updating user details will receive a privacy audit.</p>
+            <h5> ลงทะเบียนเมื่อวันที่ {registDate} </h5>
           </div>
-          <Form onSubmit={handleSubmit(onSubmit)}>
+          <Form onSubmit={handleConfirmSubmit}>
             <Row className='gy-1 pt-75'>
-              <Col md={6} xs={12}>
-                <Label className='form-label' for='firstName'>
-                  ชื่อจริง
-                </Label>
-                <Controller
-                  defaultValue=''
-                  control={control}
-                  id='firstName'
-                  name='firstName'
-                  render={({ field }) => (
-                    <Input {...field} id='firstName' placeholder='John' invalid={errors.firstname && true} />
-                  )}
-                />
-              </Col>
-              <Col md={6} xs={12}>
-                <Label className='form-label' for='lastName'>
-                  นามสกุล
-                </Label>
-                <Controller
-                  defaultValue=''
-                  control={control}
-                  id='lastName'
-                  name='lastName'
-                  render={({ field }) => (
-                    <Input {...field} id='lastName' placeholder='Doe' invalid={errors.lastname && true} />
-                  )}
-                />
-              </Col>
-              <Col md={6} xs={12}>
-                <Label className='form-label' for='billing-email'>
-                  เพศ
+              <Col>
+                <Label className='form-label font-weight-bold' for='firstName'>
+                  เลขบัตรประชาชนผู้ป่วย:
                 </Label>
                 <Input
-                  type='email'
-                  id='billing-email'
-                  defaultValue={selectedPatient.gender}
-                  placeholder= 'Male / Female'
+                  required
+                  type='number'
+                  placeholder='15xxxxxxxxxxx'
+                  pattern='[0-9]{13}'
+                  value={perID}
+                  onChange={handlePIDChange}
                 />
               </Col>
-              <Col md={6} xs={12}>
-                <Label className='form-label' for='status'>
-                  วันเดือนปีเกิด:
+              <Row md={12} xs={12} style={{ marginBottom: '20px' }}>
+                <Label className='form-label font-weight-bold' for='firstName'>
+                  ชื่อผู้ป่วย:
                 </Label>
-                <Input
-                  id='tax-id'
-                  placeholder='DD/MM/YYYY'
-                  defaultValue={selectedPatient.dob}
-                />
-              </Col>
-              <Col md={6} xs={12}>
-                <Label className='form-label' for='tax-id'>
-                  กรุ๊ปเลือด
-                </Label>
-                <Input
-                  id='tax-id'
-                  placeholder='O,A,B,AB'
-                  defaultValue={selectedPatient.bloodtype}
-                />
-              </Col>
-              <Col md={6} xs={12}>
-                <Label className='form-label' for='contact'>
-                  ข้อมูลติดต่อ
-                </Label>
-                <Input id='contact' 
-                defaultValue={selectedPatient.phoneNo} 
-                placeholder='(+66) 87 545 1234' />
-              </Col>
-              <Col md={12} xs={12}>
-                <Label className='form-label' for='language'>
-                  ที่อยู่
-                </Label>
-                <Input
-                  id='tax-id'
-                  placeholder='บ้่านเลขที่ xx หมู่ xx'
-                  defaultValue={selectedPatient.address}
-                />
-              </Col>
-             
-              <Col xs={12}>
-                <div className='d-flex align-items-center mt-1'>
-                  <div className='form-switch'>
-                    <Input type='switch' defaultChecked id='billing-switch' name='billing-switch' />
-                    <Label className='form-check-label' htmlFor='billing-switch'>
-                      <span className='switch-icon-left'>
-                        <Check size={14} />
-                      </span>
-                      <span className='switch-icon-right'>
-                        <X size={14} />
-                      </span>
-                    </Label>
-                  </div>
-                  <Label className='form-check-label fw-bolder' for='billing-switch'>
-                    Use as a billing address?
-                  </Label>
+                <div id='firstName'>
+                  <Row>
+                    <Col>
+                      <Input
+                        value={firstName}
+                        id='patientName'
+                        placeholder='ชื่อจริง'
+                        required
+                        onChange={handelNameChange}
+                      />
+                    </Col>
+                    <Col>
+                      <Input
+                        value={lastName}
+                        id='patientLastName'
+                        placeholder='นามสกุล'
+                        required
+                        onChange={handleLnameChange}
+                      />
+                    </Col>
+                  </Row>
                 </div>
-              </Col>
+              </Row>
+              <Row md={12} xs={12} style={{ marginBottom: '20px' }}>
+                <div>
+                  <Row>
+                    <Col>
+                      <Label className='h4 form-label font-weight-bold' for='default-picker'>
+                        วันเกิด
+                      </Label>
+                      <Flatpickr
+                        className='form-control'
+                        value={picker}
+                        onChange={date => setPicker(date)}
+                        id='default-picker'
+                        style={{ maxWidth: '250px' }}
+                        required
+                      />
+                    </Col>
+                    <Col>
+                      <Label className='h4 form-label font-weight-bold' for='default-picker'>
+                        เพศ
+                      </Label>
+                      <Select
+                        theme={selectThemeColors}
+                        className='react-select'
+                        classNamePrefix='select'
+                        value={gender}
+                        onChange={handleGenderChange}
+                        options={genderOptions}
+                        placeholder='กรุณาเลือกเพศ'
+                        isClearable={true}
+                        required
+                      />
+                    </Col>
+                  </Row>
+                </div>
+              </Row>
+              <Row md={12} xs={12}>
+                <div>
+                  <Row>
+                    <Col md={6}>
+                      <Label className='h4 form-label font-weight-bold' for='billing-email'>
+                        หมู่เลือด:
+                      </Label>
+                      <Select
+                        theme={selectThemeColors}
+                        className='react-select'
+                        classNamePrefix='select'
+                        value={bloodType}
+                        onChange={handleBloodChange}
+                        options={bloodTypeOption}
+                        placeholder='กรุณาเลือกหมู่เลือด'
+                        isClearable={true}
+                        required
+                        style={{ maxWidth: '150px', overflow: 'hidden' }}
+                      />
+                    </Col>
+                    <Col md={6}>
+                      <Label className='h4 form-label font-weight-bold' for='billing-email'>
+                        เบอร์โทรติดต่อ:
+                      </Label>
+                      <Input
+                        type='number'
+                        value={telNo}
+                        maxLength={10}
+                        placeholder='087xxxxxxx'
+                        style={{ maxWidth: '100%' }}
+                        onChange={handlePhoneChange}
+                      />
+                    </Col>
+                  </Row>
+                </div>
+              </Row>
+              <div className='divider'>
+                <div className='divider-text'>ข้อมูลที่อยู่</div>
+              </div>
+              <Row md={12} xs={12}>
+                <Col>
+                  <Label for='address'>
+                    ที่อยู่
+                  </Label>
+                  <Input
+                    value={houseNo}
+                    onChange={handleHouseNoChange}
+                    id='address'
+                    type='textarea'
+                    required
+                  />
+                </Col>
+                <div>
+                  <Row>
+                    <Col md={6}>
+                      <Label className='form-label font-weight-bold' for='subdistrict'>
+                        ตำบล/แขวง:
+                      </Label>
+                      <InputAddress
+                        required
+                        address="subdistrict"
+                        value={address.subdistrict}
+                        onChange={handleAddressChange('subdistrict')}
+                        onSelect={handleAdressSelect}
+                        style={{ maxWidth: '100%', width: '300%', height: '40px' }}
+                      />
+
+                    </Col>
+                    <Col md={6}>
+                      <Label className='form-label font-weight-bold' for='district'>
+                        อำเภอ/เขต:
+                      </Label>
+                      <InputAddress
+                        required
+                        field={'district'}
+                        address="district"
+                        value={address.district}
+                        onChange={handleAddressChange('district')}
+                        onSelect={handleAdressSelect}
+                        style={{ maxWidth: '100%', width: '300%', height: '40px' }}
+                      />
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col md={6}>
+                      <Label className='form-label font-weight-bold' for='province'>
+                        จังหวัด:
+                      </Label>
+                      <InputAddress
+                        required
+                        address="province"
+                        value={address.province}
+                        onChange={handleAddressChange('province')}
+                        onSelect={handleAdressSelect}
+                        style={{ maxWidth: '100%', width: '300%', height: '40px' }}
+
+                      />
+                    </Col>
+                    <Col md={6}>
+                      <Label className='form-label font-weight-bold' for='zipcode'>
+                        รหัสไปรษณีย์:
+                      </Label>
+                      <InputAddress
+                        required
+                        address="zipcode"
+                        value={address.zipcode}
+                        onChange={handleAddressChange('zipcode')}
+                        onSelect={handleAdressSelect}
+                        style={{ maxWidth: '100%', width: '300%', height: '40px' }}
+                      />
+                    </Col>
+                  </Row>
+                </div>
+              </Row>
               <Col xs={12} className='text-center mt-2 pt-50'>
                 <Button type='submit' className='me-1' color='primary'>
-                  Submit
-                </Button>
-                <Button
-                  type='reset'
-                  color='secondary'
-                  outline
-                  onClick={() => {
-                    handleReset()
-                    setShow(false)
-                  }}
-                >
-                  Discard
+                  แก้ไขข้อมูลผู้ป่วย
                 </Button>
               </Col>
             </Row>

@@ -2,21 +2,18 @@
 import { useState, Fragment } from 'react'
 
 // ** Reactstrap Imports
-import { Row, Col, Card, Form, CardBody, Button, Badge, Modal, Input, Label, ModalBody, ModalHeader } from 'reactstrap'
+import { Card, CardBody, Badge } from 'reactstrap'
 
 
 // ** Third Party Components
 import Swal from 'sweetalert2'
-import Select from 'react-select'
-import { Check, Briefcase, X } from 'react-feather'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import withReactContent from 'sweetalert2-react-content'
 
 // ** Custom Components
 import Avatar from '@components/avatar'
 
 // ** Utils
-import { selectThemeColors } from '@utils'
 
 // ** Styles
 import '@styles/react/libs/react-select/_react-select.scss'
@@ -34,8 +31,8 @@ const roleColors = {
 }
 
 const statusColors = {
-  1: 'light-success',
-  0: 'light-secondary'
+  1: 'light-danger',
+  0: 'light-success'
 }
 
 const statusOptions = [
@@ -161,8 +158,6 @@ const UserInfoCard = ({ selectedEncounter }) => {
 
   const ageCal = () => {
     const today = new Date()
-    console.log("this is selectedEncounter")
-    console.log(selectedEncounter.dob)
     const dob = dateFormat(selectedEncounter.dob, "yyyy")
     console.log(dob)
     const age = today.getFullYear() - dob
@@ -235,11 +230,11 @@ const UserInfoCard = ({ selectedEncounter }) => {
               <ul className='list-unstyled'>
                 <li className='mb-75'>
                   <span className='fw-bolder me-25'>แพทย์ที่ทำการตรวจ:</span>
-                  <span>  ID of Doctor {selectedEncounter.doctorID}</span>
+                  <span>  DoctorID:{selectedEncounter.staffID}</span>
                 </li>
                 <li className='mb-75'>
                   <span className='fw-bolder me-25'>รายละเอียด:</span>
-                  <span>{selectedEncounter.contact}</span>
+                  <span>{!selectedEncounter.note? '   -   ' : selectedEncounter.note }</span>
                 </li>
               </ul>
             ) : null}
