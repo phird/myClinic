@@ -1,5 +1,5 @@
 // ** React Imports
-import { Fragment, useState } from 'react'
+import { Fragment, useState, useEffect } from 'react'
 
 // ** Reactstrap Imports
 import {
@@ -24,7 +24,7 @@ import { DownloadCloud, X, Save, Plus } from 'react-feather'
 
 // ** Third Party Components
 import { useDropzone } from 'react-dropzone'
-
+import { Spinner } from 'reactstrap';
 // ** User Components
 import Prescription from './Prescription'
 import DoctorBoxs from './DoctorBoxes'
@@ -34,8 +34,9 @@ import Invoice from './Invoice'
 import { useDispatch } from 'react-redux'
 
 //* STORE imports
-import { addSymptom, addNote } from '../store'
-
+import { addSymptom, addNote, handleSubmitEncounter } from '../store'
+import { postInvoiceList } from '../../invoice/store'
+import { postDrugList } from '../../prescription/store'
 
 
 const UserTabs = ({ selectedEncounter }) => {
@@ -45,9 +46,23 @@ const UserTabs = ({ selectedEncounter }) => {
   const [drugsList, setDrugsList] = useState([]);
   const [invoiceList, setInvoiceList] = useState([]);
   const [files, setFiles] = useState([])
+  const [isLoading, setIsLoading] = useState(false);
+
   const dispatch = useDispatch();
-  const eStatus = selectedEncounter.eStatus
-  console.log('delStatus,', eStatus)
+  const eStatus = selectedEncounter.eStatus;
+  const invID = selectedEncounter.invID;
+  const prescriptionID = selectedEncounter.prescriptionID;
+
+  console.log("Data from SELECTEDENCOUNTER ")
+  console.log(selectedEncounter)
+  console.log(invoiceList)
+
+  useEffect(() => {
+    if (!isLoading) return;
+    const loadingIcon = document.createElement('i');
+    loadingIcon.classList.add('fas', 'fa-spinner', 'loading-icon');
+    document.querySelector('#reload-button').appendChild(loadingIcon);
+  }, [isLoading]);
 
   const { getRootProps, getInputProps } = useDropzone({
     multiple: false,
@@ -103,14 +118,32 @@ const UserTabs = ({ selectedEncounter }) => {
 
   const handleSaveEncounter = (e) => {
     e.preventDefault();
+    setIsLoading(true);
     // POST EACH SYMPTOM
     /* symptoms['encounterID'] =  */
     const encounterID = selectedEncounter.encounterID
+
+    // * add each Symtoms to EncounterSymptom
     symptoms.forEach(symptom => {
       dispatch(addSymptom({ encounterID, symptom }));
     });
-    dispatch(addNote({ encounterID, doctorNote }))
 
+    // * add Doctor Note To Encounter
+    dispatch(addNote({ encounterID, doctorNote }));
+
+    // * add Each invoice detail to InvoceList
+    invoiceList.forEach(invoice => {
+      dispatch(postInvoiceList({ invID, invoice }));
+    })
+    //* add Each prescription to Prescription List
+    drugsList.forEach(drugDetail => {
+      dispatch(postDrugList({ prescriptionID, drugDetail }));
+    })
+
+    //** handleSubmitEncounter by changing eStatus from 1 to 0 */
+    dispatch(handleSubmitEncounter(encounterID));
+
+    window.location.reload();
   }
 
   function handleSymptom(newSymptom) {
@@ -129,66 +162,73 @@ const UserTabs = ({ selectedEncounter }) => {
   return (
     <Fragment>
       <Card>
-        <CardBody>
-          <Container className='my-2' fluid>
-            <Row>
-              <Col className="d-flex justify-content-start align-items-center" >
-                <div className="d-flex">
-                  <h3>รายละเอียดทางการตรวจ</h3>
-                </div>
-              </Col>
-              <Col className="d-flex justify-content-end align-items-center" >
-                <div className="d-flex justify-content-end align-items-center">
-                  <Button.Ripple
-                    color='success'
-                    outline
-                    className="d-flex  justify-content-center"
-                    onClick={() => setShow(true)}
-                    block
-                  >
-                    <Plus size={16} />
-                    {/* be back */}
-                    <span className='align-middle ms-25'> อัปโหลดรูปภาพ </span>
-                    {/* be back */}
-                  </Button.Ripple>
-                </div>
-              </Col>
-
-            </Row>
-            <div className='my-2'>
-              {eStatus == 0 ? (
-                <>
-                  <Badge color='danger' className='d-block'>
-                    <span>การตรวจเสร็จสิ้น</span>
-                  </Badge>
-                </>
-              )
-                :
-                (null)
-              }
-            </div>
-
-          </Container>
+        {isLoading && <Spinner color="primary" />}
+        {!isLoading && (
           <div>
-            <DoctorBoxs onSymptomChange={handleSymptom} onNoteAdded={handleNoteAdded} selectedEncounter={selectedEncounter} />
-            <Prescription onDrugSelected={handleDrugSelected} selectedEncounter={selectedEncounter} />
-            <Invoice onInvoiceAdded={handleInvoiceAdded} selectedEncounter={selectedEncounter} />
+            {/* Render your component here */}
+            <CardBody>
+              <Container className='my-2' fluid>
+                <Row>
+                  <Col className="d-flex justify-content-start align-items-center" >
+                    <div className="d-flex">
+                      <h3>รายละเอียดทางการตรวจ</h3>
+                    </div>
+                  </Col>
+                  <Col className="d-flex justify-content-end align-items-center" >
+                    <div className="d-flex justify-content-end align-items-center">
+                      <Button.Ripple
+                        color='success'
+                        outline
+                        className="d-flex  justify-content-center"
+                        onClick={() => setShow(true)}
+                        block
+                      >
+                        <Plus size={16} />
+                        {/* be back */}
+                        <span className='align-middle ms-25'> อัปโหลดรูปภาพ </span>
+                        {/* be back */}
+                      </Button.Ripple>
+                    </div>
+                  </Col>
+
+                </Row>
+                <div className='my-2'>
+                  {eStatus == 0 ? (
+                    <>
+                      <Badge color='danger' className='d-block'>
+                        <span>การตรวจเสร็จสิ้น</span>
+                      </Badge>
+                    </>
+                  )
+                    :
+                    (null)
+                  }
+                </div>
+
+              </Container>
+              <div>
+                <DoctorBoxs onSymptomChange={handleSymptom} onNoteAdded={handleNoteAdded} selectedEncounter={selectedEncounter} />
+                <Prescription onDrugSelected={handleDrugSelected} selectedEncounter={selectedEncounter} />
+                <Invoice onInvoiceAdded={handleInvoiceAdded} selectedEncounter={selectedEncounter} />
+              </div>
+              <div>
+                {eStatus == 0 ? (
+                  <>
+                    <Badge color='danger' className='d-block'>
+                      <span>การตรวจเสร็จสิ้น</span>
+                    </Badge>
+                  </>
+                )
+                  :
+                  (<Button.Ripple onClick={handleSaveEncounter} color='danger' outline className="d-flex justify-content-center" block>
+                    เสร็จสิ้นการตรวจ
+                  </Button.Ripple>)
+                }
+              </div>
+            </CardBody>
           </div>
-          <div>
-            {eStatus == 0 ? (
-              <>
-                <Badge color='danger' className='d-block'>
-                  <span>การตรวจเสร็จสิ้น</span>
-                </Badge>
-              </>
-            )
-              :
-              (<Button.Ripple onClick={handleSaveEncounter} color='danger' outline className="d-flex justify-content-center" block>
-                เสร็จสิ้นการตรวจ
-              </Button.Ripple>)
-            }
-          </div>
-        </CardBody>
+        )}
+
       </Card>
 
       {/* MODAL FOR UPLOADING PICTURE */}

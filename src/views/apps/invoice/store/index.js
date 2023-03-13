@@ -40,6 +40,16 @@ export const getInvoice = createAsyncThunk('appInvoice/getInvoice', async(encoun
   }
 })
 
+export const postInvoiceList = createAsyncThunk('appInvoice/postInvoiceList' , async(invoiceArray) => {
+  console.log("in STORE here is InvoiceArray")
+  console.log(invoiceArray)
+  try {
+    await axios.post('http://localhost:8000/invoice/addInvoiceList', invoiceArray);
+  } catch (error) {
+    console.log(error)
+  }
+})
+
 
 export const appInvoiceSlice = createSlice({
   name: 'appInvoice',

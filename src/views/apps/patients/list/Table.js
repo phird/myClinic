@@ -183,11 +183,9 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
     const columnDelimiter = ','
     const lineDelimiter = '\n'
     const keys = Object.keys(store.data[0])
-
     result = ''
     result += keys.join(columnDelimiter)
     result += lineDelimiter
-
     array.forEach(item => {
       let ctr = 0
       keys.forEach(key => {
@@ -257,6 +255,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                 type='text'
                 value={searchTerm}
                 onChange={e => handleFilter(e.target.value)}
+                placeholder='รหัสผู้ป่วย / ชื่อผู้ป่วย'
               />
             </div>
 
@@ -540,55 +539,28 @@ const PatientsList = () => {
   // ** Get data on mount
   useEffect(() => {
     dispatch(getAllData())
-    dispatch(
-      getData({
-        sort,
-        q: searchTerm,
-        page: currentPage,
-      })
-    )
+    
   }, [dispatch, store.data.length, sort, currentPage])
 
   // ** Function in get data on page change
   const handlePagination = page => {
-    dispatch(
-      getData({
-        sort,
-        q: searchTerm,
-        page: page.selected + 1,
-      })
-    )
     setCurrentPage(page.selected + 1)
   }
 
   // ** Function in get data on rows per page
   const handlePerPage = e => {
     const value = parseInt(e.currentTarget.value)
-    dispatch(
-      getData({
-        sort,
-        q: searchTerm,
-        page: page.selected + 1,
-      })
-    )
     setRowsPerPage(value)
   }
 
   // ** Function in get data on search query change
   const handleFilter = val => {
     setSearchTerm(val)
-    dispatch(
-      getData({
-        sort,
-        q: searchTerm,
-        page: page.selected + 1,
-      })
-    )
   }
 
   // ** Custom Pagination
   const CustomPagination = () => {
-    const count = Number(Math.ceil(store.total / rowsPerPage))
+    const count = Number(Math.ceil(store.data.length / rowsPerPage))
 
     return (
       <ReactPaginate
@@ -611,6 +583,18 @@ const PatientsList = () => {
 
   // ** Table data to render
   const dataToRender = () => {
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+
+    const customFilter = (rows, searchTerm) => {
+      return rows.filter(
+        (row) =>
+          row.patientID.toString().indexOf(searchTerm) >= 0 ||
+          row.fname.toLowerCase().indexOf(searchTerm.toLowerCase()) >= 0 ||
+          row.lname.toLowerCase().indexOf(searchTerm.toLowerCase()) >= 0 
+      );
+    };
+    const filteredData = customFilter(store.data, searchTerm);
     const filters = {
       q: searchTerm
     }
@@ -620,7 +604,7 @@ const PatientsList = () => {
     })
 
     if (store.data.length > 0) {
-      return store.data
+      return filteredData.slice(startIndex, endIndex);
     } else if (store.data.length === 0 && isFiltered) {
       return []
     } else {

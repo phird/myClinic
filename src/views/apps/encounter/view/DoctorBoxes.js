@@ -32,8 +32,9 @@ const DoctorBoxs = (props) => {
   // ** Dispatch 
   const dispatch = useDispatch();
   const [notes, setNotes] = useState('');
+  const [noteRetrive, setNoteRetrive] = useState('');  
   const [disease, setDisease] = useState('');
-  const [symptoms, setSymptoms] = useState([]);
+  const [symptoms, setSymptoms] = useState([]); //* Retrive Things
   const [inputSymptoms, setInputSymptoms] = useState([]);
   const store = useSelector(state => state.encounters)
   const enID = props.selectedEncounter.encounterID
@@ -46,18 +47,20 @@ const DoctorBoxs = (props) => {
 
   useEffect(() => {
     setSymptoms(arraySymp);
-    setNotes(props.selectedEncounter.Tnote)
-    props.onSymptomChange(symptoms);
+    setNoteRetrive(props.selectedEncounter.Tnote)
   }, [arraySymp, arraySymp, props]);
 
   useEffect(() => {
     props.onSymptomChange(inputSymptoms);
-  }, [inputSymptoms])
+    props.onNoteAdded(notes);
+  }, [inputSymptoms, notes])
 
- 
-  const handleSubmit = (e) => {
+
+  const handleSubmit = (e) => {  //* for add symtoms
     e.preventDefault();
     const newSymptom = e.target.elements.symptom.value;
+    console.log("here what new symptom value : ")
+    console.log(newSymptom)
     if (inputSymptoms.length === 0) {
       setInputSymptoms([{ name: newSymptom }]);
     } else {
@@ -71,24 +74,27 @@ const DoctorBoxs = (props) => {
   };
 
 
+
   const handleDelete = (index) => {
     setInputSymptoms((prevSymptoms) =>
       prevSymptoms.filter((symptom, i) => i !== index)
     );
   };
 
-  const handleNoteSubmit = (event) => {
+  const handleNoteChange = (event) => {
     event.preventDefault();
     const newNote = event.target.value;
+    console.log("NewNote:")
+    console.log(newNote)
     setNotes(newNote);
-    props.onNoteAdded(notes);
   };
-
-
 
   const handleDiseaseClick = (disease) => {
-    setSymptoms(MOCKDISEASE[disease]);
+    setInputSymptoms(MOCKDISEASE[disease]);
   };
+
+  console.log("note after onNoteChange")
+  console.log(notes)
   if (enStatus == 1) {
     return (
       <div className="shadow">
@@ -140,6 +146,7 @@ const DoctorBoxs = (props) => {
                             id='floatingInput'
                             placeholder='เพิ่มอาการ'
                             style={{ textOverflow: "ellipsis", overflow: "hidden", maxWidth: "100%" }}
+                            
                             required
                           />
                           <label htmlFor='floatingInput' style={{ maxWidth: "90%" }} >เพิ่มอาการ</label>
@@ -163,15 +170,16 @@ const DoctorBoxs = (props) => {
                     {/* Here is list of Symptom Shows */}
 
                     {/*  Here is submit Button */}
-                    <form onSubmit={handleNoteSubmit}>
+                    <form>
                       <div className='d-flex form-floating align-items-center justify-content-center'>
                         <Input
+                          id="doctorNote"
                           type="textarea"
                           name="note"
                           placeholder='เพิ่มโน้ต'
                           rows='5'
                           style={{ textOverflow: "ellipsis", overflow: "hidden", maxWidth: "100%", minHeight: "150px" }}
-                          onChange={handleNoteSubmit}
+                          onChange={handleNoteChange}
                           value={notes}
                         />
                       </div>
@@ -289,7 +297,7 @@ const DoctorBoxs = (props) => {
                     {/* Here is list of Symptom Shows */}
 
                     {/*  Here is submit Button */}
-                    <form onSubmit={handleNoteSubmit}>
+                    <form>
                       <div className='d-flex form-floating align-items-center justify-content-center'>
                         <Input
                           type="textarea"
@@ -297,8 +305,7 @@ const DoctorBoxs = (props) => {
                           placeholder='เพิ่มโน้ต'
                           rows='5'
                           style={{ textOverflow: "ellipsis", overflow: "hidden", maxWidth: "100%", minHeight: "150px" }}
-
-                          value={notes}
+                          value={noteRetrive}
                           disabled={true}
                         />
                       </div>

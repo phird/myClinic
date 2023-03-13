@@ -7,8 +7,6 @@ import axios from 'axios'
 import { createInvoice } from '../../invoice/store'
 import { createPrescription } from '../../prescription/store'
 
-
-
 export const getAllEncounter = createAsyncThunk('appEncounters/getAllEncounter', async () => {
   const response = await axios.get('http://localhost:8000/app/Encounter/list/data')
   return response.data.encounter
@@ -31,6 +29,13 @@ export const postEncounter = createAsyncThunk('appEncounter/postEncounter', asyn
   return response.data
 })
 
+export const handleSubmitEncounter = createAsyncThunk('appEncounter/handleSubmitEncounter', async(encounterID)=>{
+  try {
+    await axios.put(`http://localhost:8000/app/Encounter/handleSubmit/${encounterID}`)
+  } catch (error) {
+    console.log(error)
+  }
+})
 
 //** get specific encounter for patient  */
 
@@ -75,8 +80,6 @@ export const getSymptoms = createAsyncThunk('appEncounter/getSymptoms', async(en
 })
 
 export const addSymptom = createAsyncThunk('appEncounter/addSymptom', async (dataArray) => {
-  console.log("what i sent")
-  console.log(dataArray)
   try {
     const response = await axios.post('http://localhost:8000/encounterSymptom/addSymptom', dataArray);
     return response;
@@ -85,8 +88,6 @@ export const addSymptom = createAsyncThunk('appEncounter/addSymptom', async (dat
     console.log(error.response);
   }
 })
-
-
 
 //** ============================================ */
 

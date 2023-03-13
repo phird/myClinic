@@ -26,7 +26,15 @@ export const getPrescription = createAsyncThunk('appPrescription/getPrescription
     }
 })
 
-
+export const postDrugList = createAsyncThunk('appPrescription/postDrugList', async(drugListArray)=>{
+    console.log("poestDrugList --------> ")
+    console.log(drugListArray)
+    try {
+        await axios.post('http://localhost:8000/prescriptions/addDrugList', drugListArray);
+    } catch (error) {
+        console.log(error)
+    }
+})
 
 
 export const appPrescriptionSlice = createSlice({
@@ -42,5 +50,8 @@ export const appPrescriptionSlice = createSlice({
             })
     }
 })
+
+
+
 
 export default appPrescriptionSlice.reducer

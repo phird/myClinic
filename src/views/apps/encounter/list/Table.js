@@ -52,7 +52,7 @@ import '@styles/react/libs/tables/react-dataTable-component.scss'
 const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handleFilter, searchTerm }) => {
 
   // ** Current Date
-  const currentDate = new Date().toISOString().slice(0,10);
+  const currentDate = new Date().toISOString().slice(0, 10);
 
   // ** useDispatch 
   const dispatch = useDispatch()
@@ -84,18 +84,17 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
     const staffID = doctor.value;
     const note = document.getElementById('note').value;
     const addedDate = currentDate;
-    const newData = { patientID, staffID, note, addedDate};
+    const newData = { patientID, staffID, note, addedDate };
     // update state 
     if (!patientID || !staffID) {
       return;
     }
     try {
-      dispatch(postEncounter(newData) );
+      dispatch(postEncounter(newData));
       setShow(false);
       toast.success("เพิ่มบันทึกการตรวจสำเร็จ ! ", { duration: 5000 })
       setPatient([]);
       setDoctor([]);
-      console.log("end of trying")
     } catch (error) {
       console.log(error)
     }
@@ -187,12 +186,15 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
                 ค้นหา:
               </label>
               <Input
-                id='search-encounter'
+                id='search-invoice'
                 className='ms-50 w-100'
                 type='text'
                 value={searchTerm}
                 onChange={e => handleFilter(e.target.value)}
+                placeholder='ชื่อ / รหัสการตรวจ'
               />
+
+
             </div>
 
             <div className='d-flex align-items-center table-header-actions'>
@@ -305,9 +307,6 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
   )
 }
 
-
-
-
 const handleReset = () => {
   dispatch(appEncountersSlice.actions.reset());
 };
@@ -316,76 +315,46 @@ const EncountersList = () => {
   // ** Store Vars
   const dispatch = useDispatch()
   const store = useSelector(state => state.encounters)
+
+  console.log(store)
+
   // ** States  
 
   const [sort, setSort] = useState('desc')
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
-  const [sortColumn, setSortColumn] = useState('id')
+  const [sortColumn, setSortColumn] = useState('encounterID')
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  // ** Function to toggle sidebar
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen)
 
   // ** Get data on mount
   useEffect(() => {
     dispatch(getAllEncounter())
     dispatch(
-      getEncounterData({
-        sort,
-        sortColumn,
-        q: searchTerm,
-        page: currentPage,
-        perPage: rowsPerPage,
-      })
+      getEncounterData()
     )
   }, [dispatch, store.data.length, sort, sortColumn, currentPage])
 
   // ** Function in get data on page change
   const handlePagination = page => {
-    dispatch(
-      getEncounterData({
-        sort,
-        sortColumn,
-        q: searchTerm,
-        perPage: rowsPerPage,
-        page: page.selected + 1,
-      })
-    )
     setCurrentPage(page.selected + 1)
   }
 
   // ** Function in get data on rows per page
   const handlePerPage = e => {
     const value = parseInt(e.currentTarget.value)
-    dispatch(
-      getEncounterData({
-        sort,
-        sortColumn,
-        q: searchTerm,
-        perPage: value,
-      })
-    )
     setRowsPerPage(value)
   }
 
   // ** Function in get data on search query change
   const handleFilter = val => {
     setSearchTerm(val)
-    dispatch(
-      getEncounterData({
-        sort,
-        q: val,
-        sortColumn,
-        page: currentPage,
-        perPage: rowsPerPage,
-      })
-    )
   }
 
   // ** Custom Pagination
   const CustomPagination = () => {
-    const count = Number(Math.ceil(store.total / rowsPerPage))
+    const count = Number(Math.ceil(store.data.length / rowsPerPage))
+    console.log(count)
     return (
       <ReactPaginate
         previousLabel={''}
@@ -407,35 +376,38 @@ const EncountersList = () => {
 
   // ** Table data to render
   const dataToRender = () => {
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+
+    const customFilter = (rows, searchTerm) => {
+      return rows.filter(
+        (row) =>
+          row.encounterID.toString().indexOf(searchTerm) >= 0 ||
+          row.fname.toLowerCase().indexOf(searchTerm.toLowerCase()) >= 0 ||
+          row.lname.toLowerCase().indexOf(searchTerm.toLowerCase()) >= 0 
+      );
+    };
+
+    const filteredData = customFilter(store.data, searchTerm);
+
     const filters = {
       q: searchTerm
     }
 
     const isFiltered = Object.keys(filters).some(function (k) {
-      return filters[k].length > 0
+      return filters[k].length > 0;
     })
-
     if (store.data.length > 0) {
-      return store.data
+      return filteredData.slice(startIndex, endIndex);
     } else if (store.data.length === 0 && isFiltered) {
       return []
     } else {
       return store.allData.slice(0, rowsPerPage)
     }
   }
-
   const handleSort = (column, sortDirection) => {
     setSort(sortDirection)
     setSortColumn(column.sortField)
-    dispatch(
-      getEncounterData({
-        sort,
-        sortColumn,
-        q: searchTerm,
-        page: currentPage,
-        perPage: rowsPerPage,
-      })
-    )
   }
 
   return (
@@ -460,9 +432,8 @@ const EncountersList = () => {
                 store={store}
                 searchTerm={searchTerm}
                 rowsPerPage={rowsPerPage}
-                handleFilter={handleFilter}
                 handlePerPage={handlePerPage}
-                toggleSidebar={toggleSidebar}
+                handleFilter={handleFilter}
               />
             }
           />

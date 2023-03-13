@@ -11,7 +11,7 @@ const UsersList = () => {
   return (
     <div className='app-user-list'>
       <Breadcrumbs title='จัดการการตรวจผู้ป่วย' data={[{ title: 'บริการ' }, { title: 'จัดการการตรวจผู้ป่วย' }]} />
-      <Table />
+      <Table/>
     </div>
   )
 }

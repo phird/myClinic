@@ -223,8 +223,6 @@ const UserInfoCard = ({ selectedEncounter }) => {
           {/* ======divider======= */}
           <h4 className='fw-bolder border-bottom pb-50 mb-1'></h4>
           {/* =============== */}
-
-
           <div className='info-container'>
             {selectedEncounter !== null ? (
               <ul className='list-unstyled'>

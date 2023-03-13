@@ -14,8 +14,9 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-  Button, 
+  Button,
   UncontrolledTooltip,
+  Badge
 } from 'reactstrap'
 
 //** dateFormat imports */
@@ -25,7 +26,6 @@ import dateFormat from 'dateformat'
 export const columns = [
   {
     name: 'รหัสการรักษา',
-    sortable: true,
     minWidth: '50px',
     sortField: 'id',
     selector: row => row.encounterID,
@@ -44,7 +44,6 @@ export const columns = [
   },
   {
     name: 'ชื่อผู้ป่วย',
-    sortable: true,
     minWidth: '300px',
     sortField: 'fullName',
     selector: row => row.patientID,
@@ -66,14 +65,30 @@ export const columns = [
   {
     name: 'วันที่ทำการตรวจ',
     minWidth: '138px',
-    sortable: true,
     sortField: 'addedDate',
-    selector: row => row.addedDate,
-    cell: row => <span className='text-capitalize'>{dateFormat(row.addedDate, "dd/mm/yyyy")}</span>
+    selector: row => row.editDate,
+    cell: row => (
+      <span className='text-capitalize'>
+        {dateFormat(row.addedDate, "dd/mm/yyyy")}
+      </span>
+    )
+  },
+  {
+    name: 'สถานะการตรวจ',
+    minWidth: '138px',
+    sortField: 'addedDate',
+    selector: row => row.eStatus,
+    cell: row => <span className='text-capitalize'>{
+      row.eStatus == 0 ? (
+        <Badge color='success'>
+          ตรวจเสร็จสิ้น
+        </Badge>) : (
+        <Badge color='danger'>
+          ยังไม่ได้ทำการตรวจ
+        </Badge>)}</span>
   },
   {
     name: 'ษา',
-    sortable: true,
     minWidth: '172px',
     sortField: 'role',
     selector: row => row.prescriptionID,
