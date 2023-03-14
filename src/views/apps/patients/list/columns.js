@@ -42,7 +42,7 @@ export const columns = [
     name: 'รหัสผู้ป่วย',
     sortable: true,
     minWidth: '50px',
-    sortField: 'id',
+    sortField: 'patientID',
     selector: row => row.patientID,
     cell: row => (
       <div className='d-flex justify-content-center align-items-center'>
@@ -62,7 +62,7 @@ export const columns = [
     name: 'ชื่อผู้ป่วย',
     sortable: true,
     minWidth: '300px',
-    sortField: 'fullName',
+    sortField: 'fname',
     selector: row => row.firstname,
     cell: row => (
       <div className='d-flex justify-content-center align-items-center'>
@@ -81,7 +81,6 @@ export const columns = [
   },
   {
     name: 'เบอร์โทรคิดค่อ',
-    sortable: true,
     minWidth: '172px',
     sortField: 'role',
     selector: row => row.phoneNo,
@@ -101,12 +100,12 @@ export const columns = [
     cell: row => (
       <div className='column-action'>
         <>
-          <Link id='detail' to={`/apps/patient/view/${row.patientID}`} onClick={() => { getUser(row.patientID) }}>
-            <Button.Ripple className='btn-icon' outline color='flat-success'>
+          <Link id={`view-${row.patientID}`} to={`/apps/patient/view/${row.patientID}`} onClick={() => { getUser(row.patientID) }}>
+            <Button.Ripple  className='btn-icon' outline color='flat-success'>
               <FileText size={16} />
             </Button.Ripple>
           </Link>
-          <UncontrolledTooltip placement='top' target='detail'>
+          <UncontrolledTooltip placement='top' target={`view-${row.patientID}`}>
             โปรไฟล์ผู้ป่วย
           </UncontrolledTooltip>
         </>
@@ -122,15 +121,15 @@ export const columns = [
           </UncontrolledTooltip>
       </>*/}
         <>
-          <Link id='delete' onClick={e => {
+          <Link id={`delete-${row.patientID}`} onClick={e => {
             e.preventDefault()
             /* store.dispatch(deleteUser(row.id)) */
           }}>
-            <Button.Ripple className='btn-icon' color='flat-warning'>
+            <Button.Ripple  className='btn-icon' color='flat-warning'>
               <Trash2 size={16} />
             </Button.Ripple>
           </Link>
-          <UncontrolledTooltip placement='top' target='delete'>
+          <UncontrolledTooltip placement='top' target={`delete-${row.patientID}`}>
             ลบผู้ป่วย
           </UncontrolledTooltip>
         </>

@@ -171,7 +171,7 @@ const UserTabs = ({ selectedEncounter }) => {
                 <Row>
                   <Col className="d-flex justify-content-start align-items-center" >
                     <div className="d-flex">
-                      <h3>รายละเอียดทางการตรวจ</h3>
+                      <h3>รายละเอียดทางการตรวจ  #{selectedEncounter.encounterID}</h3>
                     </div>
                   </Col>
                   <Col className="d-flex justify-content-end align-items-center" >

@@ -145,7 +145,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
     setPerID(ID);
   }
 
-  const handelNameChange = (e) => {
+  const handleNameChange = (e) => {
     setFirstName(e.target.value)
   }
 
@@ -335,7 +335,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                         id='patientName'
                         placeholder='ชื่อจริง'
                         required
-                        onChange={handelNameChange}
+                        onChange={handleNameChange}
                       />
                     </Col>
                     <Col>
@@ -518,12 +518,6 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
   )
 }
 
-const onSubmit = data => {
-}
-
-const handleReset = () => {
-  dispatch(appEncountersSlice.actions.reset());
-};
 
 const PatientsList = () => {
   // ** Store Vars
@@ -533,35 +527,73 @@ const PatientsList = () => {
   const [sort, setSort] = useState('desc')
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
-  const [sortColumn, setSortColumn] = useState('id')
+  const [sortColumn, setSortColumn] = useState('patientID')
   const [rowsPerPage, setRowsPerPage] = useState(10)
+
+  console.log("STORE")
+  console.log(store)
+
 
   // ** Get data on mount
   useEffect(() => {
     dispatch(getAllData())
-    
-  }, [dispatch, store.data.length, sort, currentPage])
+    dispatch(getData(
+      {
+        sort,
+        sortColumn,
+        q: searchTerm,
+        page: currentPage,
+        perPage: rowsPerPage,
+      }
+    ))
+  }, [dispatch, store.data.length, sort, sortColumn, currentPage, searchTerm])
 
   // ** Function in get data on page change
   const handlePagination = page => {
+    dispatch(getData(
+      {
+        sort,
+        sortColumn,
+        q: searchTerm,
+        page: page.selected + 1,
+        perPage: rowsPerPage,
+      }
+    ))
     setCurrentPage(page.selected + 1)
   }
 
   // ** Function in get data on rows per page
   const handlePerPage = e => {
     const value = parseInt(e.currentTarget.value)
+    dispatch(getData(
+      {
+        sort,
+        sortColumn,
+        q: searchTerm,
+        page: currentPage,
+        perPage: value,
+      }
+    ))
     setRowsPerPage(value)
   }
 
   // ** Function in get data on search query change
   const handleFilter = val => {
     setSearchTerm(val)
+    dispatch(getData(
+      {
+        q: val,
+        sort,
+        sortColumn,
+        page: currentPage,
+        perPage: rowsPerPage,
+      }
+    ))
   }
 
   // ** Custom Pagination
   const CustomPagination = () => {
-    const count = Number(Math.ceil(store.data.length / rowsPerPage))
-
+    const count = Number(Math.ceil(store.total / rowsPerPage))
     return (
       <ReactPaginate
         previousLabel={''}
@@ -583,18 +615,6 @@ const PatientsList = () => {
 
   // ** Table data to render
   const dataToRender = () => {
-    const startIndex = (currentPage - 1) * rowsPerPage;
-    const endIndex = startIndex + rowsPerPage;
-
-    const customFilter = (rows, searchTerm) => {
-      return rows.filter(
-        (row) =>
-          row.patientID.toString().indexOf(searchTerm) >= 0 ||
-          row.fname.toLowerCase().indexOf(searchTerm.toLowerCase()) >= 0 ||
-          row.lname.toLowerCase().indexOf(searchTerm.toLowerCase()) >= 0 
-      );
-    };
-    const filteredData = customFilter(store.data, searchTerm);
     const filters = {
       q: searchTerm
     }
@@ -603,8 +623,11 @@ const PatientsList = () => {
       return filters[k].length > 0
     })
 
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage
+
     if (store.data.length > 0) {
-      return filteredData.slice(startIndex, endIndex);
+      return store.data.slice(startIndex, endIndex);
     } else if (store.data.length === 0 && isFiltered) {
       return []
     } else {
@@ -613,15 +636,21 @@ const PatientsList = () => {
   }
 
   const handleSort = (column, sortDirection) => {
+    console.log("HandleSort")
+    console.log(sortDirection)
     setSort(sortDirection)
     setSortColumn(column.sortField)
-    dispatch(
-      getData({
+
+    dispatch(getData(
+      {
         sort,
+        sortDirection,
+        sortColumn,
         q: searchTerm,
-        page: page.selected + 1,
-      })
-    )
+        page: currentPage,
+        perPage: rowsPerPage,
+      }
+    ))
   }
 
   return (
@@ -648,7 +677,6 @@ const PatientsList = () => {
                 rowsPerPage={rowsPerPage}
                 handleFilter={handleFilter}
                 handlePerPage={handlePerPage}
-                
               />
             }
           />

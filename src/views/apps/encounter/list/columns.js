@@ -3,17 +3,13 @@ import { Link } from 'react-router-dom'
 
 // ** Store & Actions
 import { store } from '@store/store'
-import { getAllEncounter, deleteEncounter, } from '../store'
+import { getAllEncounter, } from '../store'
 
 // ** Icons Imports
-import { MoreVertical, FileText, Trash2, Archive, Camera } from 'react-feather'
+import { FileText, Send } from 'react-feather'
 
 // ** Reactstrap Imports
 import {
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
   Button,
   UncontrolledTooltip,
   Badge
@@ -27,7 +23,8 @@ export const columns = [
   {
     name: 'รหัสการรักษา',
     minWidth: '50px',
-    sortField: 'id',
+    sortable: true,
+    sortField: 'encounterID',
     selector: row => row.encounterID,
     cell: row => (
       <div className='d-flex justify-content-left align-items-center'>
@@ -45,7 +42,8 @@ export const columns = [
   {
     name: 'ชื่อผู้ป่วย',
     minWidth: '300px',
-    sortField: 'fullName',
+    sortable: true,
+    sortField: 'fName',
     selector: row => row.patientID,
     cell: row => (
       <div className='d-flex justify-content-left align-items-center'>
@@ -65,6 +63,7 @@ export const columns = [
   {
     name: 'วันที่ทำการตรวจ',
     minWidth: '138px',
+    sortable: true,
     sortField: 'addedDate',
     selector: row => row.editDate,
     cell: row => (
@@ -76,7 +75,8 @@ export const columns = [
   {
     name: 'สถานะการตรวจ',
     minWidth: '138px',
-    sortField: 'addedDate',
+    sortable: true,
+    sortField: 'eStatus',
     selector: row => row.eStatus,
     cell: row => <span className='text-capitalize'>{
       row.eStatus == 0 ? (
@@ -88,7 +88,7 @@ export const columns = [
         </Badge>)}</span>
   },
   {
-    name: 'ษา',
+    name: 'ยา',
     minWidth: '172px',
     sortField: 'role',
     selector: row => row.prescriptionID,
@@ -97,21 +97,36 @@ export const columns = [
     </Link>
   },
   {
-    name: 'เมนู',
+    name: '',
     minWidth: '140px',
     sortField: 'role',
     cell: row => (
-      <div className='column-action'>
+      <div className='column-action d-flex align-items-center'>
         <>
           <Link to={`/apps/encounter/view/${row.encounterID}`}>
-            <Button.Ripple id='view' className='btn-icon' color='flat-success'>
-              <FileText size={16} />
+            <Button.Ripple id={`view-${row.encounterID}`} className='btn-icon' color='flat-success'>
+              <FileText size={18} />
             </Button.Ripple>
           </Link>
-          <UncontrolledTooltip placement='top' target='view'>
+          <UncontrolledTooltip placement='top' target={`view-${row.encounterID}`}>
             ดูบันทึก
           </UncontrolledTooltip>
         </>
+        {row.eStatus == 0 ? (
+          <div>
+            <Link to={`/apps/invoice/preview/${row.invID}`}>
+              <Button.Ripple id={`inv-${row.encounterID}`} className='btn-icon' color='flat-success'>
+                <Send size={18} />
+              </Button.Ripple>
+            </Link>
+            <UncontrolledTooltip placement='top' target={`inv-${row.encounterID}`}>
+              ดูบันทึก
+            </UncontrolledTooltip>
+          </div>
+        ) : (
+          <div> </div>
+        )}
+
       </div>
     )
   }

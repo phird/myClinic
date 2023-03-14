@@ -65,8 +65,6 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
   // ** in this case use patient instead of doctor  -> please fix
   const [doctor, setDoctor] = useState([]);
 
-
-
   // ** Get Patient Data 
   useEffect(() => {
     const fetchData = async () => {
@@ -311,6 +309,8 @@ const handleReset = () => {
   dispatch(appEncountersSlice.actions.reset());
 };
 
+
+
 const EncountersList = () => {
   // ** Store Vars
   const dispatch = useDispatch()
@@ -325,35 +325,79 @@ const EncountersList = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [sortColumn, setSortColumn] = useState('encounterID')
   const [rowsPerPage, setRowsPerPage] = useState(10)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+
 
   // ** Get data on mount
   useEffect(() => {
     dispatch(getAllEncounter())
     dispatch(
-      getEncounterData()
+      getEncounterData(
+        {
+          sort,
+          sortColumn,
+          q: searchTerm,
+          page: currentPage,
+          
+        }
+      )
     )
   }, [dispatch, store.data.length, sort, sortColumn, currentPage])
 
   // ** Function in get data on page change
   const handlePagination = page => {
+    dispatch(
+      getEncounterData(
+        {
+          sort,
+          sortColumn,
+          q: searchTerm,
+          page: page.selected + 1,
+         
+        }
+      )
+    )
     setCurrentPage(page.selected + 1)
   }
 
   // ** Function in get data on rows per page
   const handlePerPage = e => {
     const value = parseInt(e.currentTarget.value)
+    dispatch(
+      getEncounterData(
+        {
+          sort,
+          sortColumn,
+          q: searchTerm,
+          page: currentPage,
+          
+        }
+      ))
     setRowsPerPage(value)
   }
 
   // ** Function in get data on search query change
   const handleFilter = val => {
     setSearchTerm(val)
+    dispatch(
+      getEncounterData(
+        {
+          sort,
+          sortColumn,
+          q: val,
+          page: currentPage,
+          
+        }
+      )
+    )
   }
 
   // ** Custom Pagination
   const CustomPagination = () => {
-    const count = Number(Math.ceil(store.data.length / rowsPerPage))
+    const count = Number(Math.ceil(store.total/ rowsPerPage))
+    console.log(Number(store.total))
+    console.log("/")
+    console.log(rowsPerPage)
+    console.log("=")
     console.log(count)
     return (
       <ReactPaginate
@@ -376,29 +420,16 @@ const EncountersList = () => {
 
   // ** Table data to render
   const dataToRender = () => {
-    const startIndex = (currentPage - 1) * rowsPerPage;
-    const endIndex = startIndex + rowsPerPage;
-
-    const customFilter = (rows, searchTerm) => {
-      return rows.filter(
-        (row) =>
-          row.encounterID.toString().indexOf(searchTerm) >= 0 ||
-          row.fname.toLowerCase().indexOf(searchTerm.toLowerCase()) >= 0 ||
-          row.lname.toLowerCase().indexOf(searchTerm.toLowerCase()) >= 0 
-      );
-    };
-
-    const filteredData = customFilter(store.data, searchTerm);
-
     const filters = {
       q: searchTerm
     }
-
     const isFiltered = Object.keys(filters).some(function (k) {
       return filters[k].length > 0;
     })
+    const startIndex = (currentPage - 1)* rowsPerPage;
+    const endIndex = startIndex + rowsPerPage
     if (store.data.length > 0) {
-      return filteredData.slice(startIndex, endIndex);
+      return store.data.slice(startIndex,endIndex);
     } else if (store.data.length === 0 && isFiltered) {
       return []
     } else {
@@ -406,8 +437,22 @@ const EncountersList = () => {
     }
   }
   const handleSort = (column, sortDirection) => {
+    console.log("HandleSort")
+    console.log(sortDirection)
     setSort(sortDirection)
     setSortColumn(column.sortField)
+    dispatch(
+      getEncounterData(
+        {
+          sort,
+          sortDirection,
+          sortColumn,
+          q: searchTerm,
+          page: currentPage,
+          perPage: rowsPerPage,
+        }
+      )
+    )
   }
 
   return (
@@ -432,8 +477,9 @@ const EncountersList = () => {
                 store={store}
                 searchTerm={searchTerm}
                 rowsPerPage={rowsPerPage}
-                handlePerPage={handlePerPage}
                 handleFilter={handleFilter}
+                handlePerPage={handlePerPage}
+
               />
             }
           />

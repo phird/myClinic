@@ -42,10 +42,8 @@ export default [
     id: 'invoices',
     title: 'จัดการค่ารักษา',
     icon: <Paperclip size={20} />,
-    navLink: ''
+    navLink: '/apps/invoice/list'
   },
-
-
   {
     id: 'services',
     title: 'จัดการการบริการ',

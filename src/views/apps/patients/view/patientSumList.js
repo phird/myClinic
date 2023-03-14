@@ -40,7 +40,7 @@ import '@styles/react/apps/app-invoice.scss'
 import '@styles/react/libs/tables/react-dataTable-component.scss'
 import { getPatientEncounter, postPatientEncounter } from '../store'
 
-const patientSumList = ({ selectedPatient }) => {
+const patientSumList = ({ selectedPatient, enDetail }) => {
   // ** Store Vars
   const dispatch = useDispatch()
   const store = useSelector(state => state.patients)
@@ -48,7 +48,7 @@ const patientSumList = ({ selectedPatient }) => {
   console.log(store)
   const selectedPatientID = selectedPatient.patientID
   const fullName = selectedPatient.fname + ' ' + selectedPatient.lname
-  
+  const invID = enDetail.invID // โง่นิดนึง แต่อร่อยอยู่
   
   useEffect(() => {
     dispatch(getPatientEncounter(selectedPatientID))
@@ -144,12 +144,12 @@ const patientSumList = ({ selectedPatient }) => {
             sortServer
             paginationServer
             columns={columns}
-            responsive={true}
+            responsive
             onSort={handleSort}
             data={dataToRender()}
             sortIcon={<ChevronDown />}
             className='react-dataTable'
-            defaultSortField='invoiceId'
+            defaultSortField='invID'
           />
         </div>
       </Card>

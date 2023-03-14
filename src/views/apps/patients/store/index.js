@@ -14,12 +14,13 @@ export const getAllData = createAsyncThunk('appPatients/getAllData', async () =>
   }
 })
 
-export const getData = createAsyncThunk('appPatients/getData', async params => {
-  const response = await axios.get('http://localhost:8000/app/Patient/list/getdata', params)
+export const getData = createAsyncThunk('appPatients/getData', async (params) => {
+  const response = await axios.get('http://localhost:8000/app/Patient/list/getdata', {params: params})
+  /* console.log(response.data.patients.length) */
   return {
     params: params,
-    data: response.data.patients,
-    totalPages: 10,
+    data: response.data.patient,
+    totalPages: response.data.patient.length,
   }
 })
 // * INSERT NEW PATIENT TO DATABASE

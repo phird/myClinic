@@ -50,7 +50,7 @@ const UserView = props => {
     e.preventDefault()
     console.log("im in handdleGoBack")
     dispatch(resetEncounterData())
-    navigate("/apps/patient")
+    navigate(-1)
     
   }
 
@@ -77,7 +77,7 @@ const UserView = props => {
             <UserInfoCard selectedPatient={store.selectedPatient} onC />
           </Col>
           <Col xl='8' lg='7' xs={{ order: 0 }} md={{ order: 1, size: 7 }}>
-            <UserTabs active={active} toggleTab={toggleTab} selectedPatient={store.selectedPatient} />
+            <UserTabs active={active} toggleTab={toggleTab} selectedPatient={store.selectedPatient} encounterDetail={store.encounter}/>
           </Col>
         </Row>
       </div>

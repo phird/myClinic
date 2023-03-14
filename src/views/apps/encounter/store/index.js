@@ -13,11 +13,13 @@ export const getAllEncounter = createAsyncThunk('appEncounters/getAllEncounter',
 })
 
 export const getEncounterData = createAsyncThunk('appEncounters/getEncounterData', async params => {
-  const response = await axios.get('http://localhost:8000/app/Encounter/list/getdata', params)
+  const response = await axios.get('http://localhost:8000/app/Encounter/list/getdata', {params: params})
+  console.log(response)
+  console.log("#############")
   return {
     params,
     data: response.data.encounters,
-    totalPage: 10
+    totalPage: response.data.encounters.length
   }
 })
 

@@ -31,8 +31,6 @@ const UserView = () => {
     dispatch(getEncounter(parseInt(id)))
   }, [dispatch])
 
-  const [active, setActive] = useState('1')
-
   const navigate = useNavigate()
   // ** Handles Label Update
   const handleGoBack = (e) => {

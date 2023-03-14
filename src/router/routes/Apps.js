@@ -90,23 +90,11 @@ const AppRoutes = [
     path: '/apps/invoice/preview/:id'
   },
   {
-    path: '/apps/invoice/preview',
-    element: <Navigate to='/apps/invoice/preview/4987' />
-  },
-  {
     element: <InvoiceEdit />,
     path: '/apps/invoice/edit/:id'
   },
   {
-    path: '/apps/invoice/edit',
-    element: <Navigate to='/apps/invoice/edit/4987' />
-  },
-  {
-    element: <InvoiceAdd />,
-    path: '/apps/invoice/add'
-  },
-  {
-    path: '/apps/invoice/print',
+    path: '/apps/invoice/print/:id',
     element: <InvoicePrint />,
     meta: {
       layout: 'blank'

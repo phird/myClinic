@@ -9,7 +9,6 @@ import {
   Eye,
   Download,
   File,
-
 } from 'react-feather'
 
 // ** Table columns
@@ -43,16 +42,18 @@ export const columns = [
     cell: row => (
       <div className='column-action d-flex align-items-center'>
         <>
-          <Link className='text-body' to={`/apps/invoice/preview/${row.encounterID}`} id={`pw-tooltip-${row.encounterID}`}>
+          <Link className='text-body' to={`/apps/invoice/preview/${row.invID}`} id={`pw-tooltip-${row.encounterID}`}>
             <File size={17} className='mx-1' />
           </Link>
           <UncontrolledTooltip placement='top' target={`pw-tooltip-${row.encounterID}`}>
             ดูค่ารักษา
           </UncontrolledTooltip>
         </>
-
+        
         <>
-          <Download className='text-body cursor-pointer' size={17} id={`download-tooltip-${row.encounterID}`} />
+          <Link className='text-body' to={`/apps/invoice/preview/${row.invID}`} id={`pw-tooltip-${row.encounterID}`}>
+            <Download className='text-body cursor-pointer' size={17} id={`download-tooltip-${row.encounterID}`} tag={Link}/>
+          </Link>
           <UncontrolledTooltip placement='top' target={`download-tooltip-${row.encounterID}`}>
             ดาวน์โหลดค่ารักษา
           </UncontrolledTooltip>

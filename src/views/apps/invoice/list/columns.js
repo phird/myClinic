@@ -1,17 +1,13 @@
 // ** React Imports
-import { Fragment } from 'react'
 import { Link } from 'react-router-dom'
 
 // ** Custom Components
 import Avatar from '@components/avatar'
 
 // ** Store & Actions
-import { store } from '@store/store'
-import { deleteInvoice } from '../store'
 
 // ** Reactstrap Imports
 import {
-  Badge,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
@@ -22,41 +18,21 @@ import {
 // ** Third Party Components
 import {
   Eye,
-  Send,
   Edit,
-  Copy,
-  Save,
-  Info,
-  Trash,
-  PieChart,
   Download,
-  TrendingUp,
-  CheckCircle,
-  MoreVertical,
-  ArrowDownCircle
+  MoreVertical
 } from 'react-feather'
 
-// ** Vars
-const invoiceStatusObj = {
-  Sent: { color: 'light-secondary', icon: Send },
-  Paid: { color: 'light-success', icon: CheckCircle },
-  Draft: { color: 'light-primary', icon: Save },
-  Downloaded: { color: 'light-info', icon: ArrowDownCircle },
-  'Past Due': { color: 'light-danger', icon: Info },
-  'Partial Payment': { color: 'light-warning', icon: PieChart }
-}
+//** dateFormat imports */
+import dateFormat from 'dateformat'
 
 // ** renders client column
 const renderClient = row => {
+  const name = row.fname + ' ' + row.lname
   const stateNum = Math.floor(Math.random() * 6),
     states = ['light-success', 'light-danger', 'light-warning', 'light-info', 'light-primary', 'light-secondary'],
     color = states[stateNum]
-
-  if (row.avatar.length) {
-    return <Avatar className='me-50' img={row.avatar} width='32' height='32' />
-  } else {
-    return <Avatar color={color} className='me-50' content={row.client ? row.client.name : 'John Doe'} initials />
-  }
+  return <Avatar color={color} className='me-50' content={name} initials />
 }
 
 // ** Table columns
@@ -64,129 +40,88 @@ export const columns = [
   {
     name: '#',
     sortable: true,
-    sortField: 'id',
+    sortField: 'Invoice.invID',
     minWidth: '107px',
     // selector: row => row.id,
-    cell: row => <Link to={`/apps/invoice/preview/${row.id}`}>{`#${row.id}`}</Link>
+    cell: row => <Link to={`/apps/invoice/preview/${row.invID}`}>{`#INV-${row.invID}`}</Link>
   },
   {
+    name: 'รหัสการตรวจ',
+    minWidth: '50px',
     sortable: true,
-    minWidth: '102px',
-    sortField: 'invoiceStatus',
-    name: <TrendingUp size={14} />,
-    // selector: row => row.invoiceStatus,
-    cell: row => {
-      const color = invoiceStatusObj[row.invoiceStatus] ? invoiceStatusObj[row.invoiceStatus].color : 'primary',
-        Icon = invoiceStatusObj[row.invoiceStatus] ? invoiceStatusObj[row.invoiceStatus].icon : Edit
-      return (
-        <Fragment>
-          <Avatar color={color} icon={<Icon size={14} />} id={`av-tooltip-${row.id}`} />
-          <UncontrolledTooltip placement='top' target={`av-tooltip-${row.id}`}>
-            <span className='fw-bold'>{row.invoiceStatus}</span>
-            <br />
-            <span className='fw-bold'>Balance:</span> {row.balance}
-            <br />
-            <span className='fw-bold'>Due Date:</span> {row.dueDate}
-          </UncontrolledTooltip>
-        </Fragment>
-      )
-    }
+    sortField: 'Invoice.patientID',
+    selector: row => row.patientID,
+    cell: row => (
+      <div className='d-flex justify-content-center align-items-center'>
+        <div className='d-flex flex-column'>
+          <Link to={`/apps/encounter/view/${row.encounterID}`}>
+            {`#ENC-${row.encounterID}`}
+          </Link>
+          <Link className='text-body' to={`/apps/patient/view/${row.patientID}`}>
+            <span> {`#PT-${row.patientID}`} </span>
+          </Link>
+        </div>
+      </div>
+    )
   },
   {
-    name: 'Client',
+    name: 'ชื่อผู้ป่วย',
     sortable: true,
     minWidth: '350px',
-    sortField: 'client.name',
+    sortField: 'Patient.fname',
     // selector: row => row.client.name,
     cell: row => {
-      const name = row.client ? row.client.name : 'John Doe',
-        email = row.client ? row.client.companyEmail : 'johnDoe@email.com'
+      const name = row.fname + ' ' + row.lname
       return (
         <div className='d-flex justify-content-left align-items-center'>
           {renderClient(row)}
           <div className='d-flex flex-column'>
-            <h6 className='user-name text-truncate mb-0'>{name}</h6>
-            <small className='text-truncate text-muted mb-0'>{email}</small>
+            <Link
+              to={`/apps/invoice/preview/${row.invID}`}
+              className='user_name text-truncate text-body'
+            >
+              <span className='user-name mb-0 fw-bolder'>{name}</span>
+            </Link>
           </div>
         </div>
       )
     }
   },
   {
-    name: 'Total',
-    sortable: true,
-    minWidth: '150px',
-    sortField: 'total',
-    // selector: row => row.total,
-    cell: row => <span>${row.total || 0}</span>
-  },
-  {
     sortable: true,
     minWidth: '200px',
-    name: 'Issued Date',
-    sortField: 'dueDate',
-    cell: row => row.dueDate
+    name: 'วันที่',
+    sortField: 'Invoice.addedDate',
+    cell: row => (
+      <span className='text-capitalize'>
+        {dateFormat(row.addedDate, "dd/mm/yyyy")}
+      </span>
+    )
     // selector: row => row.dueDate
   },
   {
-    sortable: true,
-    name: 'Balance',
-    minWidth: '164px',
-    sortField: 'balance',
-    // selector: row => row.balance,
-    cell: row => {
-      return row.balance !== 0 ? (
-        <span>{row.balance}</span>
-      ) : (
-        <Badge color='light-success' pill>
-          Paid
-        </Badge>
-      )
-    }
-  },
-  {
-    name: 'Action',
+    name: '',
     minWidth: '110px',
     cell: row => (
       <div className='column-action d-flex align-items-center'>
-        <Send className='cursor-pointer' size={17} id={`send-tooltip-${row.id}`} />
-        <UncontrolledTooltip placement='top' target={`send-tooltip-${row.id}`}>
-          Send Mail
-        </UncontrolledTooltip>
-        <Link to={`/apps/invoice/preview/${row.id}`} id={`pw-tooltip-${row.id}`}>
+        <Link to={`/apps/invoice/preview/${row.invID}`} id={`pw-tooltip-${row.invID}`}>
           <Eye size={17} className='mx-1' />
         </Link>
-        <UncontrolledTooltip placement='top' target={`pw-tooltip-${row.id}`}>
-          Preview Invoice
+        <UncontrolledTooltip placement='top' target={`pw-tooltip-${row.invID}`}>
+          ดูค่ารักษา
         </UncontrolledTooltip>
         <UncontrolledDropdown>
           <DropdownToggle tag='span'>
             <MoreVertical size={17} className='cursor-pointer' />
           </DropdownToggle>
           <DropdownMenu end>
-            <DropdownItem tag='a' href='/' className='w-100' onClick={e => e.preventDefault()}>
+            <DropdownItem tag={Link} to={`/apps/invoice/print/${row.invID}`} target='_blank' className='w-100'>
               <Download size={14} className='me-50' />
               <span className='align-middle'>Download</span>
             </DropdownItem>
             <DropdownItem tag={Link} to={`/apps/invoice/edit/${row.id}`} className='w-100'>
               <Edit size={14} className='me-50' />
               <span className='align-middle'>Edit</span>
-            </DropdownItem>
-            <DropdownItem
-              tag='a'
-              href='/'
-              className='w-100'
-              onClick={e => {
-                e.preventDefault()
-                store.dispatch(deleteInvoice(row.id))
-              }}
-            >
-              <Trash size={14} className='me-50' />
-              <span className='align-middle'>Delete</span>
-            </DropdownItem>
-            <DropdownItem tag='a' href='/' className='w-100' onClick={e => e.preventDefault()}>
-              <Copy size={14} className='me-50' />
-              <span className='align-middle'>Duplicate</span>
             </DropdownItem>
           </DropdownMenu>
         </UncontrolledDropdown>
