@@ -9,6 +9,7 @@ import dateFormat from 'dateformat'
 // ** Store & Actions
 import { store } from '@store/store'
 import { getPatient} from '../store'
+import { getWidgetEncounter } from '../../encounter/store'
 
 // ** Icons Imports
 import { FileText, Trash2, Archive, Phone } from 'react-feather'
@@ -50,7 +51,10 @@ export const columns = [
           <Link
             to={`/apps/patient/view/${row.patientID}`}
             className='user_name text-truncate text-body'
-            onClick={() => store.dispatch(getPatient(row.patientID))}
+            onClick={() => {
+              store.dispatch(getPatient(row.patientID))
+              store.dispatch(getWidgetEncounter(row.patientID))
+            }}
           >
             <span className='fw-bolder center'>#PT-{row.patientID}</span>
           </Link>
@@ -71,7 +75,10 @@ export const columns = [
           <Link
             to={`/apps/patient/view/${row.patientID}`}
             className='user_name text-truncate text-body'
-            onClick={() => store.dispatch(getPatient(row.patientID))}
+            onClick={() => {
+              store.dispatch(getPatient(row.patientID))
+              store.dispatch(getWidgetEncounter(row.patientID))
+            }}
           >
             <span className='fw-bolder'>{row.fname + ' ' + row.lname} </span>
           </Link>
@@ -121,10 +128,11 @@ export const columns = [
           </UncontrolledTooltip>
       </>*/}
         <>
-          <Link id={`delete-${row.patientID}`} onClick={e => {
-            e.preventDefault()
-            /* store.dispatch(deleteUser(row.id)) */
-          }}>
+          <Link id={`delete-${row.patientID}`} onClick={() => {
+              store.dispatch(getPatient(row.patientID))
+              store.dispatch(getWidgetEncounter(row.patientID))
+            }}
+            >
             <Button.Ripple  className='btn-icon' color='flat-warning'>
               <Trash2 size={16} />
             </Button.Ripple>

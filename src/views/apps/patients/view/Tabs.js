@@ -10,7 +10,7 @@ import { User,Image } from 'react-feather'
 // ** User Components
 import PatientSumList from './patientSumList'
 import UploadImageList from './uploadedImage'
-const UserTabs = ({ selectedPatient,  encounterDetail , active, toggleTab }) => {
+const UserTabs = ({ selectedPatient, active, toggleTab }) => {
   const patient = selectedPatient;
   return (
     <Fragment>
@@ -30,7 +30,7 @@ const UserTabs = ({ selectedPatient,  encounterDetail , active, toggleTab }) => 
       </Nav>
       <TabContent activeTab={active}>
         <TabPane tabId='1'>
-          <PatientSumList selectedPatient={patient} enDetail={encounterDetail} />
+          <PatientSumList selectedPatient={patient}/>
         </TabPane>
         <TabPane tabId='2'>
           <UploadImageList selectedPatient={selectedPatient}/>

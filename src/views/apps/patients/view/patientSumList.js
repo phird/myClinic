@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { columns } from './columns'
 
 // ** Third Party Components
+import ReactPaginate from 'react-paginate'
 import DataTable from 'react-data-table-component'
 import { ChevronDown } from 'react-feather'
 import Swal from 'sweetalert2'
@@ -38,81 +39,96 @@ import { useDispatch, useSelector } from 'react-redux'
 // ** Styles
 import '@styles/react/apps/app-invoice.scss'
 import '@styles/react/libs/tables/react-dataTable-component.scss'
-import { getPatientEncounter, postPatientEncounter } from '../store'
+import { postEncounter, getPatientEncounter } from '../../encounter/store'
 
 const patientSumList = ({ selectedPatient, enDetail }) => {
   // ** Store Vars
   const dispatch = useDispatch()
-  const store = useSelector(state => state.patients)
-  console.log("store was here")
-  console.log(store)
+  const store = useSelector(state => state.encounters)
   const selectedPatientID = selectedPatient.patientID
   const fullName = selectedPatient.fname + ' ' + selectedPatient.lname
-  const invID = enDetail.invID // โง่นิดนึง แต่อร่อยอยู่
-  
-  useEffect(() => {
-    dispatch(getPatientEncounter(selectedPatientID))
-  }, [dispatch, store.encounter.length])
-  
-  
-  // ** States
-  // ** Current Date
-  const currentDate = new Date().toISOString().slice(0, 10);
-  const [value] = useState('')
-  const [rowsPerPage] = useState(6)
-  const [currentPage] = useState(1)
-  const [sort, setSort] = useState('desc')
-  const [sortColumn, setSortColumn] = useState('id')
-
   // MODAL STATES
   // ** State
   const [show, setShow] = useState(false)
   const patientID = selectedPatient.patientID
   const [allPatients, setAllPatients] = useState([]);
-  const [patientEn, setPatientEn] = useState([]);
+  const [sort, setSort] = useState('desc')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [sortColumn, setSortColumn] = useState('encounterID')
+  const [rowsPerPage, setRowsPerPage] = useState(10)
+
+  // ** States
+  const currentDate = new Date().toISOString().slice(0, 10);
+  const [value] = useState('')
   // ** in this case use patient instead of doctor  -> please fix
   const [doctor, setDoctor] = useState([]);
+
+  useEffect(() => {
+    dispatch(getPatientEncounter(
+      {
+        selectedPatientID,
+        sort,
+        sortColumn,
+      }
+    ))
+  }, [dispatch, selectedPatientID,store.data.length, sort, sortColumn, currentPage])
 
 
   const handleSubmitEncounter = (event) => {
     event.preventDefault();
     // retrieve the values of the form field 
     const patientID = selectedPatient.patientID;
-    console.log("patientID ******************")
-    console.log(patientID)
     const staffID = 1;
     const note = document.getElementById('note').value;
     const addedDate = currentDate;
-    const newData = {patientID,staffID, note, addedDate};
+    const newData = { patientID, staffID, note, addedDate };
     // update state 
     if (!patientID || !staffID) {
+      console.log("error before upload")
       return;
     }
     try {
-      dispatch(postPatientEncounter(newData));
+      dispatch(postEncounter(newData));
       setShow(false);
-      toast.success(`เพิ่มบันทึกการตรวจขอบคุณ ${fullName} สำเร็จ !`, { duration: 5000 })
+      toast.success(`เพิ่มบันทึกการตรวจขอบคุณ ${fullName} สำเร็จ !`, { duration: 3000 })
     } catch (error) {
       console.log(error)
     }
   }
-
   const handleDoctorChange = (selectedOption) => {
     console.log("here is selected Option")
     console.log(selectedOption)
     setDoctor(selectedOption);
   }
 
+  // ** Custom Pagination
+  const CustomPagination = () => {
+    const count = Number(Math.ceil(store.encounter.length / rowsPerPage))
+    return (
+      <ReactPaginate
+        previousLabel={''}
+        nextLabel={''}
+        pageCount={count || 1}
+        activeClassName='active'
+        forcePage={currentPage !== 0 ? currentPage - 1 : 0}
+        onPageChange={page => handlePagination(page)}
+        pageClassName={'page-item'}
+        nextLinkClassName={'page-link'}
+        nextClassName={'page-item next'}
+        previousClassName={'page-item prev'}
+        previousLinkClassName={'page-link'}
+        pageLinkClassName={'page-link'}
+        containerClassName={'pagination react-paginate justify-content-end my-2 pe-1'}
+      />
+    )
+  }
+
   const dataToRender = () => {
-    const filters = {
-      q: value
-    }
-    const isFiltered = Object.keys(filters).some(function (k) {
-      return filters[k].length > 0
-    })
+    const startIndex = (currentPage - 1 ) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage
 
     if (store.encounter.length > 0) {
-      return store.encounter
+      return store.encounter.slice(startIndex, endIndex)
     } else if (store.encounter.length === 0) {
       return store.encounter.slice(0, rowsPerPage)
     } else {
@@ -121,11 +137,18 @@ const patientSumList = ({ selectedPatient, enDetail }) => {
   }
 
   const handleSort = (column, sortDirection) => {
+    if (sortDirection.toLowerCase() == 'asc') {
+      sortDirection = 'desc'
+    } else {
+      sortDirection = 'asc'
+    }
     setSort(sortDirection)
     setSortColumn(column.sortField)
     dispatch(
-      getEncounter({
-        q: value,
+      getPatientEncounter({
+        selectedPatientID,
+        sort,
+        sortColumn,
       })
     )
   }
@@ -142,7 +165,9 @@ const patientSumList = ({ selectedPatient, enDetail }) => {
           <DataTable
             noHeader
             sortServer
+            pagination
             paginationServer
+            paginationComponent={CustomPagination}
             columns={columns}
             responsive
             onSort={handleSort}

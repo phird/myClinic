@@ -1,14 +1,11 @@
 // ** React Imports
 import { Fragment, useState, useEffect } from 'react'
 
-// ** Invoice List Sidebar
-import Sidebar from './Sidebar'
-
 // ** Table Columns
 import { columns } from './columns'
 
 // ** Store & Actions
-import { getAllData, getData } from '../store'
+import { getAllData, getData, addService } from '../store'
 import { useDispatch, useSelector } from 'react-redux'
 
 // ** Third Party Components
@@ -26,6 +23,7 @@ import {
   Col,
   Card,
   Input,
+  InputGroup,
   Label,
   Button,
   CardBody,
@@ -34,19 +32,39 @@ import {
   DropdownMenu,
   DropdownItem,
   DropdownToggle,
-  UncontrolledDropdown
+  UncontrolledDropdown,
+  Form,
+  FormGroup,
+  FormFeedback,
+  Modal,
+  ModalBody,
+  ModalHeader,
+  InputGroupText,
 } from 'reactstrap'
 
 // ** Styles
 import '@styles/react/libs/react-select/_react-select.scss'
 import '@styles/react/libs/tables/react-dataTable-component.scss'
 
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+import { toast } from 'react-hot-toast'
+
+const MySwal = withReactContent(Swal)
+
+
 // ** Table Header
-const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handleFilter, searchTerm }) => {
+const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchTerm }) => {
+
+  const dispatch = useDispatch()
+  // ** State 
+  const [show, setShow] = useState(false)
+  const [serviceName, setServiceName] = useState('');
+  const [servicePrice, setservicePrice] = useState('');
+
   // ** Converts table to CSV
   function convertArrayOfObjectsToCSV(array) {
     let result
-
     const columnDelimiter = ','
     const lineDelimiter = '\n'
     const keys = Object.keys(store.data[0])
@@ -59,9 +77,7 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
       let ctr = 0
       keys.forEach(key => {
         if (ctr > 0) result += columnDelimiter
-
-        result += item[key]
-
+        result += item[ky]
         ctr++
       })
       result += lineDelimiter
@@ -69,7 +85,6 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
 
     return result
   }
-
   // ** Downloads CSV
   function downloadCSV(array) {
     const link = document.createElement('a')
@@ -85,13 +100,56 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
     link.setAttribute('href', encodeURI(csv))
     link.setAttribute('download', filename)
     link.click()
+ 
+ 
+ 
   }
+
+  // ** Handle for Modal 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const sname = serviceName;
+    const sprice = servicePrice;
+    const newData = {sname, sprice};
+
+    // update state and dispatch action 
+    if( !sname || !sprice ) {
+      // ** handle an empty data here ;
+      return ;
+    }
+    try {
+      dispatch(addService(newData));
+      setShow(false)
+      toast.success("เพิ่มการบริการสำเร็จ")
+      setServiceName('');
+      setservicePrice('');
+    } catch (error) {
+      console.log("it's an error in submit form ! ")
+      console.error(error)
+    }
+
+  } 
+
+  const handleServiceNameChange = (e) => {
+    e.preventDefault();
+    const value = e.target.value;
+    setServiceName(value);
+
+  }
+
+  const handleServicePriceChange = (e) => {
+    e.preventDefault();
+    const price = e.target.value;
+    setservicePrice(price);
+  }
+
+
   return (
     <div className='invoice-list-table-header w-100 me-1 ms-50 mt-2 mb-75'>
       <Row>
         <Col xl='6' className='d-flex align-items-center p-0'>
           <div className='d-flex align-items-center w-100'>
-            <label htmlFor='rows-per-page'>Show</label>
+            <label htmlFor='rows-per-page'>แสดง</label>
             <Input
               className='mx-50'
               type='select'
@@ -104,7 +162,7 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
               <option value='25'>25</option>
               <option value='50'>50</option>
             </Input>
-            <label htmlFor='rows-per-page'>Entries</label>
+            <label htmlFor='rows-per-page'>รายการ</label>
           </div>
         </Col>
         <Col
@@ -113,7 +171,7 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
         >
           <div className='d-flex align-items-center mb-sm-0 mb-1 me-1'>
             <label className='mb-0' htmlFor='search-invoice'>
-              Search:
+              ค้นหา:
             </label>
             <Input
               id='search-invoice'
@@ -121,67 +179,101 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
               type='text'
               value={searchTerm}
               onChange={e => handleFilter(e.target.value)}
+              placeholder='ชื่อบริการ'
             />
           </div>
 
           <div className='d-flex align-items-center table-header-actions'>
-            <UncontrolledDropdown className='me-1'>
-              <DropdownToggle color='secondary' caret outline>
-                <Share className='font-small-4 me-50' />
-                <span className='align-middle'>Export</span>
-              </DropdownToggle>
-              <DropdownMenu>
-                <DropdownItem className='w-100'>
-                  <Printer className='font-small-4 me-50' />
-                  <span className='align-middle'>Print</span>
-                </DropdownItem>
-                <DropdownItem className='w-100' onClick={() => downloadCSV(store.data)}>
-                  <FileText className='font-small-4 me-50' />
-                  <span className='align-middle'>CSV</span>
-                </DropdownItem>
-                <DropdownItem className='w-100'>
-                  <Grid className='font-small-4 me-50' />
-                  <span className='align-middle'>Excel</span>
-                </DropdownItem>
-                <DropdownItem className='w-100'>
-                  <File className='font-small-4 me-50' />
-                  <span className='align-middle'>PDF</span>
-                </DropdownItem>
-                <DropdownItem className='w-100'>
-                  <Copy className='font-small-4 me-50' />
-                  <span className='align-middle'>Copy</span>
-                </DropdownItem>
-              </DropdownMenu>
-            </UncontrolledDropdown>
-
-            <Button className='add-new-user' color='primary' onClick={toggleSidebar}>
-              Add New User
+            <Button className='add-new-user' color='primary' onClick={e => {
+              e.preventDefault();
+              setShow(true);
+              }}>
+              เพิ่มการบริการ
             </Button>
           </div>
         </Col>
       </Row>
+
+      {/* Modal Section  */}
+      <Modal isOpen={show} toggle={() => setShow(!show)} className='modal-dialog-centered modal-lg' backdrop="static">
+        <ModalHeader className='bg-transparent' toggle={() => setShow(!show)}></ModalHeader>
+        <ModalBody className='px-sm-5 pt-50 pb-5'>
+          <div className='text-center mb-2'>
+            <h1 className='mb-1'>เพิ่มการบริการ</h1>
+          </div>
+          <Form onSubmit={handleSubmit}>
+            <Row className='gy-1 pt-75' >
+              <Row md={12} xs={12} style={{ marginBottom: '10px' }}>
+                <Col>
+                  <FormGroup>
+                    <Label className='form-label font-weight-bold' for='firstName'>
+                      ชื่อบริการ:
+                    </Label>
+                    <Input
+                      id="serviceName"
+                      placeholder="ชื่อบริการ ตัวอย่าง. นวด"
+                      value={serviceName}
+                      onChange={handleServiceNameChange}
+                      required
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+              <Row md={3} xs={12} style={{ marginBottom: '10px' }}>
+                <Col sm={4}>
+                  <FormGroup>
+                    <Label className='h4 form-label font-weight-bold' for='lastName'>
+                      ปริมาณ
+                    </Label>
+                    <InputGroup>
+                      <Input
+                        required
+                        id='quantity'
+                        type='number'
+                        value={servicePrice}
+                        onChange={handleServicePriceChange}
+                        placeholder='ตัวอย่าง: 100 '
+                      />
+                      <InputGroupText> บาท </InputGroupText>
+                      <FormFeedback >
+                        กรุณาราคา
+                      </FormFeedback>
+                    </InputGroup>
+                  </FormGroup>
+
+                </Col>
+              </Row>
+              <Col xs={12} className='text-center mt-2 pt-50'>
+                <Button type='submit' className='me-1' color='primary'>
+                  เพิ่ม
+                </Button>
+              </Col>
+            </Row>
+          </Form>
+        </ModalBody>
+      </Modal>
+
+      {/* End Modal Section */}
     </div>
   )
 }
 
-const UsersList = () => {
+const ServiceList = () => {
   // ** Store Vars
   const dispatch = useDispatch()
-  const store = useSelector(state => state.users)
+  const store = useSelector(state => state.service)
 
   // ** States
   const [sort, setSort] = useState('desc')
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
-  const [sortColumn, setSortColumn] = useState('id')
+  const [sortColumn, setSortColumn] = useState('serviceID')
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [currentRole, setCurrentRole] = useState({ value: '', label: 'Select Role' })
   const [currentPlan, setCurrentPlan] = useState({ value: '', label: 'Select Plan' })
   const [currentStatus, setCurrentStatus] = useState({ value: '', label: 'Select Status', number: 0 })
 
-  // ** Function to toggle sidebar
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen)
 
   // ** Get data on mount
   useEffect(() => {
@@ -193,37 +285,9 @@ const UsersList = () => {
         q: searchTerm,
         page: currentPage,
         perPage: rowsPerPage,
-        role: currentRole.value,
-        status: currentStatus.value,
-        currentPlan: currentPlan.value
       })
     )
   }, [dispatch, store.data.length, sort, sortColumn, currentPage])
-
-  // ** User filter options
-  const roleOptions = [
-    { value: '', label: 'Select Role' },
-    { value: 'admin', label: 'Admin' },
-    { value: 'author', label: 'Author' },
-    { value: 'editor', label: 'Editor' },
-    { value: 'maintainer', label: 'Maintainer' },
-    { value: 'subscriber', label: 'Subscriber' }
-  ]
-
-  const planOptions = [
-    { value: '', label: 'Select Plan' },
-    { value: 'basic', label: 'Basic' },
-    { value: 'company', label: 'Company' },
-    { value: 'enterprise', label: 'Enterprise' },
-    { value: 'team', label: 'Team' }
-  ]
-
-  const statusOptions = [
-    { value: '', label: 'Select Status', number: 0 },
-    { value: 'pending', label: 'Pending', number: 1 },
-    { value: 'active', label: 'Active', number: 2 },
-    { value: 'inactive', label: 'Inactive', number: 3 }
-  ]
 
   // ** Function in get data on page change
   const handlePagination = page => {
@@ -234,9 +298,6 @@ const UsersList = () => {
         q: searchTerm,
         perPage: rowsPerPage,
         page: page.selected + 1,
-        role: currentRole.value,
-        status: currentStatus.value,
-        currentPlan: currentPlan.value
       })
     )
     setCurrentPage(page.selected + 1)
@@ -252,9 +313,6 @@ const UsersList = () => {
         q: searchTerm,
         perPage: value,
         page: currentPage,
-        role: currentRole.value,
-        currentPlan: currentPlan.value,
-        status: currentStatus.value
       })
     )
     setRowsPerPage(value)
@@ -270,9 +328,6 @@ const UsersList = () => {
         sortColumn,
         page: currentPage,
         perPage: rowsPerPage,
-        role: currentRole.value,
-        status: currentStatus.value,
-        currentPlan: currentPlan.value
       })
     )
   }
@@ -280,7 +335,6 @@ const UsersList = () => {
   // ** Custom Pagination
   const CustomPagination = () => {
     const count = Number(Math.ceil(store.total / rowsPerPage))
-
     return (
       <ReactPaginate
         previousLabel={''}
@@ -303,18 +357,17 @@ const UsersList = () => {
   // ** Table data to render
   const dataToRender = () => {
     const filters = {
-      role: currentRole.value,
-      currentPlan: currentPlan.value,
-      status: currentStatus.value,
       q: searchTerm
     }
-
     const isFiltered = Object.keys(filters).some(function (k) {
       return filters[k].length > 0
     })
 
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage
+
     if (store.data.length > 0) {
-      return store.data
+      return store.data.slice(startIndex, endIndex)
     } else if (store.data.length === 0 && isFiltered) {
       return []
     } else {
@@ -323,6 +376,11 @@ const UsersList = () => {
   }
 
   const handleSort = (column, sortDirection) => {
+    if (sortDirection.toLowerCase() == 'asc') {
+      sortDirection = 'desc'
+    } else {
+      sortDirection = 'asc'
+    }
     setSort(sortDirection)
     setSortColumn(column.sortField)
     dispatch(
@@ -332,103 +390,12 @@ const UsersList = () => {
         q: searchTerm,
         page: currentPage,
         perPage: rowsPerPage,
-        role: currentRole.value,
-        status: currentStatus.value,
-        currentPlan: currentPlan.value
       })
     )
   }
 
   return (
     <Fragment>
-      <Card>
-        <CardHeader>
-          <CardTitle tag='h4'>Filters</CardTitle>
-        </CardHeader>
-        <CardBody>
-          <Row>
-            <Col md='4'>
-              <Label for='role-select'>Role</Label>
-              <Select
-                isClearable={false}
-                value={currentRole}
-                options={roleOptions}
-                className='react-select'
-                classNamePrefix='select'
-                theme={selectThemeColors}
-                onChange={data => {
-                  setCurrentRole(data)
-                  dispatch(
-                    getData({
-                      sort,
-                      sortColumn,
-                      q: searchTerm,
-                      role: data.value,
-                      page: currentPage,
-                      perPage: rowsPerPage,
-                      status: currentStatus.value,
-                      currentPlan: currentPlan.value
-                    })
-                  )
-                }}
-              />
-            </Col>
-            <Col className='my-md-0 my-1' md='4'>
-              <Label for='plan-select'>Plan</Label>
-              <Select
-                theme={selectThemeColors}
-                isClearable={false}
-                className='react-select'
-                classNamePrefix='select'
-                options={planOptions}
-                value={currentPlan}
-                onChange={data => {
-                  setCurrentPlan(data)
-                  dispatch(
-                    getData({
-                      sort,
-                      sortColumn,
-                      q: searchTerm,
-                      page: currentPage,
-                      perPage: rowsPerPage,
-                      role: currentRole.value,
-                      currentPlan: data.value,
-                      status: currentStatus.value
-                    })
-                  )
-                }}
-              />
-            </Col>
-            <Col md='4'>
-              <Label for='status-select'>Status</Label>
-              <Select
-                theme={selectThemeColors}
-                isClearable={false}
-                className='react-select'
-                classNamePrefix='select'
-                options={statusOptions}
-                value={currentStatus}
-                onChange={data => {
-                  setCurrentStatus(data)
-                  dispatch(
-                    getData({
-                      sort,
-                      sortColumn,
-                      q: searchTerm,
-                      page: currentPage,
-                      status: data.value,
-                      perPage: rowsPerPage,
-                      role: currentRole.value,
-                      currentPlan: currentPlan.value
-                    })
-                  )
-                }}
-              />
-            </Col>
-          </Row>
-        </CardBody>
-      </Card>
-
       <Card className='overflow-hidden'>
         <div className='react-dataTable'>
           <DataTable
@@ -451,16 +418,13 @@ const UsersList = () => {
                 rowsPerPage={rowsPerPage}
                 handleFilter={handleFilter}
                 handlePerPage={handlePerPage}
-                toggleSidebar={toggleSidebar}
               />
             }
           />
         </div>
       </Card>
-
-      <Sidebar open={sidebarOpen} toggleSidebar={toggleSidebar} />
     </Fragment>
   )
 }
 
-export default UsersList
+export default ServiceList

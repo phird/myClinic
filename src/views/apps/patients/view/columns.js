@@ -2,7 +2,7 @@
 import { Link } from 'react-router-dom'
 import dateFormat from 'dateformat'
 // ** Reactstrap Imports
-import { UncontrolledTooltip } from 'reactstrap'
+import { UncontrolledTooltip, Badge } from 'reactstrap'
 
 // ** Third Party Components
 import {
@@ -11,30 +11,54 @@ import {
   File,
 } from 'react-feather'
 
+import { getWidgetEncounter } from '../../encounter/store'
+
 // ** Table columns
 export const columns = [
   {
     name: '#',
     sortable: true,
-    sortField: 'id',
+    sortField: 'encounterID',
     minWidth: '107px',
     selector: row => row.encounterID,
-    cell: row => <Link className='fw-bolder' to={`/apps/encounter/view/${row.encounterID}`}>#ENC{row.encounterID}</Link>
+    cell: row => <Link className='fw-bolder' 
+      to={`/apps/encounter/view/${row.encounterID}` }
+      >#ENC{row.encounterID}</Link>
   },
   {
     name: 'วันที่ทำการตรวจ',
     sortable: true,
     minWidth: '150px',
-    sortField: 'total',
+    sortField: 'addedDate',
     selector: row => row.addedDate,
     cell: row => <span>{dateFormat(row.addedDate, "dd/mm/yyyy") || 0}</span>
   },
   {
-    minWidth: '200px',
-    name: 'ยาที่สั่ง',
-    cell: row => <Link>
-      ดูรายการยา
-    </Link>
+    name: 'สถานะการตรวจ',
+    minWidth: '138px',
+    sortable: true,
+    sortField: 'eStatus',
+    selector: row => row.eStatus,
+    cell: row => <span className='text-capitalize'>{
+      row.eStatus == 0 ? (
+        <Badge color='success'>
+          ตรวจเสร็จสิ้น
+        </Badge>) : (
+        <Badge color='danger'>
+          ยังไม่ได้ทำการตรวจ
+        </Badge>)}</span>
+  },
+  {
+    name: 'ยา',
+    minWidth: '172px',
+    sortField: 'role',
+    selector: row => row.prescriptionID,
+    cell: row => <span className='text-capitalize'>{
+      row.eStatus == 0 ? (
+        <Link >
+          ดูรายการยา
+        </Link> ): (
+        <></>)}</span>
   },
   {
     name: 'เมนู',

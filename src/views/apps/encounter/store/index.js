@@ -39,7 +39,22 @@ export const handleSubmitEncounter = createAsyncThunk('appEncounter/handleSubmit
   }
 })
 
-//** get specific encounter for patient  */
+//** 🙋🏻‍♂️ get specific encounter for patient  */
+export const getPatientEncounter = createAsyncThunk('appPatient/getEncounter', async params => {
+  const response = await axios.get(`http://localhost:8000/app/Patient/list/getPatientEncounter`, {params : params})
+  if (response.status == 200) {
+    return {
+      params,
+      data: response.data.encounter,
+      totalPage: 10
+    }
+  } return {
+    data: null,
+    totalPage: 1
+  }
+}
+)
+
 
 //** ⭐️ legacy get encounter  */
 
@@ -55,7 +70,6 @@ export const getLatestEncounterID = createAsyncThunk('appEncounter/getLatestEnco
 })
 
 //** end of code encounter */
-
 export const addNote = createAsyncThunk('appEncounter/addNote', async (dataArray) => {
   try {
     const response = await axios.put('http://localhost:8000/app/Encounter/addNote', dataArray)
@@ -68,8 +82,20 @@ export const addNote = createAsyncThunk('appEncounter/addNote', async (dataArray
 //**  end of encounterSYMPTOM
 
 
+// ** 🧸 Widget in Patient View 
+export const getWidgetEncounter = createAsyncThunk('appEncounter/getWidgetEncounter', async id => {
+  try {
+    const response = await axios.get(`http://localhost:8000/app/Encounter/widgetData/${id}`)
+    
+    return response.data[0]
+  } catch (error) {
+    console.log("error in store Encoutner GetWidget")
+    console.error(error)
+  }
+})
 
-//** Encounter_Symptoms  */
+
+
 //* For Encounter SYMPTOM 
 export const getSymptoms = createAsyncThunk('appEncounter/getSymptoms', async(encounterID)=> {
   try{
@@ -100,6 +126,8 @@ export const deleteEncounter = createAsyncThunk('appEncounters/deleteEncounter',
   return id
 })
 
+
+
 export const appEncountersSlice = createSlice({
   name: 'appEncounters',
   initialState: {
@@ -110,6 +138,7 @@ export const appEncountersSlice = createSlice({
     symptoms: [],
     params: {},
     allData: [],
+    widgetData: [],
     selectedEncounter: null
   },
   reducers: {},
@@ -132,6 +161,13 @@ export const appEncountersSlice = createSlice({
       })
       .addCase(getSymptoms.fulfilled, (state,action) => {
         state.symptoms = action.payload
+      })
+      .addCase(getPatientEncounter.fulfilled, (state, action)=>{
+        state.encounter = action.payload.data
+        state.etotal = action.payload.totalPage
+      })
+      .addCase(getWidgetEncounter.fulfilled, (state, action) => {
+        state.widgetData = action.payload
       })
 
   }

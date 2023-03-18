@@ -2,11 +2,14 @@
 import { Card, CardBody, CardText, Row, Col, Table } from 'reactstrap'
 
 
-const PreviewCard = ({ data, details }) => {
+const PreviewCard = ({ data, details, prescriptionData }) => {
   console.log("in PreviewCard Data : ")
   console.log(data)
   console.log(details)
-  const totalPrice = details.reduce((acc, detail) => acc + detail.price, 0);
+  console.log(prescriptionData)
+  const totalServicePrice = details.reduce((acc, detail) => acc + detail.price, 0);
+  const totalDrugPrice = prescriptionData.reduce((acc, detail) => acc + (detail.drugPrice*detail.quantity), 0);
+  const sum = (totalDrugPrice + totalServicePrice).toLocaleString()
   return data !== null ? (
     <Card className='invoice-preview-card'>
       <CardBody className='invoice-padding pb-0'>
@@ -60,7 +63,8 @@ const PreviewCard = ({ data, details }) => {
         <thead>
           <tr>
             <th className='py-1'>รายการ</th>
-            <th className='py-1'>ราคา</th>
+            <th className='py-1'></th>
+            <th className='py-1'></th>
             <th className='py-1'>รวม</th>
           </tr>
         </thead>
@@ -71,13 +75,43 @@ const PreviewCard = ({ data, details }) => {
                 <p className='card-text fw-bold mb-25'>{detail.expenseName}</p>
               </td>
               <td className='py-1'>
-                <span className='fw-bold'>{detail.price}</span>
               </td>
               <td className='py-1'>
-                <span className='fw-bold'>{detail.price}</span>
+              </td>
+              <td className='py-1'>
+                <span className='fw-bold'>{(detail.price).toLocaleString() + ' ' + 'บาท'}</span>
               </td>
             </tr>
           ))}
+        </tbody>
+        <br />
+        {/* for prescription */}
+        <thead>
+          <tr>
+            <th className='py-1 fw-bolderer'>รายการยา</th>
+            <th className='py-1'>ราคา</th>
+            <th className='py-1'>จำนวน</th>
+            <th className='py-1'>รวม</th>
+          </tr>
+        </thead>
+        <tbody>
+          {prescriptionData.map(drug => (
+            <tr key={drug.drugID}>
+              <td className='py-1'>
+                <p className='card-text fw-bold mb-25'>{drug.drugName}</p>
+              </td>
+              <td className='py-1'>
+                <span className='fw-bold'>{(drug.drugPrice).toLocaleString() + ' ' + 'บาท'}</span>
+              </td>
+              <td className='py-1'>
+                <span className='fw-bold'>{(drug.quantity).toLocaleString() + ' ' +drug.unit}</span>
+              </td>
+              <td className='py-1'>
+                <span className='fw-bold'>{ (drug.drugPrice*drug.quantity).toLocaleString()  + ' ' + 'บาท'  }</span>
+              </td>
+            </tr>
+          ))}
+
         </tbody>
       </Table>
       {/* /Invoice Description */}
@@ -85,17 +119,17 @@ const PreviewCard = ({ data, details }) => {
       {/* Total & Sales Person */}
       <CardBody className='invoice-padding pb-0'>
         <Row className='invoice-sales-total-wrapper'>
-           <Col className='mt-md-0 mt-3' md='6' order={{ md: 1, lg: 2 }}>
+          <Col className='mt-md-0 mt-3' md='6' order={{ md: 1, lg: 2 }}>
             <CardText className='mb-0'>
-             {/*  <span className='fw-bold'>ผู้ออกใบเสร็จ:</span> <span className='ms-75'> Alfie Solomons </span> */}
+              {/*  <span className='fw-bold'>ผู้ออกใบเสร็จ:</span> <span className='ms-75'> Alfie Solomons </span> */}
             </CardText>
-          </Col> 
+          </Col>
           <Col className='d-flex justify-content-end' md='6' order={{ md: 2, lg: 1 }}>
             <div className='invoice-total-wrapper'>
               <hr className='my-50' />
               <div className='invoice-total-item'>
                 <p className='invoice-total-title'>ยอดรวม:</p>
-                <p className='invoice-total-amount'>{totalPrice} บาท</p>
+                <p className='invoice-total-amount'> {sum} บาท</p>
               </div>
             </div>
           </Col>

@@ -232,6 +232,18 @@ const PrescriptionList = (props) => {
   console.log("here drug Retrive ")
   console.log(drugRetrive)
 
+  const NoDataComponent = props => {
+    <NoData noDataTitle="ไม่มีบันทึกที่จะแสดง" {...props}/>
+  }
+
+  const dataToRender = () =>{
+    if(!drugRetrive){
+      return []
+    }else{
+      drugRetrive
+    }
+  } 
+
 
   if (enStatus == 1) {
     return (

@@ -2,7 +2,7 @@
 import { useState, Fragment, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 // ** Reactstrap Imports
-import { Row, Col, Card, Form, CardBody, Button, Badge, Modal, Input, Label, ModalBody, ModalHeader, Spinner } from 'reactstrap'
+import { Row, Col, Card, CardText, Form, CardBody, Button, Badge, Modal, Input, Label, ModalBody, ModalHeader, Spinner } from 'reactstrap'
 
 // ** Third Party Components
 import Swal from 'sweetalert2'
@@ -12,6 +12,7 @@ import Flatpickr from 'react-flatpickr'
 import Select from 'react-select'
 import InputAddress from 'react-thailand-address-autocomplete'
 import toast from 'react-hot-toast'
+import ThaiNationalID from '../../../../self-modules/thai-id-validator/validator.mjs'
 
 // ** Custom Components
 import Avatar from '@components/avatar'
@@ -21,22 +22,7 @@ import '@styles/react/libs/react-select/_react-select.scss'
 import 'flatpickr/dist/themes/dark.css';
 
 // ** STORE
-import { updatePatient } from '../store'
-
-
-const roleColors = {
-  editor: 'light-info',
-  admin: 'light-danger',
-  author: 'light-warning',
-  maintainer: 'light-success',
-  subscriber: 'light-primary'
-}
-
-const statusColors = {
-  active: 'light-success',
-  pending: 'light-warning',
-  inactive: 'light-secondary'
-}
+import { getPatient, updatePatient } from '../store'
 
 const MySwal = withReactContent(Swal)
 
@@ -60,27 +46,35 @@ const bloodTypeOption = [
 
 const UserInfoCard = ({ selectedPatient }) => {
 
-  // * DATA OF SELECTED_PATIENT
-  console.log(" *************** SELECTED PATIENT ************** ")
-  console.log(selectedPatient)
-  console.log(" *************** SELECTED PATIENT ************** ")
   // ** State
   const [show, setShow] = useState(false)
   // * Reserve for Edit data 
   const dispatch = useDispatch()
   // ** Current Date
-
   const currentDate = new Date().toISOString().slice(0, 10);
-  const [editMode, setEditMode] = useState(false);
-  const [firstName, setFirstName] = useState(selectedPatient.fname);
-  const [lastName, setLastName] = useState(selectedPatient.lname); // Fname and Lname
-  const [picker, setPicker] = useState(selectedPatient.dob); // DOB
-  const [gender, setGender] = useState({ value: selectedPatient.gender, label: selectedPatient.gender }); // Gender
-  const [bloodType, setBloofType] = useState({ value: selectedPatient.bloodtype, label: selectedPatient.bloodtype }); // Blood Type
-  const [houseNo, setHouseNo] = useState(selectedPatient.address) //House No.
-  const [address, setAddress] = useState({ district: selectedPatient.district, subdistrict: selectedPatient.subdistrict, province: selectedPatient.province, zipcode: selectedPatient.postalCode });
-  const [telNo, setTelNo] = useState(selectedPatient.phoneNo); // Phone NO. 
-  const [perID, setPerID] = useState(selectedPatient.personalID);
+
+  // for Input
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState(''); // Fname and Lname
+  const [picker, setPicker] = useState(new Date()); // DOB
+  const [gender, setGender] = useState([]); // Gender
+  const [bloodType, setBloofType] = useState([]); // Blood Type
+  const [houseNo, setHouseNo] = useState('') //House No.
+  const [address, setAddress] = useState([]);
+  const [telNo, setTelNo] = useState(); // Phone NO. 
+  const [perID, setPerID] = useState();
+
+  useEffect(() => {
+    setFirstName(selectedPatient.fname);
+    setLastName(selectedPatient.lname);
+    setPicker(selectedPatient.dob);
+    setGender({ value: selectedPatient.gender, label: selectedPatient.gender });
+    setBloofType({ value: selectedPatient.bloodtype, label: selectedPatient.bloodtype });
+    setHouseNo(selectedPatient.address)
+    setAddress({ district: selectedPatient.district, subdistrict: selectedPatient.subdistrict, province: selectedPatient.province, zipcode: selectedPatient.postalCode });
+    setTelNo(selectedPatient.phoneNo);
+    setPerID(selectedPatient.personalID)
+  }, [show])
 
   const option = {
     year: 'numeric',
@@ -99,9 +93,11 @@ const UserInfoCard = ({ selectedPatient }) => {
     const phoneNo = telNo;
     const DateOfBirth = new Date(picker);
     const month = DateOfBirth.getMonth();
+    console.log("Month ---------------> ")
+    console.log(month)
     const day = DateOfBirth.getDate();
     const year = DateOfBirth.getFullYear();
-    const dob = `${year}-${month}-${day}`;
+    const dob = `${year}-${month + 1}-${day}`;
     const bloodtype = bloodType.value;
     const pgender = gender.value;
     const paddress = houseNo;
@@ -181,6 +177,10 @@ const UserInfoCard = ({ selectedPatient }) => {
     setAddress({ addr, subdistrict, district, province, zipcode });
   }
 
+  const handleModalClosed = () => {
+    dispatch(getPatient(selectedPatient.patientID))
+  }
+
   //** END OF RESERVATION */
 
   // * Convert Age and Date
@@ -192,7 +192,6 @@ const UserInfoCard = ({ selectedPatient }) => {
 
   const diffTime = Math.abs(today - dob);
   const Age = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 365.25));
-
 
   //** Handle Confirm Edit */
   const handleConfirmSubmit = (event) => {
@@ -212,7 +211,6 @@ const UserInfoCard = ({ selectedPatient }) => {
       if (result.value) {
         handleSubmit(event)
         toast.success('แก้ไขผู้ป่วยสำเร็จ');
-        
       }
     })
   }
@@ -224,17 +222,17 @@ const UserInfoCard = ({ selectedPatient }) => {
       <Avatar
         initials
         color={'light-primary'}
-        className='rounded mt-3 mb-2'
+        className='rounded mt-1 mb-2'
         content={fullName}
         contentStyles={{
-          borderRadius: 0,
+          borderRadius: 500,
           fontSize: 'calc(48px)',
           width: '100%',
           height: '100%'
         }}
         style={{
-          height: '110px',
-          width: '110px'
+          height: '150px',
+          width: '150px'
         }}
       />
     )
@@ -265,97 +263,113 @@ const UserInfoCard = ({ selectedPatient }) => {
   return (
     <Fragment>
       <Card>
-
         <CardBody>
-          <div className='user-avatar-section'>
-            <div className='d-flex align-items-center flex-column'>
-              {renderUserImg()}
-              <div className='d-flex flex-column align-items-center text-center'>
-                <div className='user-info'>
-                  <h4>{selectedPatient !== null ? selectedPatient.fname + " " + selectedPatient.lname : 'Eleanor Aguilar'}</h4>
+          <>
+            <Row className='my-2'>
+
+              <Col className='d-flex align-items-center justify-content-center mb-2 mb-md-0' md='4' xs='12'>
+                <div className='d-flex align-items-center justify-content-center'>
+                  <Row>
+                    <Col className='justify-content-center align-items-center'>
+                      {renderUserImg()}
+                      <div className='d-flex flex-column align-items-center justify-content-center'>
+                        <div className='user-info'>
+                          <h4> {selectedPatient !== null ? selectedPatient.fname + " " + selectedPatient.lname : 'Fail to load Patient Data ..'} </h4>
+                        </div>
+                      </div>
+                      <div className='d-flex justify-content-around my-2 '>
+                        <div className='d-flex align-items-start me-2'>
+                          <Badge color='light-primary' className='rounded '>
+                            <User className='font-large-1' />
+                          </Badge>
+                          <div className='ms-75'>
+                            <h4 className='mb-0'>{Age}</h4>
+                            <small>อายุ</small>
+                          </div>
+                        </div>
+                        <div className='d-flex align-items-start'>
+                          <Badge color='light-primary' className='rounded p-75'>
+                            <Smile className='font-medium-2' />
+                          </Badge>
+                          <div className='ms-75'>
+                            <h4 className='mb-0'>{selectedPatient.gender}</h4>
+                            <small>เพศ</small>
+                          </div>
+                        </div>
+                      </div>
+                    </Col>
+                  </Row>
                 </div>
-              </div>
-            </div>
-          </div>
-          <div className='d-flex justify-content-around my-2 pt-75'>
-            <div className='d-flex align-items-start me-2'>
-              <Badge color='light-primary' className='rounded p-75'>
-                <User className='font-medium-2' />
-              </Badge>
-              <div className='ms-75'>
-                <h4 className='mb-0'>{Age}</h4>
-                <small>อายุ</small>
-              </div>
-            </div>
-            <div className='d-flex align-items-start'>
-              <Badge color='light-primary' className='rounded p-75'>
-                <Smile className='font-medium-2' />
-              </Badge>
-              <div className='ms-75'>
-                <h4 className='mb-0'>{selectedPatient.gender}</h4>
-                <small>เพศ</small>
-              </div>
-            </div>
-          </div>
-          <h4 className='fw-bolder border-bottom pb-50 mb-1'>รายละเอียดผู้ป่วย</h4>
-          <div className='info-container'>
-            {selectedPatient !== null ? (
-              <ul className='list-unstyled'>
-                <li className='mb-75'>
-                  <span className='fw-bolder me-25'>เพศ:</span>
-                  <span> {selectedPatient.gender}</span>
-                </li>
-                <li className='mb-75'>
-                  <span className='fw-bolder me-25'>วัน/เดือน/ปี เกิด:</span>
-                  <span className='text-capitalize' >
-                    {birthday}
-                  </span>
-                </li>
-                <li className='mb-75'>
-                  <span className='fw-bolder me-25'>อายุ:</span>
-                  <span className='text-capitalize'> {Age} ปี</span>
-                </li>
-                <li className='mb-75'>
-                  <span className='fw-bolder me-25'>กรุ๊ปเลือด:</span>
-                  <span> {selectedPatient.bloodtype} </span>
-                </li>
-                <li className='mb-75'>
-                  <span className='fw-bolder me-25'>เบอร์โทรติดต่อ:</span>
-                  <span>{selectedPatient.phoneNo}</span>
-                </li>
-                <li className='mb-75'>
-                  <span className='fw-bolder me-25'>ที่อยู่:</span>
-                  <span>
-                    {selectedPatient.address + ', ' +
-                      selectedPatient.district + ', ' +
-                      selectedPatient.subdistrict + ', ' +
-                      selectedPatient.province + ', ' +
-                      selectedPatient.postalCode}
-                  </span>
-                </li>
-                <li className='mb-75'>
-                  <span className='fw-bolder me-25'>ลงทะเบียนเมื่อวันที่:</span>
-                  <span>{addedDate}</span>
-                </li>
-                <li className='mb-75'>
-                  <span className='fw-bolder me-25'>แก้ไขเมื่อวันที่:</span>
-                  <span>{editDate}</span>
-                </li>
-              </ul>
-            ) : null}
-          </div>
-          <div className='d-flex justify-content-center pt-2'>
-            <Button color='primary' onClick={() => setShow(true)}>
-              แก้ไขข้อมูลผู้ป่วย
-            </Button>
-            {/*             <Button className='ms-1' color='danger' outline onClick={handleSuspendedClick}>
-              Suspended
-            </Button> */}
-          </div>
+              </Col>
+
+
+              <Col md='6' xs='12'>
+                <div className='ecommerce-details-price d-flex flex-wrap mt-1'>
+                  <h4 className='fw-bolder border-bottom pb-50 mb-1'>รายละเอียดผู้ป่วย</h4>
+                </div>
+                  <div className='info-container'>
+                    {selectedPatient !== null ? (
+                      <ul className='list-unstyled'>
+
+                        <li className='mb-75'>
+                          <span className='fw-bolder me-25'>วัน/เดือน/ปี เกิด:</span>
+                          <span className='text-capitalize' >
+                            {birthday}
+                          </span>
+                        </li>
+
+                        <li className='mb-75'>
+                          <span className='fw-bolder me-25'>กรุ๊ปเลือด:</span>
+                          <span> {selectedPatient.bloodtype} </span>
+                        </li>
+                        <li className='mb-75'>
+                          <span className='fw-bolder me-25'>เบอร์โทรติดต่อ:</span>
+                          <span>{selectedPatient.phoneNo}</span>
+                        </li>
+                        <li className='mb-75'>
+                          <span className='fw-bolder me-25'>ที่อยู่:</span>
+                          <span>
+                            {selectedPatient.address + ', ' +
+                              selectedPatient.district + ', ' +
+                              selectedPatient.subdistrict + ', ' +
+                              selectedPatient.province + ', ' +
+                              selectedPatient.postalCode}
+                          </span>
+                        </li>
+                        <li className='mb-75'>
+                          <span className='fw-bolder me-25'>ลงทะเบียนเมื่อวันที่:</span>
+                          <span>{addedDate}</span>
+                        </li>
+                        <li className='mb-75'>
+                          <span className='fw-bolder me-25'>แก้ไขเมื่อวันที่:</span>
+                          <span>{editDate}</span>
+                        </li>
+                      </ul>
+                    ) : null}
+                  </div>
+
+                
+                <div className='d-flex justify-content-end pt-2'>
+                  <Button color='primary' onClick={() => setShow(true)}>
+                    แก้ไขข้อมูลผู้ป่วย
+                  </Button>
+                </div>
+              </Col>
+            </Row>
+
+          </>
+
+
+
+
+
+
+
+
         </CardBody>
       </Card>
       {/* MODAL FOR EDIT PATIENT */}
-      <Modal isOpen={show} toggle={() => setShow(!show)} className='modal-dialog-centered modal-lg' backdrop='static' >
+      <Modal isOpen={show} toggle={() => setShow(!show)} onClosed={handleModalClosed} className='modal-dialog-centered modal-lg' backdrop='static' >
         <ModalHeader className='bg-transparent' toggle={() => setShow(!show)}></ModalHeader>
         <ModalBody className='px-sm-5 pt-50 pb-5'>
           <div className='text-center mb-2'>
@@ -375,6 +389,7 @@ const UserInfoCard = ({ selectedPatient }) => {
                   pattern='[0-9]{13}'
                   value={perID}
                   onChange={handlePIDChange}
+                  disabled
                 />
               </Col>
               <Row md={12} xs={12} style={{ marginBottom: '20px' }}>
@@ -562,7 +577,7 @@ const UserInfoCard = ({ selectedPatient }) => {
           </Form>
         </ModalBody>
       </Modal>
-    </Fragment>
+    </Fragment >
   )
 }
 

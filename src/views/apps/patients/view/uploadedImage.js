@@ -186,18 +186,11 @@ const CustomHeader = ({ handlePerPage, rowsPerPage, handleFilter, searchTerm }) 
 }
 
 const UploadImageList = () => {
-    //** STATE */
-
-    const navigate = useNavigate()
-    // ** Handles Label Update
-    const handleGoBack = (e) => {
-        e.preventDefault()
-        navigate(-1)
-    }
+    //** STATE */    
     return (
         <Fragment>
             <Card className='overflow-hidden'>
-                
+            <div className='react-dataTable'>
                 <DataTable
                     noHeader
                     subHeader
@@ -209,10 +202,10 @@ const UploadImageList = () => {
                     className='react-dataTable'
                     subHeaderComponent={
                         <CustomHeader
-
                         />
                     }
                 />
+                </div>
             </Card>
         </Fragment>
     )

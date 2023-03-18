@@ -22,10 +22,10 @@ import { getSymptoms, getEncounter } from "../store";
 
 
 const MOCKDISEASE = {
-  Diabetes: ['ผิวแห้ง', 'เป็นแผลแล้วหายยาก', 'ชาบริเวณปลายมือปลายเท้า'],
+  Diabetes: [{name: 'ผิวแห้ง'},{name:'เป็นแผลแล้วหายยาก'}, {name:'ชาบริเวณปลายมือปลายเท้า'}],
   Pressure: [],
-  Muscle: ['มีอาการตึง'],
-  Beriberi: ['อ่อนเพลีย', 'เหนื่อยง่าย', 'เบื่ออาหาร', 'ท้องผูก', 'ท้องอืดเฟ้อ', 'รู้สึกชา'],
+  Muscle: [{name:'มีอาการตึง'}],
+  Beriberi: [{name:'อ่อนเพลีย'}, {name:'เหนื่อยง่าย'}, {name:'เบื่ออาหาร'}, {name:'ท้องผูก'}, {name:'ท้องอืดเฟ้อ'}, {name:'รู้สึกชา'}],
 }
 
 const DoctorBoxs = (props) => {

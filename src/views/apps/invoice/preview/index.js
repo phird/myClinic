@@ -18,7 +18,7 @@ import PreviewActions from './PreviewActions'
 import '@styles/base/pages/app-invoice.scss'
 
 // ** Store
-import { getInvoiceDetail, getInvoiceList } from '../store'
+import { getInvoiceDetail, getInvoiceList, getInvoicePrescription } from '../store'
 
 const InvoicePreview = () => {
   // ** HooksVars
@@ -31,12 +31,14 @@ const InvoicePreview = () => {
   // ** States
   const [data, setData] = useState([])
   const selectedInvoice = store.detail;
+  const prescriptionDetail = store.invoicePrescription
   // ** Functions to toggle add & send sidebar
 
   // ** Get invoice & invoiceList on mount based on id
   useEffect(() => {
     dispatch(getInvoiceDetail(id))
     dispatch(getInvoiceList(id))
+    dispatch(getInvoicePrescription(id))
   }, [dispatch, id])
 
   useEffect(() => {
@@ -68,19 +70,17 @@ const InvoicePreview = () => {
       </Row>
       <Row className='invoice-preview'>
         <Col xl={9} md={8} sm={12}>
-          <PreviewCard data={data} details={store.expenseList} />
+          <PreviewCard data={data} details={store.expenseList} prescriptionData={store.invoicePrescription} />
         </Col>
         <Col xl={3} md={4} sm={12}>
-          <PreviewActions id={id} data={data} details={store.expenseList} />
+          <PreviewActions id={id} data={data} details={store.expenseList} prescriptionData={store.invoicePrescription} />
         </Col>
       </Row>
     </div>
   ) : (
     <Alert color='danger'>
-      <h4 className='alert-heading'>Invoice not found</h4>
+      <h4 className='alert-heading'>ไม่เจอใบเสร็จค่ารักษา</h4>
       <div className='alert-body'>
-        Invoice with id: {id} doesn't exist. Check list of all invoices:{' '}
-        <Link to='/apps/invoice/list'>Invoice List</Link>
       </div>
     </Alert>
   )

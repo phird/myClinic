@@ -302,6 +302,7 @@ const InvoiceList = (props) => {
               <DataTable
                 noHeader
                 responsive
+                noDataComponent="ไม่มีบันทึกที่จะแสดง"
                 className='react-dataTable'
                 columns={columns}
                 data={pExpenseRetrive}

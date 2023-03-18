@@ -1,6 +1,7 @@
 // ** React Imports
 import { Fragment } from 'react'
 import { Link } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
 
 // ** Custom Components
 import Avatar from '@components/avatar'
@@ -32,6 +33,8 @@ const invoiceStatusObj = {
   'Partial Payment': { color: 'light-warning', icon: PieChart }
 }
 
+
+const dispatch = useDispatch()
 // ** Table columns
 export const columns = [
   {

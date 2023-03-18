@@ -6,6 +6,8 @@ import { useParams } from 'react-router-dom'
 // ** Table Columns
 import { columns } from './columns'
 
+
+
 // ** Store & Actions
 import { getAllEncounter, getEncounterData, postEncounter } from '../store';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,7 +25,6 @@ import toast from 'react-hot-toast'
 const MySwal = withReactContent(Swal)
 import withReactContent from 'sweetalert2-react-content'
 import Select from 'react-select'
-
 
 // ** Reactstrap Imports
 import {
@@ -49,7 +50,7 @@ import '@styles/react/libs/react-select/_react-select.scss'
 import '@styles/react/libs/tables/react-dataTable-component.scss'
 
 // ** Table Header
-const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handleFilter, searchTerm }) => {
+const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchTerm }) => {
 
   // ** Current Date
   const currentDate = new Date().toISOString().slice(0, 10);
@@ -84,6 +85,7 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
     const addedDate = currentDate;
     const newData = { patientID, staffID, note, addedDate };
     // update state 
+    
     if (!patientID || !staffID) {
       return;
     }
@@ -305,12 +307,6 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
   )
 }
 
-const handleReset = () => {
-  dispatch(appEncountersSlice.actions.reset());
-};
-
-
-
 const EncountersList = () => {
   // ** Store Vars
   const dispatch = useDispatch()
@@ -319,7 +315,7 @@ const EncountersList = () => {
   console.log(store)
 
   // ** States  
-
+  const [show, setShow] = useState(false);
   const [sort, setSort] = useState('desc')
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
@@ -479,10 +475,10 @@ const EncountersList = () => {
                 rowsPerPage={rowsPerPage}
                 handleFilter={handleFilter}
                 handlePerPage={handlePerPage}
-
               />
             }
           />
+          
         </div>
       </Card>
     </Fragment>

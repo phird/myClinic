@@ -35,28 +35,6 @@ const statusColors = {
   0: 'light-success'
 }
 
-const statusOptions = [
-  { value: 'active', label: 'Active' },
-  { value: 'inactive', label: 'Inactive' },
-  { value: 'suspended', label: 'Suspended' }
-]
-
-const countryOptions = [
-  { value: 'uk', label: 'UK' },
-  { value: 'usa', label: 'USA' },
-  { value: 'france', label: 'France' },
-  { value: 'russia', label: 'Russia' },
-  { value: 'canada', label: 'Canada' }
-]
-
-const languageOptions = [
-  { value: 'english', label: 'English' },
-  { value: 'spanish', label: 'Spanish' },
-  { value: 'french', label: 'French' },
-  { value: 'german', label: 'German' },
-  { value: 'dutch', label: 'Dutch' }
-]
-
 const MySwal = withReactContent(Swal)
 
 
@@ -121,41 +99,7 @@ const UserInfoCard = ({ selectedEncounter }) => {
     })
   }
 
-  const handleSuspendedClick = () => {
-    return MySwal.fire({
-      title: 'Are you sure?',
-      text: "You won't be able to revert user!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, Suspend user!',
-      customClass: {
-        confirmButton: 'btn btn-primary',
-        cancelButton: 'btn btn-outline-danger ms-1'
-      },
-      buttonsStyling: false
-    }).then(function (result) {
-      if (result.value) {
-        MySwal.fire({
-          icon: 'success',
-          title: 'Suspended!',
-          text: 'User has been suspended.',
-          customClass: {
-            confirmButton: 'btn btn-success'
-          }
-        })
-      } else if (result.dismiss === MySwal.DismissReason.cancel) {
-        MySwal.fire({
-          title: 'Cancelled',
-          text: 'Cancelled Suspension :)',
-          icon: 'error',
-          customClass: {
-            confirmButton: 'btn btn-success'
-          }
-        })
-      }
-    })
-  }
-
+  console.log(selectedEncounter.dob)
   const ageCal = () => {
     const today = new Date()
     const dob = dateFormat(selectedEncounter.dob, "yyyy")

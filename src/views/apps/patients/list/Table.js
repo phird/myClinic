@@ -17,6 +17,10 @@ import Flatpickr from 'react-flatpickr'
 import Select from 'react-select'
 import InputAddress from 'react-thailand-address-autocomplete'
 import toast from 'react-hot-toast'
+import * as yup from 'yup'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useForm, Controller } from 'react-hook-form'
+import classnames from 'classnames'
 
 
 // ** Reactstrap Imports
@@ -75,13 +79,18 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
   const [houseNo, setHouseNo] = useState('') //House No.
   const [address, setAddress] = useState([{ district: '', subdistrict: '', province: '', zipcode: '' }]);
   const [telNo, setTelNo] = useState(''); // Phone NO.
+  const [telNoError, setTelNoError] = useState('');
   const [perID, setPerID] = useState('');
+  const [perIDError, setPerIDError] = useState('');
+
+
+  const { control } = useForm({ picker })
 
 
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log("button has been click")
+
     const fname = firstName;
     const lname = lastName;
     const phoneNo = telNo;
@@ -99,7 +108,6 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
     const postalCode = address.zipcode;
     const personalID = perID
     const addedDate = currentDate;
-
     const newData = {
       fname,
       lname,
@@ -117,8 +125,9 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
     }
     console.log("here is newData")
     console.log(newData)
-    if (!fname || !lname || !personalID) {
-      return;
+    if (!fname || !lname || !phoneNo || !dob || !bloodtype || !pgender || !paddress || !district || !subdistrict || !province || !postalCode || !personalID || !addedDate) {
+      toast.error("กรุณากรอกข้อมูลให้ครบ  ! ", { duration: 5000 })
+      return; // validation failed
     }
     try {
       console.log("im trying")
@@ -141,33 +150,103 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
   }
 
   const handlePIDChange = (e) => {
-    const ID = e.target.value;
-    setPerID(ID);
+    // validate Pesonal ID 
+    const id = e.target.value;
+    setPerID(id);
+    if (!/^[0-9]{13}$/.test(e.target.value)) {
+      setPerIDError('กรุณากรอกเลขประจำตัวประชาชน 13 หลัก');
+    } else {
+      setPerIDError('');
+    }
+  }
+  const handleInvalidPID = (e) => {
+    const input = e.target
+    if (input.validity.valueMissing) {
+      input.setCustomValidity('กรุณากรอกเลขประจำตัวประชาชนให้ครบ 13 หลัก');
+    } else {
+      input.setCustomValidity('');
+    }
   }
 
   const handleNameChange = (e) => {
     setFirstName(e.target.value)
   }
+  const handleInvalidName = (e) => {
+    const input = e.target
+    if (input.validity.valueMissing) {
+      input.setCustomValidity('กรุณาชื่อผู้ป่วย');
+    } else {
+      input.setCustomValidity('');
+    }
+  }
 
   const handleLnameChange = (e) => {
     setLastName(e.target.value)
+  }
+  const handleInvalidLname = (e) => {
+    const input = e.target
+    if (input.validity.valueMissing) {
+      input.setCustomValidity('กรุณานามสกุลผู้ป่วย');
+    } else {
+      input.setCustomValidity('');
+    }
   }
 
   const handleGenderChange = (selectedOption) => {
     setGender(selectedOption)
   }
+  const handleInvalidGender = (e) => {
+    e.preventDefault()
+    const input = e.target.value
+    if (input == null) {
+      input.setCustomValidity('กรุณาเลือกเพศ');
+    } else {
+      input.setCustomValidity('');
+    }
+  }
   const handleBloodChange = (selectedOption) => {
     setBloofType(selectedOption)
+  }
+  const handleInvalidBlood = (e) => {
+    e.preventDefault()
+    const input = e.target.value
+    if (!input) {
+      toast.danger("กรุณากรอกข้อมูลให้ครบ  ! ", { duration: 5000 })
+    } else {
+      return ;
+    }
   }
 
   const handlePhoneChange = (e) => {
     const no = e.target.value;
     setTelNo(no);
+    if (!/^[0-9]{10}$/.test(e.target.value)) {
+      setTelNoError('กรุณากรอกหมายเลขโทรศัพท์ให้ครบ 10 หลัก');
+    } else {
+      setTelNoError('');
+    }
+  }
+  const handleInvalidPhone = (e) => {
+    const input = e.target
+    if (input.validity.valueMissing) {
+      input.setCustomValidity('กรุณากรอกหมายเลขโทรศัพท์');
+    } else {
+      input.setCustomValidity('');
+    }
   }
 
   const handleHouseNoChange = (e) => {
     setHouseNo(e.target.value)
   }
+  const handleInvalidHouse = (e) => {
+    const input = e.target
+    if (input.validity.valueMissing) {
+      input.setCustomValidity('กรุณากรอกที่อยู่');
+    } else {
+      input.setCustomValidity('');
+    }
+  }
+
   const handleAddressChange = (targetName) => (targetValue) => {
     setAddress({ [targetName]: targetValue.target.value });
   };
@@ -321,7 +400,9 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                   pattern='[0-9]{13}'
                   value={perID}
                   onChange={handlePIDChange}
+                  onInvalid={handleInvalidPID}
                 />
+                {perIDError && <div style={{ color: 'red' }}>{perIDError}</div>}
               </Col>
               <Row md={12} xs={12} style={{ marginBottom: '20px' }}>
                 <Label className='form-label font-weight-bold' for='firstName'>
@@ -336,6 +417,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                         placeholder='ชื่อจริง'
                         required
                         onChange={handleNameChange}
+                        onInvalid={handleInvalidName}
                       />
                     </Col>
                     <Col>
@@ -345,6 +427,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                         placeholder='นามสกุล'
                         required
                         onChange={handleLnameChange}
+                        onInvalid={handleInvalidLname}
                       />
                     </Col>
                   </Row>
@@ -357,20 +440,33 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                       <Label className='h4 form-label font-weight-bold' for='default-picker'>
                         วันเกิด
                       </Label>
-                      <Flatpickr
-                        className='form-control'
-                        value={picker}
-                        onChange={date => setPicker(date)}
-                        id='default-picker'
-                        style={{ maxWidth: '250px' }}
-                        required
+
+                      <Controller
+                        control={control}
+                        id='react-flatpickr'
+                        name='reactFlatpickr'
+                        render={({ field }) => (
+                          <Flatpickr
+                            className={classnames('form-control', {
+                              'is-invalid': picker === null
+                            })}
+                            value={picker}
+                            onChange={date => setPicker(date)}
+                            id='default-picker'
+                            style={{ maxWidth: '250px' }}
+                            required
+                            {...field}
+                          />
+                        )}
                       />
+
                     </Col>
                     <Col>
                       <Label className='h4 form-label font-weight-bold' for='default-picker'>
                         เพศ
                       </Label>
                       <Select
+                        required
                         theme={selectThemeColors}
                         className='react-select'
                         classNamePrefix='select'
@@ -379,7 +475,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                         options={genderOptions}
                         placeholder='กรุณาเลือกเพศ'
                         isClearable={true}
-                        required
+                        onInvalid={handleInvalidGender}
                       />
                     </Col>
                   </Row>
@@ -402,6 +498,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                         placeholder='กรุณาเลือกหมู่เลือด'
                         isClearable={true}
                         required
+                        onInvalid={handleInvalidBlood}
                         style={{ maxWidth: '150px', overflow: 'hidden' }}
                       />
                     </Col>
@@ -416,7 +513,10 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                         placeholder='087xxxxxxx'
                         style={{ maxWidth: '100%' }}
                         onChange={handlePhoneChange}
+                        onInvalid={handleInvalidPhone}
+                        required
                       />
+                      {telNoError && <div style={{ color: 'red' }}>{telNoError}</div>}
                     </Col>
                   </Row>
                 </div>
@@ -435,6 +535,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                     id='address'
                     type='textarea'
                     required
+                    onInvalid={handleInvalidHouse}
                   />
                 </Col>
                 <div>
@@ -450,6 +551,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                         onChange={handleAddressChange('subdistrict')}
                         onSelect={handleAdressSelect}
                         style={{ maxWidth: '100%', width: '300%', height: '40px' }}
+                        onInvalid={handleInvalidHouse}
                       />
 
                     </Col>
@@ -465,6 +567,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                         onChange={handleAddressChange('district')}
                         onSelect={handleAdressSelect}
                         style={{ maxWidth: '100%', width: '300%', height: '40px' }}
+                        onInvalid={handleInvalidHouse}
                       />
                     </Col>
                   </Row>
@@ -480,6 +583,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                         onChange={handleAddressChange('province')}
                         onSelect={handleAdressSelect}
                         style={{ maxWidth: '100%', width: '300%', height: '40px' }}
+                        onInvalid={handleInvalidHouse}
 
                       />
                     </Col>
@@ -494,6 +598,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                         onChange={handleAddressChange('zipcode')}
                         onSelect={handleAdressSelect}
                         style={{ maxWidth: '100%', width: '300%', height: '40px' }}
+                        onInvalid={handleInvalidHouse}
                       />
                     </Col>
                   </Row>
@@ -529,10 +634,6 @@ const PatientsList = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [sortColumn, setSortColumn] = useState('patientID')
   const [rowsPerPage, setRowsPerPage] = useState(10)
-
-  console.log("STORE")
-  console.log(store)
-
 
   // ** Get data on mount
   useEffect(() => {

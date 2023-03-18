@@ -25,16 +25,12 @@ export const createInvoice = createAsyncThunk('appInvoice/createInvoice', async(
   const encounterID = await dispatch(getLatestEncounterID());
   data['encounterID'] = encounterID.payload;
   //** NEED TO POST name and price to Invoice_List table */
-  console.log("data in CreateInvoice")
-  console.log(data)
   const response = await axios.post('http://localhost:8000/invoice/createInvoice', data)
 })
 
 export const getInvoice = createAsyncThunk('appInvoice/getInvoice', async(encounterID) => {
   try {
     const response = await axios.get(`http://localhost:8000/invoice/getInvoice/${encounterID}`);
-    console.log("response from getInvoice => ");
-    console.log(response.data)
     return response.data
   } catch (error) {
     console.log(error)
@@ -44,8 +40,6 @@ export const getInvoice = createAsyncThunk('appInvoice/getInvoice', async(encoun
 export const getInvoiceDetail = createAsyncThunk('appInvoice/getInvoiceDetail', async(invID) => {
   try {
     const response = await axios.get(`http://localhost:8000/invoice/getInvoiceDetail/${invID}`)
-    console.log("response from getInvoiceDetail");
-    console.log(response.data)
     return response.data[0]
   } catch (error) {
     console.log(error)
@@ -55,9 +49,18 @@ export const getInvoiceDetail = createAsyncThunk('appInvoice/getInvoiceDetail', 
 export const getInvoiceList = createAsyncThunk('appInvoice/getInvoceList', async(invID) => {
   try {
     const response = await axios.get(`http://localhost:8000/invoice/getInvoiceList/${invID}`) 
-    console.log("response from getInvoiceList")
-    console.log(response)
-    console.log("=============================")
+    return response.data
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+export const getInvoicePrescription = createAsyncThunk('/appInvoice/getInvoicePrescription' , async (id) => {
+  try {
+    const response = await axios.get(`http://localhost:8000/invoice/getInvoice/prescription/${id}`);
+    console.log("Invoice Prescription")
+    console.log(response.data)
+    console.log("========>>>")
     return response.data
   } catch (error) {
     console.log(error)
@@ -65,8 +68,6 @@ export const getInvoiceList = createAsyncThunk('appInvoice/getInvoceList', async
 })
 
 export const postInvoiceList = createAsyncThunk('appInvoice/postInvoiceList' , async(invoiceArray) => {
-  console.log("in STORE here is InvoiceArray")
-  console.log(invoiceArray)
   try {
     await axios.post('http://localhost:8000/invoice/addInvoiceList', invoiceArray);
   } catch (error) {
@@ -83,6 +84,7 @@ export const appInvoiceSlice = createSlice({
     detail: [],
     params : [],
     expenseList: [], // delete
+    invoicePrescription: [],
     total: 1,
     allData: []// delete
   },
@@ -101,6 +103,9 @@ export const appInvoiceSlice = createSlice({
     })
     .addCase(getInvoiceList.fulfilled, (state,action)=> {
       state.expenseList = action.payload
+    })
+    .addCase(getInvoicePrescription.fulfilled, (state,action)=> {
+      state.invoicePrescription = action.payload
     })
   }
 })

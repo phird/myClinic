@@ -44,23 +44,6 @@ export default [
     icon: <Paperclip size={20} />,
     navLink: '/apps/invoice/list'
   },
-  {
-    id: 'services',
-    title: 'จัดการการบริการ',
-    icon: <CheckSquare size={20} />,
-    navLink: '/apps/services'
-  },
-  {
-    id: 'drugs',
-    title: 'จัดการคลังยา',
-    icon: <Box size={20} />,
-    navLink: '/apps/drugs'
-  },
-  {
-    id: 'staff',
-    title: 'จัดการบุคลากร',
-    icon: <User size={20} />,
-    navLink: '/apps/staff'
-  },
+
  
 ]

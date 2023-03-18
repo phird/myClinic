@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, Table } from 'reactstrap'
 
 // ** Store
-import { getInvoiceDetail, getInvoiceList } from '../store'
+import { getInvoiceDetail, getInvoiceList, getInvoicePrescription } from '../store'
 
 // ** Styles
 import '@styles/base/pages/app-invoice-print.scss'
@@ -14,26 +14,31 @@ import '@styles/base/pages/app-invoice-print.scss'
 const Print = () => {
   const { id } = useParams()
   const dispatch = useDispatch()
-
   const store = useSelector(state => state.invoice)
   console.log("store")
   console.log(store)
   // ** States
   const [data, setData] = useState([])
+  const [prescriptionData, setPrescriptionData] = useState([])
   const selectedInvoice = store.detail;
-  // ** Functions to toggle add & send sidebar
-
+  
   // ** Get invoice & invoiceList on mount based on id
   useEffect(() => {
     dispatch(getInvoiceDetail(id))
     dispatch(getInvoiceList(id))
+    dispatch(getInvoicePrescription(id))
   }, [dispatch, id])
 
   useEffect(() => {
     setData(selectedInvoice)
-  }, [selectedInvoice])
+    setPrescriptionData(store.invoicePrescription)
+  }, [selectedInvoice, store.invoicePrescription])
+
+  
   const details = store.expenseList
-  const totalPrice = details.reduce((acc, detail) => acc + detail.price, 0);
+  const totalServicePrice = details.reduce((acc, detail) => acc + detail.price, 0);
+  const totalDrugPrice = prescriptionData.reduce((acc, detail) => acc + (detail.drugPrice*detail.quantity), 0);
+  const sum = (totalDrugPrice + totalServicePrice).toLocaleString()
   // ** Print on mount
   useEffect(() => {
     setTimeout(() => window.print(), 50)
@@ -78,10 +83,12 @@ const Print = () => {
       </Row>
 
       <Table className='mt-2 mb-0' responsive>
+
         <thead>
           <tr>
             <th className='py-1'>รายการ</th>
-            <th className='py-1'>ราคา</th>
+            <th className='py-1'></th>
+            <th className='py-1'></th>
             <th className='py-1'>รวม</th>
           </tr>
         </thead>
@@ -92,15 +99,48 @@ const Print = () => {
                 <p className='card-text fw-bold mb-25'>{detail.expenseName}</p>
               </td>
               <td className='py-1'>
-                <span className='fw-bold'>{detail.price}</span>
               </td>
               <td className='py-1'>
-                <span className='fw-bold'>{detail.price}</span>
+              </td>
+              <td className='py-1'>
+                <span className='fw-bold'>{(detail.price).toLocaleString() + ' ' + 'บาท'}</span>
               </td>
             </tr>
           ))}
         </tbody>
       </Table>
+
+      {/* for prescription */}
+      
+        <Table className='mt-2 mb-0' responsive>
+          <thead>
+            <tr>
+              <th className='py-1 fw-bolderer'>รายการยา</th>
+              <th className='py-1'>ราคา</th>
+              <th className='py-1'>จำนวน</th>
+              <th className='py-1'>รวม</th>
+            </tr>
+          </thead>
+          <tbody>
+            {prescriptionData.map(drug => (
+              <tr key={drug.drugID}>
+                <td className='py-1'>
+                  <p className='card-text fw-bold mb-25'>{drug.drugName}</p>
+                </td>
+                <td className='py-1'>
+                  <span className='fw-bold'>{(drug.drugPrice).toLocaleString() + ' ' + 'บาท'}</span>
+                </td>
+                <td className='py-1'>
+                  <span className='fw-bold'>{(drug.quantity).toLocaleString() + ' ' + drug.unit}</span>
+                </td>
+                <td className='py-1'>
+                  <span className='fw-bold'>{(drug.drugPrice * drug.quantity).toLocaleString() + ' ' + 'บาท'}</span>
+                </td>
+              </tr>
+            ))}
+
+          </tbody>
+        </Table>
 
       <Row className='invoice-sales-total-wrapper mt-3'>
         <Col className='mt-md-0 mt-3' md='6' order={{ md: 1, lg: 2 }}>
@@ -113,7 +153,7 @@ const Print = () => {
             <hr className='my-50' />
             <div className='invoice-total-item'>
               <p className='invoice-total-title'>ยอดรวม:</p>
-              <p className='invoice-total-amount'>{totalPrice} บาทถ้วน</p>
+              <p className='invoice-total-amount'>{sum} บาทถ้วน</p>
             </div>
           </div>
         </Col>
@@ -125,7 +165,7 @@ const Print = () => {
         <Col sm='12'>
           <span className='fw-bold'>### </span>
           <span>
-             ขอขอบคุณ
+            ขอขอบคุณ
           </span>
         </Col>
       </Row>

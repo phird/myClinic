@@ -17,8 +17,7 @@ export const createPrescription = createAsyncThunk('appPrescription/createPrescr
 export const getPrescription = createAsyncThunk('appPrescription/getPrescription', async(encounterID) => {
     try {
         const response = await axios.get(`http://localhost:8000/prescriptions/getPrescription/${encounterID}`);
-        console.log("response =>")
-        console.log(response.data)
+        console.log(`Prescription of encounterID ${encounterID}`)
         return response.data
     } catch (error) {
         console.log("there some error ")
@@ -27,7 +26,7 @@ export const getPrescription = createAsyncThunk('appPrescription/getPrescription
 })
 
 export const postDrugList = createAsyncThunk('appPrescription/postDrugList', async(drugListArray)=>{
-    console.log("poestDrugList --------> ")
+    console.log("postDrugList --------> ")
     console.log(drugListArray)
     try {
         await axios.post('http://localhost:8000/prescriptions/addDrugList', drugListArray);

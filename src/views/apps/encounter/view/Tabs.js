@@ -24,7 +24,9 @@ import { DownloadCloud, X, Save, Plus } from 'react-feather'
 
 // ** Third Party Components
 import { useDropzone } from 'react-dropzone'
-import { Spinner } from 'reactstrap';
+import toast from 'react-hot-toast'
+
+
 // ** User Components
 import Prescription from './Prescription'
 import DoctorBoxs from './DoctorBoxes'
@@ -37,6 +39,7 @@ import { useDispatch } from 'react-redux'
 import { addSymptom, addNote, handleSubmitEncounter } from '../store'
 import { postInvoiceList } from '../../invoice/store'
 import { postDrugList } from '../../prescription/store'
+import { duration } from 'moment/moment'
 
 
 const UserTabs = ({ selectedEncounter }) => {
@@ -55,14 +58,10 @@ const UserTabs = ({ selectedEncounter }) => {
 
   console.log("Data from SELECTEDENCOUNTER ")
   console.log(selectedEncounter)
+  console.log(drugsList)
   console.log(invoiceList)
+  console.log("====================")
 
-  useEffect(() => {
-    if (!isLoading) return;
-    const loadingIcon = document.createElement('i');
-    loadingIcon.classList.add('fas', 'fa-spinner', 'loading-icon');
-    document.querySelector('#reload-button').appendChild(loadingIcon);
-  }, [isLoading]);
 
   const { getRootProps, getInputProps } = useDropzone({
     multiple: false,
@@ -118,7 +117,6 @@ const UserTabs = ({ selectedEncounter }) => {
 
   const handleSaveEncounter = (e) => {
     e.preventDefault();
-    setIsLoading(true);
     // POST EACH SYMPTOM
     /* symptoms['encounterID'] =  */
     const encounterID = selectedEncounter.encounterID
@@ -143,7 +141,14 @@ const UserTabs = ({ selectedEncounter }) => {
     //** handleSubmitEncounter by changing eStatus from 1 to 0 */
     dispatch(handleSubmitEncounter(encounterID));
 
-    window.location.reload();
+    
+    handleReload();
+
+    toast.success("บันทึกการตรวจผู้ป้วยเสร็จสิ้น ", {duration: 5000})
+  }
+
+  const handleReload = () => {
+    window.location.reload()
   }
 
   function handleSymptom(newSymptom) {
@@ -162,8 +167,7 @@ const UserTabs = ({ selectedEncounter }) => {
   return (
     <Fragment>
       <Card>
-        {isLoading && <Spinner color="primary" />}
-        {!isLoading && (
+        {(
           <div>
             {/* Render your component here */}
             <CardBody>
