@@ -3,7 +3,9 @@ import { Link } from 'react-router-dom'
 
 // ** Reactstrap Imports
 import {
-  UncontrolledTooltip} from 'reactstrap'
+  UncontrolledTooltip,
+  Button
+} from 'reactstrap'
 
 // ** Third Party Components
 import {
@@ -16,12 +18,23 @@ import {
 // ** Table columns
 export const columns = [
   {
-    name: '#',
+    name: 'รหัสค่ารักษา',
     sortable: true,
     sortField: 'Invoice.invID',
     minWidth: '107px',
     // selector: row => row.id,
-    cell: row => <Link to={`/apps/invoice/preview/${row.invID}`}>{`#INV-${row.invID}`}</Link>
+    cell: row =>
+      <div className='d-flex justify-content-left align-items-center'>
+        <div className='d-flex flex-column'>
+          <Link
+            to={`/apps/invoice/preview/${row.invID}`}
+            className='user_name text-truncate text-body'
+          >
+            <span className='fw-bolder'>#INV-{`${row.invID}`}</span>
+          </Link>
+        </div>
+      </div>
+
   },
   {
     name: 'ชื่อผู้ป่วย',
@@ -68,14 +81,24 @@ export const columns = [
     cell: row => (
       <div className='column-action d-flex align-items-center'>
         <Link to={`/apps/invoice/preview/${row.invID}`} id={`pw-tooltip-${row.invID}`}>
-          <FileText size={17} className='mx-1' />
+          <Button.Ripple
+            className='btn-icon'
+            color='flat-success'
+          >
+            <FileText size={18}/>
+          </Button.Ripple>
         </Link>
         <UncontrolledTooltip placement='top' target={`pw-tooltip-${row.invID}`}>
           ดูค่ารักษา
         </UncontrolledTooltip>
 
         <Link to={`/apps/invoice/print/${row.invID}`} id={`dl-tooltip-${row.invID}`}>
-          <Download size={14} className='me-50' />
+          <Button.Ripple
+            className='btn-icon'
+            color='flat-success'
+          >
+            <Download size={18}/>
+          </Button.Ripple>
         </Link>
         <UncontrolledTooltip placement='top' target={`dl-tooltip-${row.invID}`}>
           ดาวน์โหลดค่ารักษา

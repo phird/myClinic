@@ -20,7 +20,9 @@ import {
     Eye,
     Heart,
     ShoppingBag,
-    MessageSquare
+    MessageSquare,
+    UserCheck,
+    CheckSquare
 } from 'react-feather'
 
 
@@ -48,7 +50,7 @@ const StatUserCard = ({ selectedPatient }) => {
         <Fragment>
             <Row>
                 <Col xl='12' md='12' sm='12'>
-                    <StatsVertical icon={<Heart size={21} />} color='primary' stats={`${thaiDateString}`} statTitle='ครั้งล่าสุดที่มา' />
+                    <StatsVertical icon={<CheckSquare size={21} />} color='primary' stats={`${thaiDateString}`} statTitle='ครั้งล่าสุดที่มา' />
                 </Col>
             </Row>
             <Row>
@@ -56,7 +58,7 @@ const StatUserCard = ({ selectedPatient }) => {
                     <StatsVertical icon={<Eye size={21} />} color='info' stats={`${store.encounter.length}`} statTitle='จำนวนการตรวจทั้งหมด' />
                 </Col>
                 <Col xl='6' md='6' sm='6'>
-                    <StatsVertical icon={<ShoppingBag size={21} />} color='danger' stats={`ID: ${store.widgetData.staffID}`} statTitle='หมอคนที่ตรวจล่าสุด' />
+                    <StatsVertical icon={<UserCheck size={21} />} color='danger' stats={`ID: ${store.widgetData.staffID}`} statTitle='หมอคนที่ตรวจล่าสุด' />
                 </Col>
             </Row>
             

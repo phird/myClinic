@@ -13,14 +13,26 @@ import { Trash2, Edit, Edit2 } from 'react-feather'
 // ** Reactstrap Imports
 import { UncontrolledTooltip, Button, Modal, ModalBody, ModalHeader, Row, Col, Form, Input, InputGroup, InputGroupText, FormGroup, Label } from 'reactstrap'
 
+// ** Comfirmation Section
+import { toast } from 'react-hot-toast'
+import withReactContent from 'sweetalert2-react-content'
+import Swal from 'sweetalert2'
+const MySwal = withReactContent(Swal)
+
 export const columns = [
   {
-    name: '#',
+    name: 'รหัสการบริการ',
     minWidth: '230px',
     sortable: true,
     sortField: 'serviceID',
     selector: row => row.serviceID,
-    cell: row => <span className='text-capitalize'>#{row.serviceID}</span>
+    cell: row =>
+      <div className='d-flex justify-content-left align-items-center'>
+        <div className='d-flex flex-column'>
+            <span className='text-capitalize fw-bolder'>#SV{row.serviceID}</span>         
+        </div>
+      </div>
+
   },
   {
     name: 'ชื่อบริการ',
@@ -31,19 +43,17 @@ export const columns = [
     cell: row => (
       <div className='d-flex justify-content-left align-items-center'>
         <div className='d-flex flex-column'>
-          <Link
-            to={`/apps/user/view/${row.id}`}
+          <span
             className='user_name text-truncate text-body'
-            onClick={() => store.dispatch(getUser(row.id))}
           >
             <span className='fw-bolder'>{row.sname}</span>
-          </Link>
+          </span>
         </div>
       </div>
     )
   },
   {
-    name: 'ราคา',
+    name: 'จำนวน',
     minWidth: '230px',
     sortable: true,
     sortField: 'sprice',
@@ -85,7 +95,7 @@ export const columns = [
         setSprice(value)
       }
 
-      const handleSubmitChange =(e) => {
+      const handleSubmitChange = (e) => {
         e.preventDefault()
         const serviceID = parseInt(row.serviceID)
         const newData = {
@@ -94,8 +104,8 @@ export const columns = [
           sprice
         }
         console.log(newData)
-        if(!serviceID || !sname || !sprice){
-          return ;
+        if (!serviceID || !sname || !sprice) {
+          return;
         }
         try {
           dispatch(editService(newData))
@@ -106,6 +116,56 @@ export const columns = [
         }
       }
 
+      const handleConfirmSubmit = async (event) => {
+        event.preventDefault();
+        return MySwal.fire({
+          title: 'ยืนยันการแก้ไขข้อมูลการบริการหรือไม่?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'ยืนยันการแก้ไข',
+          cancelButtonText: 'ยกเลิก',
+          customClass: {
+            confirmButton: 'btn btn-primary',
+            cancelButton: 'btn btn-outline-danger ms-1'
+          },
+          buttonsStyling: false
+        }).then(function (result) {
+          if (result.value) {
+            handleSubmitChange(event)
+            toast.success('แก้ไขข้อมูลการบริการสำเร็จ')
+          }
+        })
+      }
+      const handleDelete = () => {
+        try {
+          dispatch(deleteService(row.serviceID))
+        } catch (error) {
+          console.log(error)
+        }
+      }
+
+      const handleDeleteSubmit = async (event) => {
+        event.preventDefault();
+        return MySwal.fire({
+          title: 'ยืนยันการลบข้อมูลการบริการหรือไม่?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'ยืนยันการลบ',
+          cancelButtonText: 'ยกเลิก',
+          customClass: {
+            confirmButton: 'btn btn-primary',
+            cancelButton: 'btn btn-outline-danger ms-1'
+          },
+          buttonsStyling: false
+        }).then(function (result) {
+          if (result.value) {
+            handleDelete(event)
+            toast.success('ลบข้อมูลการบริการสำเร็จ')
+          }
+        })
+      }
+
+
       const handleOpenModal = (e) => {
         e.preventDefault();
         dispatch(getServiceData(parseInt(row.serviceID))) // * Dispatch for each service 
@@ -115,7 +175,7 @@ export const columns = [
       return (
         <div className='text-capitalize'>
           <>
-            <Button.Ripple className='btn-icon rounded-circle me-50' id={`edit-${row.serviceID}`} color='flat-success'
+            <Button.Ripple className='btn-icon' id={`edit-${row.serviceID}`} color='flat-success'
               onClick={handleOpenModal}>
               <Edit size={16} onClick={handleOpenModal} />
             </Button.Ripple>
@@ -123,7 +183,7 @@ export const columns = [
               แก้ไข
             </UncontrolledTooltip>
 
-            <Button.Ripple className='btn-icon rounded-circle me-50' color='flat-danger' id={`del-${row.serviceID}`} onClick={() => store.dispatch(deleteService(row.serviceID))} >
+            <Button.Ripple className='btn-icon' color='flat-danger' id={`del-${row.serviceID}`} onClick={handleDeleteSubmit} >
               <Trash2 size={16} />
             </Button.Ripple>
             <UncontrolledTooltip target={`del-${row.serviceID}`} >
@@ -138,7 +198,7 @@ export const columns = [
               <div className='text-center mb-2'>
                 <h1 className='mb-1'>แก้ไขข้อมูลบริการ</h1>
               </div>
-              <Form onSubmit={handleSubmitChange} >
+              <Form onSubmit={handleConfirmSubmit} >
                 <Row className='gy-1 pt-75' >
                   <Row md={12} xs={12} style={{ marginBottom: '10px' }}>
                     <Col>
@@ -163,7 +223,7 @@ export const columns = [
                         <InputGroup>
                           <Input
                             required
-                            value={sprice || 0}
+                            value={sprice || ''}
                             type='number'
                             placeholder='1000'
                             onChange={handleSpriceChange}

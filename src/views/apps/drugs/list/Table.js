@@ -1,9 +1,6 @@
 // ** React Imports
 import { Fragment, useState, useEffect } from 'react'
 
-// ** Invoice List Sidebar
-import Sidebar from './Sidebar'
-
 // ** Table Columns
 import { columns } from './columns'
 
@@ -15,7 +12,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import Select from 'react-select'
 import ReactPaginate from 'react-paginate'
 import DataTable from 'react-data-table-component'
-import { ChevronDown, Share, Printer, FileText, File, Grid, Copy } from 'react-feather'
+import { ChevronDown, Share, Printer, FileText, File, Grid, Copy, Plus, PlusCircle } from 'react-feather'
+
+//*** Store
+import { addDrug, editDrug } from '../store'
+
 
 // ** Utils
 import { selectThemeColors } from '@utils'
@@ -34,15 +35,35 @@ import {
   DropdownMenu,
   DropdownItem,
   DropdownToggle,
-  UncontrolledDropdown
+  UncontrolledDropdown,
+  Modal,
+  ModalBody,
+  ModalHeader,
+  Form,
+  FormGroup,
+  InputGroup,
+  InputGroupText,
+  FormFeedback,
 } from 'reactstrap'
 
 // ** Styles
 import '@styles/react/libs/react-select/_react-select.scss'
 import '@styles/react/libs/tables/react-dataTable-component.scss'
+import { toast } from 'react-hot-toast'
 
 // ** Table Header
-const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handleFilter, searchTerm }) => {
+const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchTerm }) => {
+
+  const dispatch = useDispatch()
+
+  // **state
+  const [show, setShow] = useState(false)
+  const [inputDrug, setInputDrug] = useState('')
+  const [inputPrice, setInputPrice] = useState(0)
+  const [inputUnit, setInputUnit] = useState('')
+  const [inputDes, setInputDes] = useState('')
+
+
   // ** Converts table to CSV
   function convertArrayOfObjectsToCSV(array) {
     let result
@@ -86,12 +107,64 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
     link.setAttribute('download', filename)
     link.click()
   }
+
+
+  // ** Handle Modal 
+  const handleModalClosed = () => {
+    setInputDrug('');
+    setInputPrice(0);
+    setInputUnit('');
+    setInputDes('');
+  }
+
+  const handlesubmit = (e) => {
+    e.preventDefault();
+    const drugName = inputDrug;
+    const drugPrice = inputPrice;
+    const unit = inputUnit;
+    const description = inputDes;
+    const newData = { drugName, drugPrice, unit, description }
+
+    if (!drugName || !unit || !drugPrice) {
+      return;
+    }
+    try {
+      dispatch(addDrug(newData))
+      setShow(false)
+      toast.success("เพิ่มข้อมูลยาสำเร็จ")
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const handleNameChange = (e) => {
+    const value = e.target.value;
+    setInputDrug(value)
+  }
+
+  const handlePriceChange = (e) => {
+    const value = e.target.value;
+    setInputPrice(value)
+  }
+
+
+  const handleUnitChange = (e) => {
+    const value = e.target.value;
+    setInputUnit(value);
+  }
+
+  const handleDesChange = (e) => {
+    const value = e.target.value;
+    setInputDes(value);
+  }
+
+
   return (
     <div className='invoice-list-table-header w-100 me-1 ms-50 mt-2 mb-75'>
       <Row>
         <Col xl='6' className='d-flex align-items-center p-0'>
           <div className='d-flex align-items-center w-100'>
-            <label htmlFor='rows-per-page'>Show</label>
+            <label htmlFor='rows-per-page'> แสดง </label>
             <Input
               className='mx-50'
               type='select'
@@ -104,7 +177,7 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
               <option value='25'>25</option>
               <option value='50'>50</option>
             </Input>
-            <label htmlFor='rows-per-page'>Entries</label>
+            <label htmlFor='rows-per-page'> รายการ </label>
           </div>
         </Col>
         <Col
@@ -113,7 +186,7 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
         >
           <div className='d-flex align-items-center mb-sm-0 mb-1 me-1'>
             <label className='mb-0' htmlFor='search-invoice'>
-              Search:
+              ค้นหา:
             </label>
             <Input
               id='search-invoice'
@@ -154,34 +227,116 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
               </DropdownMenu>
             </UncontrolledDropdown>
 
-            <Button className='add-new-user' color='primary' onClick={toggleSidebar}>
-              Add New User
+            <Button className='add-new-user' color='primary' onClick={() => setShow(true)}>
+              เพิ่มยา
             </Button>
           </div>
         </Col>
       </Row>
+      {/* // Modal */}
+      <Modal isOpen={show} toggle={() => setShow(!show)} className='modal-dialog-centered modal-lg' onClosed={handleModalClosed} backdrop="static">
+        <ModalHeader className='bg-transparent' toggle={() => setShow(!show)}></ModalHeader>
+        <ModalBody className='px-sm-5 pt-50 pb-5'>
+          <div className='text-center mb-2'>
+            <h1 className='mb-1'>เพิ่มข้อมูลยา</h1>
+            <p>🚨 กรุณาตรวจสอบ ชื่อยา หน่วย ขอยาให้ครบถ้วน</p>
+          </div>
+          <Form onSubmit={handlesubmit}>
+            <Row className='gy-1 pt-75' >
+              <Row md={12} xs={12} style={{ marginBottom: '10px' }}>
+                <Col>
+                  <FormGroup>
+                    <Label className='form-label font-weight-bold' for='drugName'>
+                      ชื่อยา
+                    </Label>
+                    <Input
+                      autoFocus={true}
+                      id='drugName'
+                      type='text'
+                      placeholder='ชื่อยา'
+                      value={inputDrug}
+                      onChange={handleNameChange}
+                      required
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+              <Row>
+                <Col sm={6}>
+                  <FormGroup>
+                    <Label className='h4 form-label font-weight-bold' for='unit'>
+                      ราคาต่อหน่วย
+                    </Label>
+                    <Input
+                      id='unit'
+                      type='number'
+                      placeholder='ราคาต่อหน่วย'
+                      value={inputPrice}
+                      onChange={handlePriceChange}
+                      required
+                    />
+                  </FormGroup>
+                </Col>
+
+                <Col sm={6}>
+                  <FormGroup>
+                    <Label className='h4 form-label font-weight-bold' for='unit'>
+                      หน่วย
+                    </Label>
+                    <Input
+                      id='unit'
+                      type='text'
+                      placeholder='หน่วยของยา: แผง, เม็ด'
+                      value={inputUnit}
+                      onChange={handleUnitChange}
+                      required
+                    />
+                  </FormGroup>
+                </Col>
+
+              </Row>
+              <Row md={12} xs={12} style={{ marginBottom: '10px' }}>
+                <Col>
+                  <Label className='h4 form-label font-weight-bold' for='note'>
+                    คำอธิบาย:
+                  </Label>
+                  <Input
+                    id='note'
+                    type='textarea'
+                    rows='2'
+                    value={inputDes}
+                    placeholder='คำอธิยายเกี่ยวกับยา (option)'
+                    onChange={handleDesChange}
+                  />
+                </Col>
+              </Row>
+              <Col xs={12} className='text-center mt-2 pt-50'>
+                <Button type='submit' className='me-1' color='primary'>
+                  <Plus size={16} /> เพิ่ม
+                </Button>
+              </Col>
+            </Row>
+          </Form>
+        </ModalBody>
+      </Modal>
+
+
     </div>
   )
 }
 
-const UsersList = () => {
+
+const DrugsList = () => {
   // ** Store Vars
   const dispatch = useDispatch()
-  const store = useSelector(state => state.users)
+  const store = useSelector(state => state.drugs)
 
   // ** States
   const [sort, setSort] = useState('desc')
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
-  const [sortColumn, setSortColumn] = useState('id')
+  const [sortColumn, setSortColumn] = useState('drugID')
   const [rowsPerPage, setRowsPerPage] = useState(10)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [currentRole, setCurrentRole] = useState({ value: '', label: 'Select Role' })
-  const [currentPlan, setCurrentPlan] = useState({ value: '', label: 'Select Plan' })
-  const [currentStatus, setCurrentStatus] = useState({ value: '', label: 'Select Status', number: 0 })
-
-  // ** Function to toggle sidebar
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen)
 
   // ** Get data on mount
   useEffect(() => {
@@ -193,37 +348,10 @@ const UsersList = () => {
         q: searchTerm,
         page: currentPage,
         perPage: rowsPerPage,
-        role: currentRole.value,
-        status: currentStatus.value,
-        currentPlan: currentPlan.value
       })
     )
-  }, [dispatch, store.data.length, sort, sortColumn, currentPage])
+  }, [dispatch, store.data.length, store.total, sort, sortColumn, searchTerm, currentPage, store.selectedDrug])
 
-  // ** User filter options
-  const roleOptions = [
-    { value: '', label: 'Select Role' },
-    { value: 'admin', label: 'Admin' },
-    { value: 'author', label: 'Author' },
-    { value: 'editor', label: 'Editor' },
-    { value: 'maintainer', label: 'Maintainer' },
-    { value: 'subscriber', label: 'Subscriber' }
-  ]
-
-  const planOptions = [
-    { value: '', label: 'Select Plan' },
-    { value: 'basic', label: 'Basic' },
-    { value: 'company', label: 'Company' },
-    { value: 'enterprise', label: 'Enterprise' },
-    { value: 'team', label: 'Team' }
-  ]
-
-  const statusOptions = [
-    { value: '', label: 'Select Status', number: 0 },
-    { value: 'pending', label: 'Pending', number: 1 },
-    { value: 'active', label: 'Active', number: 2 },
-    { value: 'inactive', label: 'Inactive', number: 3 }
-  ]
 
   // ** Function in get data on page change
   const handlePagination = page => {
@@ -234,9 +362,6 @@ const UsersList = () => {
         q: searchTerm,
         perPage: rowsPerPage,
         page: page.selected + 1,
-        role: currentRole.value,
-        status: currentStatus.value,
-        currentPlan: currentPlan.value
       })
     )
     setCurrentPage(page.selected + 1)
@@ -252,9 +377,6 @@ const UsersList = () => {
         q: searchTerm,
         perPage: value,
         page: currentPage,
-        role: currentRole.value,
-        currentPlan: currentPlan.value,
-        status: currentStatus.value
       })
     )
     setRowsPerPage(value)
@@ -270,9 +392,7 @@ const UsersList = () => {
         sortColumn,
         page: currentPage,
         perPage: rowsPerPage,
-        role: currentRole.value,
-        status: currentStatus.value,
-        currentPlan: currentPlan.value
+
       })
     )
   }
@@ -303,9 +423,6 @@ const UsersList = () => {
   // ** Table data to render
   const dataToRender = () => {
     const filters = {
-      role: currentRole.value,
-      currentPlan: currentPlan.value,
-      status: currentStatus.value,
       q: searchTerm
     }
 
@@ -313,8 +430,11 @@ const UsersList = () => {
       return filters[k].length > 0
     })
 
+    const startIndex = (currentPage - 1) * rowsPerPage
+    const endIndex = startIndex + rowsPerPage
+
     if (store.data.length > 0) {
-      return store.data
+      return store.data.slice(startIndex, endIndex)
     } else if (store.data.length === 0 && isFiltered) {
       return []
     } else {
@@ -323,6 +443,11 @@ const UsersList = () => {
   }
 
   const handleSort = (column, sortDirection) => {
+    if (sortDirection.toLowerCase() == 'asc') {
+      sortDirection = 'desc'
+    } else {
+      sortDirection = 'asc'
+    }
     setSort(sortDirection)
     setSortColumn(column.sortField)
     dispatch(
@@ -332,103 +457,12 @@ const UsersList = () => {
         q: searchTerm,
         page: currentPage,
         perPage: rowsPerPage,
-        role: currentRole.value,
-        status: currentStatus.value,
-        currentPlan: currentPlan.value
       })
     )
   }
 
   return (
     <Fragment>
-      <Card>
-        <CardHeader>
-          <CardTitle tag='h4'>Filters</CardTitle>
-        </CardHeader>
-        <CardBody>
-          <Row>
-            <Col md='4'>
-              <Label for='role-select'>Role</Label>
-              <Select
-                isClearable={false}
-                value={currentRole}
-                options={roleOptions}
-                className='react-select'
-                classNamePrefix='select'
-                theme={selectThemeColors}
-                onChange={data => {
-                  setCurrentRole(data)
-                  dispatch(
-                    getData({
-                      sort,
-                      sortColumn,
-                      q: searchTerm,
-                      role: data.value,
-                      page: currentPage,
-                      perPage: rowsPerPage,
-                      status: currentStatus.value,
-                      currentPlan: currentPlan.value
-                    })
-                  )
-                }}
-              />
-            </Col>
-            <Col className='my-md-0 my-1' md='4'>
-              <Label for='plan-select'>Plan</Label>
-              <Select
-                theme={selectThemeColors}
-                isClearable={false}
-                className='react-select'
-                classNamePrefix='select'
-                options={planOptions}
-                value={currentPlan}
-                onChange={data => {
-                  setCurrentPlan(data)
-                  dispatch(
-                    getData({
-                      sort,
-                      sortColumn,
-                      q: searchTerm,
-                      page: currentPage,
-                      perPage: rowsPerPage,
-                      role: currentRole.value,
-                      currentPlan: data.value,
-                      status: currentStatus.value
-                    })
-                  )
-                }}
-              />
-            </Col>
-            <Col md='4'>
-              <Label for='status-select'>Status</Label>
-              <Select
-                theme={selectThemeColors}
-                isClearable={false}
-                className='react-select'
-                classNamePrefix='select'
-                options={statusOptions}
-                value={currentStatus}
-                onChange={data => {
-                  setCurrentStatus(data)
-                  dispatch(
-                    getData({
-                      sort,
-                      sortColumn,
-                      q: searchTerm,
-                      page: currentPage,
-                      status: data.value,
-                      perPage: rowsPerPage,
-                      role: currentRole.value,
-                      currentPlan: currentPlan.value
-                    })
-                  )
-                }}
-              />
-            </Col>
-          </Row>
-        </CardBody>
-      </Card>
-
       <Card className='overflow-hidden'>
         <div className='react-dataTable'>
           <DataTable
@@ -451,16 +485,16 @@ const UsersList = () => {
                 rowsPerPage={rowsPerPage}
                 handleFilter={handleFilter}
                 handlePerPage={handlePerPage}
-                toggleSidebar={toggleSidebar}
+
               />
             }
           />
         </div>
       </Card>
 
-      <Sidebar open={sidebarOpen} toggleSidebar={toggleSidebar} />
+
     </Fragment>
   )
 }
 
-export default UsersList
+export default DrugsList

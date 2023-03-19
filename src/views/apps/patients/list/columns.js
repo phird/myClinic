@@ -118,7 +118,7 @@ export const columns = [
       <div className='column-action'>
         <>
           <Link id={`view-${row.patientID}`} to={`/apps/patient/view/${row.patientID}`} onClick={() => { getUser(row.patientID) }}>
-            <Button.Ripple  className='btn-icon' outline color='flat-success'>
+            <Button.Ripple  className='btn-icon' color='flat-success'>
               <FileText size={16} />
             </Button.Ripple>
           </Link>

@@ -4,47 +4,58 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 // ** Axios Imports
 import axios from 'axios'
 
-export const getAllData = createAsyncThunk('appUsers/getAllData', async () => {
-  const response = await axios.get('/api/users/list/all-data')
+export const getAllData = createAsyncThunk('appDrugs/getAllData', async () => {
+  const response = await axios.get('http://localhost:8000/drugs/list/allDrugs')
   return response.data
 })
 
-export const getData = createAsyncThunk('appUsers/getData', async params => {
-  const response = await axios.get('/api/users/list/data', params)
+export const getData = createAsyncThunk('appDrugs/getData', async params => {
+  const response = await axios.get('http://localhost:8000/drugs/list/getDrug', { params: params })
   return {
     params,
-    data: response.data.users,
-    totalPages: response.data.total
+    data: response.data,
+    totalPages: response.data.length
   }
 })
 
-export const getUser = createAsyncThunk('appUsers/getUser', async id => {
-  const response = await axios.get('/api/users/user', { id })
-  return response.data.user
+export const getDrug = createAsyncThunk('/appDrugs/getDrug', async id => {
+  try {
+    const response = await axios.get(`http://localhost:8000/drugs/getDrug/${id}`)
+    return response.data[0]
+  } catch (error) {
+    console.error(error)
+  }
 })
 
-export const addUser = createAsyncThunk('appUsers/addUser', async (user, { dispatch, getState }) => {
-  await axios.post('/apps/users/add-user', user)
-  await dispatch(getData(getState().users.params))
-  await dispatch(getAllData())
-  return user
+
+export const addDrug = createAsyncThunk('appDrugs/addDrug', async (newData) => {
+  try {
+    await axios.post('http://localhost:8000/drugs/add/drug',  newData )
+  } catch (error) {
+    console.error(error)
+  }
 })
 
-export const deleteUser = createAsyncThunk('appUsers/deleteUser', async (id, { dispatch, getState }) => {
-  await axios.delete('/apps/users/delete', { id })
-  await dispatch(getData(getState().users.params))
-  await dispatch(getAllData())
-  return id
+export const editDrug = createAsyncThunk('appDrugs/edit/Drug', async(newData) => {
+  try {
+    await axios.put('http://localhost:8000/drugs/edit/drug', newData)
+  } catch (error) {
+    console.error(error)
+  }
 })
 
-export const appUsersSlice = createSlice({
-  name: 'appUsers',
+export const deleteDrug = createAsyncThunk('appDrugs/deleteDrug', async (id) => {
+  await axios.put(`http://localhost:8000/drugs/delete/drug/${id}`)
+})
+
+export const DrugsSlice = createSlice({
+  name: 'appDrugs',
   initialState: {
     data: [],
     total: 1,
     params: {},
     allData: [],
-    selectedUser: null
+    selectedDrug: null
   },
   reducers: {},
   extraReducers: builder => {
@@ -57,10 +68,19 @@ export const appUsersSlice = createSlice({
         state.params = action.payload.params
         state.total = action.payload.totalPages
       })
-      .addCase(getUser.fulfilled, (state, action) => {
-        state.selectedUser = action.payload
+      .addCase(addDrug.fulfilled, (state,action) => {
+        state.total = state.total+1
+      })
+      .addCase(getDrug.fulfilled, (state,action)=> {
+        state.selectedDrug = action.payload
+      })
+      .addCase(editDrug.fulfilled, (state,action) => {
+        state.selectedDrug = action.payload
+      })
+      .addCase(deleteDrug.fulfilled, (state, action) => {
+        state.total = state.total - 1 
       })
   }
 })
 
-export default appUsersSlice.reducer
+export default DrugsSlice.reducer

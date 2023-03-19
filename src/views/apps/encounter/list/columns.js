@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react'
 // ** Store & Actions
 import { getAllEncounter, } from '../store'
 // ** Icons Imports
-import { FileText, Send } from 'react-feather'
+import { FileText, Send, Download, } from 'react-feather'
 import { useDispatch, useSelector } from 'react-redux'
 
 // ** Reactstrap Imports
@@ -23,7 +23,7 @@ import DataTable from 'react-data-table-component'
 //** dateFormat imports */
 import dateFormat from 'dateformat'
 import { getPrescription } from '../../prescription/store'
-
+import { toast } from 'react-hot-toast'
 
 export const columns = [
   {
@@ -100,7 +100,7 @@ export const columns = [
         </Badge>)}</span>
   },
   {
-    name: 'ยา',
+    name: '',
     minWidth: '172px',
     sortField: 'role',
     selector: row => row.prescriptionID,
@@ -140,9 +140,9 @@ export const columns = [
       ]
 
       console.log(store)
-      useEffect(()=>{
+      useEffect(() => {
         setDrugList(store.prescriptions)
-      },[store.prescriptions])
+      }, [store.prescriptions])
 
       const handleModalClose = () => {
         setDrugList([]);
@@ -162,6 +162,7 @@ export const columns = [
           ) : (
             <></>
           )}
+
           <Modal className='modal-dialog-centered modal-lg ' isOpen={showModal} onClosed={handleModalClose}>
             <ModalHeader className='bg-transparent' toggle={() => setShowModal(!showModal)}></ModalHeader>
             <ModalBody>
@@ -206,18 +207,21 @@ export const columns = [
         {row.eStatus == 0 ? (
           <div>
             <Link to={`/apps/invoice/preview/${row.invID}`}>
-              <Button.Ripple id={`inv-${row.encounterID}`} className='btn-icon' color='flat-success'>
-                <Send size={18} />
+              <Button.Ripple
+                id={`inv-${row.encounterID}`}
+                className='btn-icon'
+                color='flat-success'
+              >
+                <Download size={18} />
               </Button.Ripple>
             </Link>
             <UncontrolledTooltip placement='top' target={`inv-${row.encounterID}`}>
-              ดูบันทึก
+              ดาวน์โหลดค่ารักษา
             </UncontrolledTooltip>
           </div>
         ) : (
           <div> </div>
         )}
-
       </div>
     )
   },

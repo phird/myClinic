@@ -2,17 +2,16 @@
 import { useState, Fragment, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 // ** Reactstrap Imports
-import { Row, Col, Card, CardText, Form, CardBody, Button, Badge, Modal, Input, Label, ModalBody, ModalHeader, Spinner } from 'reactstrap'
+import { Row, Col, Card, Form, CardBody, Button, Badge, Modal, Input, Label, ModalBody, ModalHeader } from 'reactstrap'
 
 // ** Third Party Components
 import Swal from 'sweetalert2'
-import { Check, Briefcase, X, User, Loader, Smile } from 'react-feather'
+import { User, Smile } from 'react-feather'
 import withReactContent from 'sweetalert2-react-content'
 import Flatpickr from 'react-flatpickr'
 import Select from 'react-select'
 import InputAddress from 'react-thailand-address-autocomplete'
 import toast from 'react-hot-toast'
-import ThaiNationalID from '../../../../self-modules/thai-id-validator/validator.mjs'
 
 // ** Custom Components
 import Avatar from '@components/avatar'
@@ -105,7 +104,6 @@ const UserInfoCard = ({ selectedPatient }) => {
     const postalCode = address.zipcode;
     const personalID = perID
     const editDate = currentDate;
-
     const newData = {
       id,
       fname,
@@ -192,6 +190,7 @@ const UserInfoCard = ({ selectedPatient }) => {
   const Age = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 365.25));
 
   //** Handle Confirm Edit */
+
   const handleConfirmSubmit = (event) => {
     event.preventDefault();
     return MySwal.fire({

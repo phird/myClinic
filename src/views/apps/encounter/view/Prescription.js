@@ -133,9 +133,9 @@ const PrescriptionList = (props) => {
   // sent this to patent 
   const [drugList, setDrugList] = useState([]);
   const [drugRetrive, setDrugRetrive] = useState([]);
-
+  const [unit, setUnit ] = useState('');
   const [inputValue, setInputValue] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
+
   const [filteredData, setFilteredData] = useState([]);
   // * PROPS Retrive
   const selectedEncounter = props.selectedEncounter
@@ -143,9 +143,8 @@ const PrescriptionList = (props) => {
   const enStatus = selectedEncounter.eStatus
   const store = useSelector(state => state.prescription)
 
-  console.log("enID is")
-  console.log(enID)
-  console.log(store.prescriptions)
+  console.log(" Selected Drug ====>  ")
+  console.log(selectedDrugs)
 
   useEffect(() => {
     fetchDrugsData();
@@ -160,7 +159,7 @@ const PrescriptionList = (props) => {
   }, [drugList]);
 
   const fetchDrugsData = async () => {
-    const response = await axios.get('http://localhost:8000/drugs/allDrugs');
+    const response = await axios.get('http://localhost:8000/drugs//list/allDrugs');
     console.log("from fetch data")
     console.log(response.data)
     setDrugs(response.data)
@@ -195,11 +194,17 @@ const PrescriptionList = (props) => {
   const handleInputChange = (e) => {
     const value = e.target.value;
     setInputValue(value)
+
   }
   const handleDrugChange = (selectedOption) => {
-    setSelectedDrugs(selectedOption);
+    const drug = drugFilter(parseInt(selectedOption.value))
+    setSelectedDrugs(selectedOption);   
+    setUnit(drug.unit)
   }
 
+  const drugFilter = (dId) => {
+    return drugs.find((drug) => drug.drugID == dId )
+  }
   const handleModalClosed = () => {
     setSelectedDrugs([]);
     setInputValue('');
@@ -210,6 +215,9 @@ const PrescriptionList = (props) => {
     const filterDrugs = drugList.filter(drug => drug.drugID !== drugID);
     setDrugList(filterDrugs)
   }
+
+
+
   //* Error Alert
   const handleError = () => {
     return MySwal.fire({
@@ -222,12 +230,9 @@ const PrescriptionList = (props) => {
       buttonsStyling: false
     })
   }
-  const filterData = (query) => {
-    const filtered = drugs.filter((item) =>
-      item.name.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilteredData(filtered);
-  };
+
+  
+
 
   console.log("here drug Retrive ")
   console.log(drugRetrive)
@@ -305,7 +310,6 @@ const PrescriptionList = (props) => {
                         onChange={handleDrugChange}
                         required
                         defaultValue=""
-                        
                       />
                       <FormFeedback >
                         กรุณาเลือกยา
@@ -329,7 +333,7 @@ const PrescriptionList = (props) => {
                           onChange={handleInputChange}
                           placeholder='ตัวอย่าง: 10'
                         />
-                        <InputGroupText> เม็ด </InputGroupText>
+                        <InputGroupText>  {unit} </InputGroupText>
                         <FormFeedback >
                           กรุณากรอกปริมาณยา
                         </FormFeedback>
@@ -361,7 +365,7 @@ const PrescriptionList = (props) => {
         </Modal>
       </div >
     )
-  } else {
+  } else { /* DOne */
     return (
       <div className='shadow-lg'>
         <Card className='shadow'>

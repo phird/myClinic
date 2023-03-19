@@ -9,12 +9,9 @@ const EncounterView = lazy(()=> import('../../views/apps/encounter/view'))
 const UploadList = lazy(()=> import('../../views/apps/encounter/view/upload'))
 const Patient = lazy(()=> import('../../views/apps/patients/list'))
 const PatientView = lazy(()=> import('../../views/apps/patients/view'))
-const Users = lazy(()=> import('../../views/apps/user/list'))
-const UserView = lazy(() => import('../../views/apps/user/view'))
 const Services = lazy(()=> import('../../views/apps/services/list'))
 const Drugs = lazy(()=> import('../../views/apps/drugs/list'))
 const Setting = lazy(()=> import('../../views/apps/setting'))
-
 // * Invoice
 const InvoiceAdd = lazy(() => import('../../views/apps/invoice/add'))
 const InvoiceList = lazy(() => import('../../views/apps/invoice/list'))
@@ -56,14 +53,6 @@ const AppRoutes = [
   {
     element: <PatientView />,
     path: '/apps/patient/view/:id'
-  },
-  {
-    element: <Users />,
-    path: '/apps/users'
-  },
-  {
-    element: <UserView />,
-    path: '/apps/user/view/:id'
   },
   {
     element: <Services />,

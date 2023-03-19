@@ -6,7 +6,6 @@ import {
   Calendar,  
   UserCheck,
   Box,
-  User,
   Paperclip
 } from 'react-feather'
 

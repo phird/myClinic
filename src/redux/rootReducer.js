@@ -2,7 +2,6 @@
 import navbar from './navbar'
 import layout from './layout'
 import auth from './authentication'
-import users from '@src/views/apps/user/store'
 import patients from '@src/views/apps/patients/store'
 import encounters from '@src/views/apps/encounter/store'
 import drugs from '@src/views/apps/drugs/store'
@@ -22,7 +21,6 @@ const appReducer = combineReducers({
 
 const rootReducer = combineReducers({
   auth,
-  users,
   patients,
   encounters,
   drugs,
