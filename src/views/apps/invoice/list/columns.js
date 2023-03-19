@@ -1,31 +1,17 @@
 // ** React Imports
 import { Link } from 'react-router-dom'
 
-// ** Custom Components
-import Avatar from '@components/avatar'
-
-// ** Store & Actions
-
 // ** Reactstrap Imports
 import {
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-  UncontrolledTooltip,
-  UncontrolledDropdown
-} from 'reactstrap'
+  UncontrolledTooltip} from 'reactstrap'
 
 // ** Third Party Components
 import {
-  Eye,
-  Edit,
   Download,
-  MoreVertical,
   FileText
 } from 'react-feather'
 
 //** dateFormat imports */
-import dateFormat from 'dateformat'
 
 // ** Table columns
 export const columns = [

@@ -6,6 +6,7 @@ import { ChevronDown } from 'react-feather'
 import DataTable from 'react-data-table-component'
 import { useDispatch, useSelector } from 'react-redux'
 import dateFormat from 'dateformat'
+import AutoComplete from '@components/autocomplete'
 
 
 // ** Reactstrap Imports
@@ -27,7 +28,7 @@ import {
   InputGroup,
   InputGroupText,
   FormGroup,
-  UncontrolledTooltip
+  UncontrolledTooltip,
 } from 'reactstrap'
 
 // ** Custom Components
@@ -44,13 +45,14 @@ const MySwal = withReactContent(Swal)
 
 //** Store imports */
 import { getInvoice } from '../../invoice/store'
+import { getAllData } from '../../services/store'
 
 const InvoiceList = (props) => {
   const dispatch = useDispatch();
   //** Column */
   const columns = [
     {
-      name: 'ค่าใช้จ่าย',
+      name: 'รายการ',
       sortable: true,
       selector: row => row.expenseName,
       minWidth: '300px',
@@ -106,17 +108,22 @@ const InvoiceList = (props) => {
   const [pExpenseRetrive, setPExpenseRetrive] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [inputPrice, setInputPrice] = useState('');
+  const [serviceSuggest, setServiceSuggest] = useState([]);
 
   // * PROPS Retrive
   const selectedEncounter = props.selectedEncounter
   const enID = selectedEncounter.encounterID
   const enStatus = selectedEncounter.eStatus
   const store = useSelector(state => state.invoice)
+  const sStore = useSelector(state => state.service)
 
+  useEffect(() => {
+    dispatch(getAllData()) // Load Service Detail
+  }, [])
 
-  console.log("[invoice] enID ]")
-  console.log(enID)
-  console.log(store.invoice)
+  useEffect(() => {
+    setServiceSuggest(sStore.allData)
+  }, [sStore.allData.length])
 
   useEffect(() => {
     dispatch(getInvoice(enID));
@@ -142,6 +149,13 @@ const InvoiceList = (props) => {
   const handleExpenseChange = (e) => {
     const text = e.target.value;
     setInputValue(text)
+
+    const selectedService = serviceSuggest.find((suggestion) => suggestion.sname === text);
+    if (selectedService) {
+      setInputPrice(selectedService.sprice);
+    } else if (text === '' || text== null) {
+      setInputPrice('');
+    }
   }
 
   const handlePriceChange = (e) => {
@@ -185,7 +199,10 @@ const InvoiceList = (props) => {
       buttonsStyling: false
     })
   }
+
   //** HANDLE MODAL END 
+
+
 
   // ** Store Vars  
   if (enStatus == 1) { //* not done yet
@@ -227,7 +244,7 @@ const InvoiceList = (props) => {
           <ModalHeader className='bg-transparent' toggle={() => setShow(!show)}></ModalHeader>
           <ModalBody className='px-sm-5 pt-50 pb-5'>
             <div className='text-center mb-2'>
-              <h1 className='mb-1'>เพิ่มรายการค่าใช้จ่าย</h1>
+              <h1 className='mb-1'>เพิ่มค่าบริการ</h1>
             </div>
             <Form onSubmit={handleSubmit}>
               <Row className='gy-1 pt-75' >
@@ -236,13 +253,31 @@ const InvoiceList = (props) => {
                   <Col>
                     <FormGroup>
                       <Label className='form-label font-weight-bold' for='firstName'>
-                        ค่าใช้จ่าย
+                        ค่าบริการ]
                       </Label>
-                      <Input
+                      {/*   <Input
                         required
                         id='expenseName'
                         onChange={handleExpenseChange}
-                      />
+                      /> */}
+                      <>
+                        <Input
+                          className='custom-select custom-select-sm'
+                          type="text"
+                          value={inputValue}
+                          onChange={handleExpenseChange}
+                          onInput={(event) => {
+                            const currentValue = event.target.value.toLowerCase();
+                            setInputValue(currentValue);
+                          }}
+                          list="suggestions"
+                        />
+                        <datalist className='dflex' id="suggestions" style={{ maxWidth: '100%' }}>
+                          {serviceSuggest.map(suggestion => (
+                            <option key={suggestion.sname} value={suggestion.sname} onClick={e => setInputPrice(suggestion.sprice)}  />
+                          ))}
+                        </datalist>
+                      </>
                     </FormGroup>
                   </Col>
                   <Col sm={4}>
@@ -253,6 +288,7 @@ const InvoiceList = (props) => {
                       <InputGroup>
                         <Input
                           required
+                          value={inputPrice}
                           type='number'
                           placeholder='1000'
                           onChange={handlePriceChange}
@@ -260,14 +296,6 @@ const InvoiceList = (props) => {
                         <InputGroupText> บาท </InputGroupText>
                       </InputGroup>
                     </FormGroup>
-                  </Col>
-                </Row>
-                <Row md={12} xs={12} style={{ marginBottom: '10px' }} >
-                  <Col xs={12} className='mt-2 pt-50 d-flex align-items-start form-check form-check-inline'>
-                    <Input type='checkbox' id='basic-cb-unchecked' />
-                    <Label for='basic-cb-unchecked' className='form-check-label'>
-                      Unchecked
-                    </Label>
                   </Col>
                 </Row>
                 <Col xs={12} className='text-center mt-2 pt-50'>

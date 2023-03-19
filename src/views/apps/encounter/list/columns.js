@@ -72,11 +72,17 @@ export const columns = [
     sortable: true,
     sortField: 'addedDate',
     selector: row => row.editDate,
-    cell: row => (
-      <span className='text-capitalize'>
-        {dateFormat(row.addedDate, "dd/mm/yyyy")}
-      </span>
-    )
+    cell: row => {
+      const date = new Date(row.addedDate)
+      const options = { year: 'numeric', month: 'numeric', day: 'numeric', timeZone: 'Asia/Bangkok' };
+      const thaiDateString = date.toLocaleDateString('th-TH', options);
+
+      return (
+        <span className='text-capitalize'>
+          {thaiDateString}
+        </span>
+      )
+    }
   },
   {
     name: 'สถานะการตรวจ',

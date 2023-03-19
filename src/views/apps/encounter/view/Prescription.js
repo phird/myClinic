@@ -305,6 +305,7 @@ const PrescriptionList = (props) => {
                         onChange={handleDrugChange}
                         required
                         defaultValue=""
+                        
                       />
                       <FormFeedback >
                         กรุณาเลือกยา

@@ -93,8 +93,6 @@ const UserInfoCard = ({ selectedPatient }) => {
     const phoneNo = telNo;
     const DateOfBirth = new Date(picker);
     const month = DateOfBirth.getMonth();
-    console.log("Month ---------------> ")
-    console.log(month)
     const day = DateOfBirth.getDate();
     const year = DateOfBirth.getFullYear();
     const dob = `${year}-${month + 1}-${day}`;
@@ -237,27 +235,6 @@ const UserInfoCard = ({ selectedPatient }) => {
       />
     )
 
-  }
-
-  const onSubmit = data => {
-    if (Object.values(data).every(field => field.length > 0)) {
-      setShow(false)
-    } else {
-      for (const key in data) {
-        if (data[key].length === 0) {
-          setError(key, {
-            type: 'manual'
-          })
-        }
-      }
-    }
-  }
-
-  const handleReset = () => {
-    reset({
-      firstname: selectedPatient.fname,
-      lastName: selectedPatient.lname
-    })
   }
 
   return (

@@ -27,10 +27,27 @@ export const getData = createAsyncThunk('appService/getData', async params => {
   }
 })
 
+export const getServiceData = createAsyncThunk('appService/getServiceData', async (id) => {
+  const response  = await axios.get(`http://localhost:8000/services/getService/${id}`);
+  return response.data[0]
+})
+
 export const addService = createAsyncThunk('appService/addService', async(newData) => {
   const response = await axios.post('http://localhost:8000/services/addService', newData);
   return response.data
 })
+
+export const editService = createAsyncThunk('appService/editService', async newData => {
+  await axios.put('http://localhost:8000/services/updateService',  { params: newData })
+})
+
+export const deleteService = createAsyncThunk('appService/deleteService' , async (id) => {
+  await axios.put(`http://localhost:8000/services/delete/${id}`)
+})
+
+
+
+
 
 export const appServiceSlice = createSlice({
   name: 'appService',
@@ -39,7 +56,8 @@ export const appServiceSlice = createSlice({
     total: 1,
     params: {},
     allData: [],
-    selectedUser: null
+    selectedService: [],
+    slength: 1,
   },
   reducers: {},
   extraReducers: builder => {
@@ -55,6 +73,14 @@ export const appServiceSlice = createSlice({
       .addCase(addService.fulfilled, (state, action) => {
         state.total = state.total+1 
       })
+      .addCase(deleteService.fulfilled, (state, action)=>{
+        state.total = state.total-1
+      })
+      .addCase(getServiceData.fulfilled, (state, action) => {
+        console.log("added SelectSevicee")
+        state.selectedService = action.payload
+        state.slength = action.payload.length
+      }) 
   }
 })
 

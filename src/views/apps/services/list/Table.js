@@ -287,7 +287,7 @@ const ServiceList = () => {
         perPage: rowsPerPage,
       })
     )
-  }, [dispatch, store.data.length, sort, sortColumn, currentPage])
+  }, [dispatch, store.data.length, store.total, sort, sortColumn, currentPage])
 
   // ** Function in get data on page change
   const handlePagination = page => {
