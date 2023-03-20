@@ -36,10 +36,18 @@ import Invoice from './Invoice'
 import { useDispatch } from 'react-redux'
 
 //* STORE imports
-import { addSymptom, addNote, handleSubmitEncounter } from '../store'
+import { addSymptom, addNote, handleSubmitEncounter, addUrl } from '../store'
 import { postInvoiceList } from '../../invoice/store'
 import { postDrugList } from '../../prescription/store'
-import { duration } from 'moment/moment'
+
+// * Firebase Storage 
+import storage from '../../../../../firebaseConfig'
+import {
+  ref,
+  uploadBytesResumable,
+  getDownloadURL
+} from 'firebase/storage'
+
 
 
 const UserTabs = ({ selectedEncounter }) => {
@@ -48,20 +56,16 @@ const UserTabs = ({ selectedEncounter }) => {
   const [doctorNote, setDoctorNote] = useState('');
   const [drugsList, setDrugsList] = useState([]);
   const [invoiceList, setInvoiceList] = useState([]);
-  const [files, setFiles] = useState([])
-  const [isLoading, setIsLoading] = useState(false);
-
+  const [files, setFiles] = useState([]);
+  const [url, setUrl] = useState('');
+  const [percent, setPercent] = useState(0);
+  console.log("========== URL =============")
+  console.log(url)
+  console.log('============================')
   const dispatch = useDispatch();
   const eStatus = selectedEncounter.eStatus;
   const invID = selectedEncounter.invID;
   const prescriptionID = selectedEncounter.prescriptionID;
-
-  console.log("Data from SELECTEDENCOUNTER ")
-  console.log(selectedEncounter)
-  console.log(drugsList)
-  console.log(invoiceList)
-  console.log("====================")
-
 
   const { getRootProps, getInputProps } = useDropzone({
     multiple: false,
@@ -107,6 +111,43 @@ const UserTabs = ({ selectedEncounter }) => {
     </ListGroupItem>
   ))
 
+  const handleUploadImg = (e) => {
+    e.preventDefault()
+    const encounterID = selectedEncounter.encounterID
+    files.forEach(file => {
+      const storageRef = ref(storage, `/files/${file.name}`)
+      // progress can be paused and resumed. It also exposes progress updates.
+      // Receives the storage reference and the file to upload.
+      const uploadTask = uploadBytesResumable(storageRef, file);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const percent = Math.round(
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          );
+          // update progress
+          setPercent(percent);
+        },
+        (err) => console.log(err),
+        () => {
+          // download url
+          getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+            console.log(url);
+            setUrl(url)
+            const exUrl = { encounterID, url};
+            dispatch(addUrl(exUrl));
+          });
+        }
+      );
+      
+      
+
+      // * put url into Img_url Table
+      
+    })
+  }
+
+
   const handleRemoveAllFiles = () => {
     setFiles([])
   }
@@ -115,7 +156,7 @@ const UserTabs = ({ selectedEncounter }) => {
 
   }
 
-  const handleSaveEncounter = (e) => {
+  const handleSaveEncounter = (e) => {    //** File Upload also place here */
     e.preventDefault();
     // POST EACH SYMPTOM
     /* symptoms['encounterID'] =  */
@@ -127,6 +168,7 @@ const UserTabs = ({ selectedEncounter }) => {
     });
 
     // * add Doctor Note To Encounter
+
     dispatch(addNote({ encounterID, doctorNote }));
 
     // * add Each invoice detail to InvoceList
@@ -141,10 +183,10 @@ const UserTabs = ({ selectedEncounter }) => {
     //** handleSubmitEncounter by changing eStatus from 1 to 0 */
     dispatch(handleSubmitEncounter(encounterID));
 
-    
+
     handleReload();
 
-    toast.success("บันทึกการตรวจผู้ป้วยเสร็จสิ้น ", {duration: 5000})
+    toast.success("บันทึกการตรวจผู้ป้วยเสร็จสิ้น ", { duration: 5000 })
   }
 
   const handleReload = () => {
@@ -261,16 +303,14 @@ const UserTabs = ({ selectedEncounter }) => {
               {files.length ? (
                 <Fragment>
                   <ListGroup className='my-2'>{fileList}</ListGroup>
-                  <div className='d-flex justify-content-end'>
-                    <Button className='me-1' color='danger' outline onClick={handleRemoveAllFiles}>
-                      ลบทั้งหมด
-                    </Button>
-
-                  </div>
                 </Fragment>
               ) : null}
             </CardBody>
           </Card>
+
+          <button onClick={handleUploadImg}>Upload to Firebase</button>
+          <p>{percent} "% done"</p>
+
         </ModalBody>
       </Modal>
       {/* MODAL END  */}

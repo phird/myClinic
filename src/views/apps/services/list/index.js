@@ -19,7 +19,7 @@ import Breadcrumbs from '@components/breadcrumbs'
 const UsersList = () => {
   return (
     <div className='app-user-list'>
-      <Breadcrumbs title='จัดการการบริการ' data={[{ title: 'บริการ' }, { title: 'จัดการการบริการ' }]} />
+      <Breadcrumbs title='จัดการการบริการ' data={[{ title: 'การตั้งค่า' }, { title: 'จัดการการข้อมูลบริการ' }]} />
       <Table />
     </div>
   )

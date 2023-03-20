@@ -36,26 +36,6 @@ export default [
     navLink: '/apps/staff'
   },
   {
-    id: 'Roles & Permissions',
-    title: 'จัดการบทบาท & สิทธิ์',
-    icon: <Shield size={20} />,
-    children: [
-      {
-        id: 'Roles',
-        title: 'บทบา',
-        icon: <Circle size={12} />,
-        navLink: '/apps/roles'
-      },
-      {
-        id: 'Permissions',
-        title: 'จัดการสิทธ์',
-        icon: <Circle size={12} />,
-        navLink: '/apps/permissions'
-      }
-    ]
-  },
-
-  {
     id: 'setting',
     title: 'ตั้งค่า',
     icon: <Settings size={20} />,

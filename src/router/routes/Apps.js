@@ -11,6 +11,8 @@ const Patient = lazy(()=> import('../../views/apps/patients/list'))
 const PatientView = lazy(()=> import('../../views/apps/patients/view'))
 const Services = lazy(()=> import('../../views/apps/services/list'))
 const Drugs = lazy(()=> import('../../views/apps/drugs/list'))
+const Staff = lazy(()=> import('../../views/apps/staff/list'))
+const StaffView = lazy(()=> import('../../views/apps/staff/view'))
 const Setting = lazy(()=> import('../../views/apps/setting'))
 // * Invoice
 const InvoiceAdd = lazy(() => import('../../views/apps/invoice/add'))
@@ -18,11 +20,6 @@ const InvoiceList = lazy(() => import('../../views/apps/invoice/list'))
 const InvoiceEdit = lazy(() => import('../../views/apps/invoice/edit'))
 const InvoicePrint = lazy(() => import('../../views/apps/invoice/print'))
 const InvoicePreview = lazy(() => import('../../views/apps/invoice/preview'))
-
-// * Permisson
-const Roles = lazy(() => import('../../views/apps/roles-permissions/roles'))
-const Permissions = lazy(() => import('../../views/apps/roles-permissions/permissions'))
-
 
 
 const AppRoutes = [
@@ -63,11 +60,17 @@ const AppRoutes = [
     path: 'apps/drugs'
   },
   {
+    element: <Staff />,
+    path: 'apps/staff'
+  },
+  {
+    element: <StaffView />,
+    path: 'apps/staff/view/:id'
+  },
+  {
     element: <Setting />,
     path: 'apps/setting'
   },
-
-
 
   /* INvoice section */
   {
@@ -91,14 +94,7 @@ const AppRoutes = [
   },
 
   /* role & permission */
-  {
-    element: <Roles />,
-    path: '/apps/roles'
-  },
-  {
-    element: <Permissions />,
-    path: '/apps/permissions'
-  }
+
 ]
 
 export default AppRoutes

@@ -14,8 +14,6 @@ export const getAllEncounter = createAsyncThunk('appEncounters/getAllEncounter',
 
 export const getEncounterData = createAsyncThunk('appEncounters/getEncounterData', async params => {
   const response = await axios.get('http://localhost:8000/app/Encounter/list/getdata', {params: params})
-  console.log(response)
-  console.log("#############")
   return {
     params,
     data: response.data.encounters,
@@ -24,7 +22,6 @@ export const getEncounterData = createAsyncThunk('appEncounters/getEncounterData
 })
 
 export const postEncounter = createAsyncThunk('appEncounter/postEncounter', async (newData, { dispatch, getState }) => {
-  console.log("postEncounter has been called")
   const response = await axios.post('http://localhost:8000/app/Encounter/createEncounter', newData)
   await dispatch(createInvoice(newData));
   await dispatch(createPrescription(newData));
@@ -86,7 +83,6 @@ export const addNote = createAsyncThunk('appEncounter/addNote', async (dataArray
 export const getWidgetEncounter = createAsyncThunk('appEncounter/getWidgetEncounter', async id => {
   try {
     const response = await axios.get(`http://localhost:8000/app/Encounter/widgetData/${id}`)
-    
     return response.data[0]
   } catch (error) {
     console.log("error in store Encoutner GetWidget")
@@ -116,6 +112,15 @@ export const addSymptom = createAsyncThunk('appEncounter/addSymptom', async (dat
     console.log(error.response);
   }
 })
+
+
+export const addUrl = createAsyncThunk('appEncounter/addUrl', async (dataArray) => {
+  try{
+    await axios.post('http://localhost:8000/app/Encounter/imgUrl', dataArray)
+  }catch (error){
+    console.log(error)
+  }
+} )
 
 //** ============================================ */
 
@@ -168,6 +173,9 @@ export const appEncountersSlice = createSlice({
       })
       .addCase(getWidgetEncounter.fulfilled, (state, action) => {
         state.widgetData = action.payload
+      })
+      .addCase(addUrl.fulfilled, (state,action) => {
+
       })
 
   }
