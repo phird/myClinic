@@ -8,8 +8,7 @@ export default class JwtService {
   // ** For Refreshing Token
   isAlreadyFetchingAccessToken = false
 
-  // ** For Refreshing Token
-  subscribers = []
+
 
   constructor(jwtOverrideConfig) {
     this.jwtConfig = { ...this.jwtConfig, ...jwtOverrideConfig }
@@ -54,9 +53,6 @@ export default class JwtService {
           }
           const retryOriginalRequest = new Promise(resolve => {
             this.addSubscriber(accessToken => {
-              // ** Make sure to assign accessToken according to your response.
-              // ** Check: https://pixinvent.ticksy.com/ticket/2413870
-              // ** Change Authorization header
               originalRequest.headers.Authorization = `${this.jwtConfig.tokenType} ${accessToken}`
               resolve(this.axios(originalRequest))
             })
@@ -68,14 +64,7 @@ export default class JwtService {
     )
   }
 
-  onAccessTokenFetched(accessToken) {
-    this.subscribers = this.subscribers.filter(callback => callback(accessToken))
-  }
-
-  addSubscriber(callback) {
-    this.subscribers.push(callback)
-  }
-
+  // ** Get token !  --- > Token Session
   getToken() {
     return localStorage.getItem(this.jwtConfig.storageTokenKeyName)
   }
@@ -93,6 +82,7 @@ export default class JwtService {
   }
 
   login(...args) {
+    console.log("im tryna login !")
     return axios.post(this.jwtConfig.loginEndpoint, ...args)
   }
 

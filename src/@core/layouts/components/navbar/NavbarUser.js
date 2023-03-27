@@ -22,11 +22,12 @@ const NavbarUser = props => {
 
   return (
     <ul className='nav navbar-nav align-items-center ms-auto'>
-      <NavItem className='d-none d-lg-block'>
+      <NavItem className='d-none d-lg-block d-flex align-items-start'>
         <NavLink className='nav-link-style'>
           <ThemeToggler />
         </NavLink>
       </NavItem>
+      
       <UserDropdown />
     </ul>
   )

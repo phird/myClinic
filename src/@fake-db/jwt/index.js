@@ -60,7 +60,6 @@ const jwtConfig = {
 
 mock.onPost('/jwt/login').reply(request => {
   const { email, password } = JSON.parse(request.data)
-
   let error = {
     email: ['Something went wrong']
   }
@@ -90,6 +89,9 @@ mock.onPost('/jwt/login').reply(request => {
 
   return [400, { error }]
 })
+
+
+
 
 mock.onPost('/jwt/register').reply(request => {
   if (request.data.length > 0) {

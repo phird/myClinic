@@ -1,9 +1,6 @@
 // ** React Imports
 import { Fragment, useState, useEffect } from 'react'
 
-// ** Invoice List Sidebar
-import Sidebar from './Sidebar'
-
 // ** Table Columns
 import { columns } from './columns'
 
@@ -19,6 +16,9 @@ import { ChevronDown, Share, Printer, FileText, File, Grid, Copy } from 'react-f
 
 // ** Utils
 import { selectThemeColors } from '@utils'
+
+// ** Modal 
+import AddStaffModal from './Modal'
 
 // ** Reactstrap Imports
 import {
@@ -42,56 +42,14 @@ import '@styles/react/libs/react-select/_react-select.scss'
 import '@styles/react/libs/tables/react-dataTable-component.scss'
 
 // ** Table Header
-const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handleFilter, searchTerm }) => {
-  // ** Converts table to CSV
-  function convertArrayOfObjectsToCSV(array) {
-    let result
-
-    const columnDelimiter = ','
-    const lineDelimiter = '\n'
-    const keys = Object.keys(store.data[0])
-
-    result = ''
-    result += keys.join(columnDelimiter)
-    result += lineDelimiter
-
-    array.forEach(item => {
-      let ctr = 0
-      keys.forEach(key => {
-        if (ctr > 0) result += columnDelimiter
-
-        result += item[key]
-
-        ctr++
-      })
-      result += lineDelimiter
-    })
-
-    return result
-  }
-
-  // ** Downloads CSV
-  function downloadCSV(array) {
-    const link = document.createElement('a')
-    let csv = convertArrayOfObjectsToCSV(array)
-    if (csv === null) return
-
-    const filename = 'export.csv'
-
-    if (!csv.match(/^data:text\/csv/i)) {
-      csv = `data:text/csv;charset=utf-8,${csv}`
-    }
-
-    link.setAttribute('href', encodeURI(csv))
-    link.setAttribute('download', filename)
-    link.click()
-  }
+const CustomHeader = ({ store, toggleModal, handlePerPage, rowsPerPage, handleFilter, searchTerm }) => {
+  
   return (
     <div className='invoice-list-table-header w-100 me-1 ms-50 mt-2 mb-75'>
       <Row>
         <Col xl='6' className='d-flex align-items-center p-0'>
           <div className='d-flex align-items-center w-100'>
-            <label htmlFor='rows-per-page'>Show</label>
+            <label htmlFor='rows-per-page'>แสดง</label>
             <Input
               className='mx-50'
               type='select'
@@ -104,7 +62,7 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
               <option value='25'>25</option>
               <option value='50'>50</option>
             </Input>
-            <label htmlFor='rows-per-page'>Entries</label>
+            <label htmlFor='rows-per-page'>รายการ</label>
           </div>
         </Col>
         <Col
@@ -125,37 +83,8 @@ const CustomHeader = ({ store, toggleSidebar, handlePerPage, rowsPerPage, handle
           </div>
 
           <div className='d-flex align-items-center table-header-actions'>
-            <UncontrolledDropdown className='me-1'>
-              <DropdownToggle color='secondary' caret outline>
-                <Share className='font-small-4 me-50' />
-                <span className='align-middle'>Export</span>
-              </DropdownToggle>
-              <DropdownMenu>
-                <DropdownItem className='w-100'>
-                  <Printer className='font-small-4 me-50' />
-                  <span className='align-middle'>Print</span>
-                </DropdownItem>
-                <DropdownItem className='w-100' onClick={() => downloadCSV(store.data)}>
-                  <FileText className='font-small-4 me-50' />
-                  <span className='align-middle'>CSV</span>
-                </DropdownItem>
-                <DropdownItem className='w-100'>
-                  <Grid className='font-small-4 me-50' />
-                  <span className='align-middle'>Excel</span>
-                </DropdownItem>
-                <DropdownItem className='w-100'>
-                  <File className='font-small-4 me-50' />
-                  <span className='align-middle'>PDF</span>
-                </DropdownItem>
-                <DropdownItem className='w-100'>
-                  <Copy className='font-small-4 me-50' />
-                  <span className='align-middle'>Copy</span>
-                </DropdownItem>
-              </DropdownMenu>
-            </UncontrolledDropdown>
-
-            <Button className='add-new-user' color='primary' onClick={toggleSidebar}>
-              Add New User
+            <Button className='add-new-user' color='primary' onClick={toggleModal}>
+              เพิ่มข้อมูลบุคลากร
             </Button>
           </div>
         </Col>
@@ -175,13 +104,13 @@ const UsersList = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [sortColumn, setSortColumn] = useState('id')
   const [rowsPerPage, setRowsPerPage] = useState(10)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
   const [currentRole, setCurrentRole] = useState({ value: '', label: 'Select Role' })
   const [currentPlan, setCurrentPlan] = useState({ value: '', label: 'Select Plan' })
   const [currentStatus, setCurrentStatus] = useState({ value: '', label: 'Select Status', number: 0 })
 
-  // ** Function to toggle sidebar
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen)
+  // ** toggle Modal
+  const toggleModal = () => setModalOpen(!modalOpen)
 
   // ** Get data on mount
   useEffect(() => {
@@ -198,32 +127,7 @@ const UsersList = () => {
         currentPlan: currentPlan.value
       })
     )
-  }, [dispatch, store.data.length, sort, sortColumn, currentPage])
-
-  // ** User filter options
-  const roleOptions = [
-    { value: '', label: 'Select Role' },
-    { value: 'admin', label: 'Admin' },
-    { value: 'author', label: 'Author' },
-    { value: 'editor', label: 'Editor' },
-    { value: 'maintainer', label: 'Maintainer' },
-    { value: 'subscriber', label: 'Subscriber' }
-  ]
-
-  const planOptions = [
-    { value: '', label: 'Select Plan' },
-    { value: 'basic', label: 'Basic' },
-    { value: 'company', label: 'Company' },
-    { value: 'enterprise', label: 'Enterprise' },
-    { value: 'team', label: 'Team' }
-  ]
-
-  const statusOptions = [
-    { value: '', label: 'Select Status', number: 0 },
-    { value: 'pending', label: 'Pending', number: 1 },
-    { value: 'active', label: 'Active', number: 2 },
-    { value: 'inactive', label: 'Inactive', number: 3 }
-  ]
+  }, [dispatch, store.total,store.data.length, sort, sortColumn, currentPage])
 
   // ** Function in get data on page change
   const handlePagination = page => {
@@ -363,14 +267,13 @@ const UsersList = () => {
                 rowsPerPage={rowsPerPage}
                 handleFilter={handleFilter}
                 handlePerPage={handlePerPage}
-                toggleSidebar={toggleSidebar}
+                toggleModal={toggleModal}
               />
             }
           />
         </div>
       </Card>
-
-      <Sidebar open={sidebarOpen} toggleSidebar={toggleSidebar} />
+            <AddStaffModal open={modalOpen} toggleModal={toggleModal} />
     </Fragment>
   )
 }

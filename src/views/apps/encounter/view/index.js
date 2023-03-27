@@ -67,9 +67,7 @@ const UserView = () => {
   ) : (
     <Alert color='danger'>
       <h4 className='alert-heading'>ไม่เจอบันทึกการตรวจ</h4>
-      <div className='alert-body'>
-        User with id: {id} doesn't exist. Check list of all Users: <Link to='/apps/user/list'>Users List</Link>
-      </div>
+      
     </Alert>
   )
 }

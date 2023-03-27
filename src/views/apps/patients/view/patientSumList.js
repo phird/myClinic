@@ -10,11 +10,12 @@ import DataTable from 'react-data-table-component'
 import { ChevronDown } from 'react-feather'
 import Swal from 'sweetalert2'
 import toast from 'react-hot-toast'
-
+import classnames from 'classnames'
 
 const MySwal = withReactContent(Swal)
 import withReactContent from 'sweetalert2-react-content'
 import Select from 'react-select'
+import { useForm, Controller } from 'react-hook-form'
 
 // ** Reactstrap Imports
 import {
@@ -33,18 +34,21 @@ import {
 } from 'reactstrap'
 
 // ** Store & Actions
-
 import { useDispatch, useSelector } from 'react-redux'
+import { postEncounter, getPatientEncounter, getDoctorForUser } from '../../encounter/store'
 
 // ** Styles
 import '@styles/react/apps/app-invoice.scss'
+import '@styles/react/libs/react-select/_react-select.scss'
 import '@styles/react/libs/tables/react-dataTable-component.scss'
-import { postEncounter, getPatientEncounter } from '../../encounter/store'
+
+
 
 const patientSumList = ({ selectedPatient, enDetail }) => {
   // ** Store Vars
   const dispatch = useDispatch()
   const store = useSelector(state => state.encounters)
+
   const selectedPatientID = selectedPatient.patientID
   const fullName = selectedPatient.fname + ' ' + selectedPatient.lname
   // MODAL STATES
@@ -60,8 +64,8 @@ const patientSumList = ({ selectedPatient, enDetail }) => {
   // ** States
   const currentDate = new Date().toISOString().slice(0, 10);
   const [value] = useState('')
-  // ** in this case use patient instead of doctor  -> please fix
   const [doctor, setDoctor] = useState([]);
+  const [allDoc, setAllDoc] = useState([]);
 
   useEffect(() => {
     dispatch(getPatientEncounter(
@@ -71,20 +75,26 @@ const patientSumList = ({ selectedPatient, enDetail }) => {
         sortColumn,
       }
     ))
-  }, [dispatch, selectedPatientID,store.data.length, sort, sortColumn, currentPage])
+    dispatch(getDoctorForUser())
+
+  }, [dispatch, selectedPatientID, store.data.length, sort, sortColumn, currentPage])
+
+  useEffect(() => {
+    setAllDoc(store.doctorList)
+  }, [store.doctorListTotal])
 
 
   const handleSubmitEncounter = (event) => {
     event.preventDefault();
     // retrieve the values of the form field 
     const patientID = selectedPatient.patientID;
-    const staffID = 1;
-    const note = document.getElementById('note').value;
+    const staffID = doctor.value;
+    const note = ''; /* document.getElementById('note').value */
     const addedDate = currentDate;
     const newData = { patientID, staffID, note, addedDate };
     // update state 
     if (!patientID || !staffID) {
-      console.log("error before upload")
+      toast.error(`กรุณาเลือกแพทย์ผู้รักษา`, { duration: 3000 })
       return;
     }
     try {
@@ -124,7 +134,7 @@ const patientSumList = ({ selectedPatient, enDetail }) => {
   }
 
   const dataToRender = () => {
-    const startIndex = (currentPage - 1 ) * rowsPerPage;
+    const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage
 
     if (store.encounter.length > 0) {
@@ -152,6 +162,13 @@ const patientSumList = ({ selectedPatient, enDetail }) => {
       })
     )
   }
+
+  const defaultValues = {
+    doctor: []
+  }
+  const { control } = useForm({ defaultValues })
+
+
   return (
     <div className='invoice-list-wrapper'>
       <Card>
@@ -206,21 +223,24 @@ const patientSumList = ({ selectedPatient, enDetail }) => {
                 />
               </Row>
               <Row md={12} xs={12} style={{ marginBottom: '20px' }}>
-                <Label className='h4 form-label font-weight-bold' for='lastName'>
+                <Label className='h4 form-label font-weight-bold' for='doctorSelect'>
                   แพทย์ผู้ทำการรักษา:
                 </Label>
+                   
                 <Select
+                  className='react-select is-invalid'
                   id="patientName"
                   placeholder="เลือก หรือ ค้นแพทย์"
-                  options={allPatients.map((patient) => ({ value: patient.patientID, label: patient.fname + "  " + patient.lname }))}
+                  options={allDoc.map((doc) => ({ value: doc.staffID, label: doc.fname + "  " + doc.lname }))}
                   required
                   value={doctor}
                   onChange={handleDoctorChange}
                   defaultValue=""
+
                   style={{ maxWidth: '100%' }}
                 />
               </Row>
-              <Row md={12} xs={12} style={{ marginBottom: '20px' }}>
+              {/* <Row md={12} xs={12} style={{ marginBottom: '20px' }}>
                 <Input
                   id="note"
                   type="textarea"
@@ -228,7 +248,7 @@ const patientSumList = ({ selectedPatient, enDetail }) => {
                   rows='5'
                   style={{ textOverflow: "ellipsis", overflow: "hidden", maxWidth: "100%", minHeight: "120px" }}
                 />
-              </Row>
+              </Row> */}
               <Col md={12} xs={12} style={{ marginBottom: '20px' }}>
                 <Row style={{ marginBottom: '20px' }}>
                   <Label className='h4 form-label font-weight-bold' for='billing-email'>

@@ -14,6 +14,7 @@ const Drugs = lazy(()=> import('../../views/apps/drugs/list'))
 const Staff = lazy(()=> import('../../views/apps/staff/list'))
 const StaffView = lazy(()=> import('../../views/apps/staff/view'))
 const Setting = lazy(()=> import('../../views/apps/setting'))
+
 // * Invoice
 const InvoiceAdd = lazy(() => import('../../views/apps/invoice/add'))
 const InvoiceList = lazy(() => import('../../views/apps/invoice/list'))

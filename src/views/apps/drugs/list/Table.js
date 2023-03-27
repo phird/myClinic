@@ -14,6 +14,15 @@ import ReactPaginate from 'react-paginate'
 import DataTable from 'react-data-table-component'
 import { ChevronDown, Share, Printer, FileText, File, Grid, Copy, Plus, PlusCircle } from 'react-feather'
 
+// @deno-types="https://unpkg.com/xlsx/types/index.d.ts"
+import * as XLSX from 'https://unpkg.com/xlsx/xlsx.mjs';
+
+/* load the codepage support library for extended support with older formats  */
+import * as cptable from 'https://unpkg.com/xlsx/dist/cpexcel.full.mjs';
+XLSX.set_cptable(cptable);
+import { saveAs } from 'file-saver';
+
+
 //*** Store
 import { addDrug, editDrug } from '../store'
 
@@ -99,13 +108,25 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
 
     const filename = 'export.csv'
 
-    if (!csv.match(/^data:text\/csv/i)) {
+    if (!csv.match(/^data:text\/csv;charset=utf-8/i)) {
       csv = `data:text/csv;charset=utf-8,${csv}`
     }
 
     link.setAttribute('href', encodeURI(csv))
     link.setAttribute('download', filename)
     link.click()
+  }
+
+  function downloadExcel(array) {
+    const headers = Object.keys(array[0])
+    const data = array.map(obj => headers.map(key => obj[key]))
+  
+    const worksheet = XLSX.utils.json_to_sheet(array, { header: headers })
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1')
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' })
+  
+    saveAs(new Blob([excelBuffer], { type: 'application/octet-stream' }), 'export.xlsx')
   }
 
 
@@ -212,17 +233,9 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                   <FileText className='font-small-4 me-50' />
                   <span className='align-middle'>CSV</span>
                 </DropdownItem>
-                <DropdownItem className='w-100'>
-                  <Grid className='font-small-4 me-50' />
-                  <span className='align-middle'>Excel</span>
-                </DropdownItem>
-                <DropdownItem className='w-100'>
-                  <File className='font-small-4 me-50' />
-                  <span className='align-middle'>PDF</span>
-                </DropdownItem>
-                <DropdownItem className='w-100'>
-                  <Copy className='font-small-4 me-50' />
-                  <span className='align-middle'>Copy</span>
+                <DropdownItem className='w-100' onClick={() => downloadExcel(store.data)}>
+                  <FileText className='font-small-4 me-50' />
+                  <span className='align-middle'>EXCEL</span>
                 </DropdownItem>
               </DropdownMenu>
             </UncontrolledDropdown>

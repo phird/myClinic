@@ -9,7 +9,6 @@ import { BrowserRouter } from 'react-router-dom';
 const App = () => {
   return (
     <Suspense fallback={null}>
-      
       <Router />
     </Suspense>
   )

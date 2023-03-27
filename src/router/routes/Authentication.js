@@ -23,6 +23,9 @@ const VerifyEmailCover = lazy(() => import('../../views/pages/authentication/Ver
 const TwoStepsBasic = lazy(() => import('../../views/pages/authentication/TwoStepsBasic'))
 const TwoStepsCover = lazy(() => import('../../views/pages/authentication/TwoStepsCover'))
 
+const NotAuthorized = lazy(() => import('../../views/pages/misc/NotAuthorized'))
+
+
 const AuthenticationRoutes = [
   {
     path: '/login',
@@ -143,7 +146,8 @@ const AuthenticationRoutes = [
     meta: {
       layout: 'blank'
     }
-  }
+  },
+
 ]
 
 export default AuthenticationRoutes

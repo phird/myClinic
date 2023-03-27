@@ -16,13 +16,13 @@ import '@styles/react/apps/app-users.scss'
 
 import Breadcrumbs from '@components/breadcrumbs'
 
-const UsersList = () => {
+const StaffsList = () => {
   return (
     <div className='app-user-list'>
-      <Breadcrumbs title='จัดการการตรวจผู้ป่วย' data={[{ title: 'การตั้งค่า' }, { title: 'จัดการข้อมูลบุคลากร' }]} />
+      <Breadcrumbs title='จัดการข้อมูลบุคลากร' data={[{ title: 'การตั้งค่า' }, { title: 'จัดการข้อมูลบุคลากร' }]} />
       <Table />
     </div>
   )
 }
 
-export default UsersList
+export default StaffsList

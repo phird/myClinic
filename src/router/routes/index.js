@@ -3,6 +3,7 @@ import { Fragment } from 'react'
 
 // ** Routes Imports
 import AppRoutes from './Apps'
+import PageRoutes from './Pages'
 import DashboardRoutes from './Dashboards'
 import AuthenticationRoutes from './Authentication'
 
@@ -24,7 +25,7 @@ const getLayout = {
 }
 
 // ** Document title
-const TemplateTitle = '%s - Vuexy React Admin Template'
+const TemplateTitle = '%s - myClinic'
 
 // ** Default Route
 const DefaultRoute = '/home'
@@ -34,6 +35,7 @@ const Routes = [
   ...AuthenticationRoutes,
   ...DashboardRoutes,
   ...AppRoutes,
+  ...PageRoutes,
 
 ]
 
@@ -46,6 +48,7 @@ const getRouteMeta = route => {
     }
   }
 }
+
 
 // ** Return Filtered Array of Routes & Paths
 const MergeLayoutRoutes = (layout, defaultLayout) => {
@@ -89,6 +92,8 @@ const MergeLayoutRoutes = (layout, defaultLayout) => {
   }
   return LayoutRoutes
 }
+
+
 
 const getRoutes = layout => {
   const defaultLayout = layout || 'vertical'

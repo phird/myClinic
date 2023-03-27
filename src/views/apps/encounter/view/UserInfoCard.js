@@ -1,9 +1,9 @@
 // ** React Imports
-import { useState, Fragment } from 'react'
-
+import { useState, Fragment, useEffect } from 'react'
+import { useDispatch } from 'react-redux'
 // ** Reactstrap Imports
 import { Card, CardBody, Badge } from 'reactstrap'
-
+import axios from 'axios'
 
 // ** Third Party Components
 import Swal from 'sweetalert2'
@@ -41,7 +41,27 @@ const MySwal = withReactContent(Swal)
 
 const UserInfoCard = ({ selectedEncounter }) => {
   // ** State
+  const dispatch = useDispatch()
   const [show, setShow] = useState(false)
+  const [doctor, setDoctor] = useState([])
+  const [dName, setDname] = useState('')
+
+  useEffect(() => {
+    const fetcgDoc = async () => {
+      const response = await axios.get('http://localhost:8000/staff/allData')
+      setDoctor(response.data)
+    }
+    fetcgDoc();
+  }, [dispatch]);
+
+  useEffect(() => {
+    const setName = async () => {
+      const d = doctor.find((e) => e.staffID === selectedEncounter.staffID)
+      setDname(d.fname + ' ' + d.lname)
+    }
+    setName()
+  }, [doctor.length])
+
 
   // ** Hook
   const {
@@ -117,6 +137,7 @@ const UserInfoCard = ({ selectedEncounter }) => {
     }
   }
 
+
   return (
     <Fragment>
       <Card>
@@ -172,12 +193,13 @@ const UserInfoCard = ({ selectedEncounter }) => {
               <ul className='list-unstyled'>
                 <li className='mb-75'>
                   <span className='fw-bolder me-25'>แพทย์ที่ทำการตรวจ:</span>
-                  <span>  DoctorID:{selectedEncounter.staffID}</span>
+                  <span>
+                    {
+                      dName
+                    }
+                  </span>
                 </li>
-                <li className='mb-75'>
-                  <span className='fw-bolder me-25'>รายละเอียด:</span>
-                  <span>{!selectedEncounter.note? '   -   ' : selectedEncounter.note }</span>
-                </li>
+                
               </ul>
             ) : null}
           </div>

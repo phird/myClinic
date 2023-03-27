@@ -37,29 +37,29 @@ const UserDropdown = () => {
 
   //** Vars
   const userAvatar = (userData && userData.avatar) || defaultAvatar
-
+ 
   return (
     <UncontrolledDropdown tag='li' className='dropdown-user nav-item'>
       <DropdownToggle href='/' tag='a' className='nav-link dropdown-user-link' onClick={e => e.preventDefault()}>
         <div className='user-nav d-sm-flex d-none'>
-          <span className='user-name fw-bold'>{(userData && userData['username']) || 'Phirachat'}</span>
-          <span className='user-status'>{(userData && userData.role) || 'Admin'}</span>
+          <span className='user-name fw-bold'>{(userData && userData['fullname']) || ' - '}</span>
+          <span className='user-status'>{(userData && userData.role === 'admin' ? 'ผู้ดูแล' : 'ทั่วไป' ) || 'Admin'}</span>
         </div>
         <Avatar img={userAvatar} imgHeight='40' imgWidth='40' status='online' />
       </DropdownToggle>
       <DropdownMenu end>
         <DropdownItem tag={Link} to='/pages/profile'>
           <User size={14} className='me-75' />
-          <span className='align-middle'>Profile</span>
+          <span className='align-middle'>โปรไฟล์</span>
         </DropdownItem>
         <DropdownItem divider />
         <DropdownItem tag={Link} to='/pages/account-settings'>
           <Settings size={14} className='me-75' />
-          <span className='align-middle'>Settings</span>
+          <span className='align-middle'>ตั้งค่า</span>
         </DropdownItem>
         <DropdownItem tag={Link} to='/login' onClick={() => dispatch(handleLogout())}>
           <Power size={14} className='me-75' />
-          <span className='align-middle'>Logout</span>
+          <span className='align-middle'>ลงชื่อออกจากระบบ</span>
         </DropdownItem>
       </DropdownMenu>
     </UncontrolledDropdown>

@@ -75,7 +75,7 @@ const UserView = props => {
               <UserInfoCard selectedPatient={store.selectedPatient} onC />
             </Col>
             <Col xl='4' lg='4' xs={{ order: 2 }} md={{ order: 2, size: 12}}>
-              <StatUserCard selectedPatient={store.selectedPatient}/>
+              <StatUserCard selectedPatient={store.selectedPatient} onC />
             </Col>
           </Row>
 

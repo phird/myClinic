@@ -242,7 +242,6 @@ const UserInfoCard = ({ selectedPatient }) => {
         <CardBody>
           <>
             <Row className='my-2'>
-
               <Col className='d-flex align-items-center justify-content-center mb-2 mb-md-0' md='4' xs='12'>
                 <div className='d-flex align-items-center justify-content-center'>
                   <Row>
@@ -277,56 +276,55 @@ const UserInfoCard = ({ selectedPatient }) => {
                   </Row>
                 </div>
               </Col>
-
-
-              <Col md='6' xs='12'>
+              <Col md='6' xs='12' className='justify-centent-around mx-4'>
                 <div className='ecommerce-details-price d-flex flex-wrap mt-1'>
-                  <h4 className='fw-bolder border-bottom pb-50 mb-1'>รายละเอียดผู้ป่วย</h4>
+                  <h4 className='fw-bolder border-bottom pb-50 mb-1'>รายละเอียดผู้ป่วย #{selectedPatient.patientID}</h4>
                 </div>
-                  <div className='info-container'>
-                    {selectedPatient !== null ? (
-                      <ul className='list-unstyled'>
+                <div className='info-container'>
+                  {selectedPatient !== null ? (
+                    <ul className='list-unstyled'>
 
-                        <li className='mb-75'>
-                          <span className='fw-bolder me-25'>วัน/เดือน/ปี เกิด:</span>
-                          <span className='text-capitalize' >
-                            {birthday}
-                          </span>
-                        </li>
+                      <li className='mb-75'>
+                        <span className='fw-bolder me-25'>วัน/เดือน/ปี เกิด:</span>
+                        <span className='text-capitalize' >
+                          {birthday}
+                        </span>
+                      </li>
 
-                        <li className='mb-75'>
-                          <span className='fw-bolder me-25'>กรุ๊ปเลือด:</span>
-                          <span> {selectedPatient.bloodtype} </span>
-                        </li>
-                        <li className='mb-75'>
-                          <span className='fw-bolder me-25'>เบอร์โทรติดต่อ:</span>
-                          <span>{selectedPatient.phoneNo}</span>
-                        </li>
-                        <li className='mb-75'>
-                          <span className='fw-bolder me-25'>ที่อยู่:</span>
-                          <span>
-                            {selectedPatient.address + ', ' +
-                              selectedPatient.district + ', ' +
-                              selectedPatient.subdistrict + ', ' +
-                              selectedPatient.province + ', ' +
-                              selectedPatient.postalCode}
-                          </span>
-                        </li>
-                        <li className='mb-75'>
-                          <span className='fw-bolder me-25'>ลงทะเบียนเมื่อวันที่:</span>
-                          <span>{addedDate}</span>
-                        </li>
-                        <li className='mb-75'>
-                          <span className='fw-bolder me-25'>แก้ไขเมื่อวันที่:</span>
-                          <span>{editDate}</span>
-                        </li>
-                      </ul>
-                    ) : null}
-                  </div>
-
-                
-                <div className='d-flex justify-content-end pt-2'>
-                  <Button color='primary' onClick={() => setShow(true)}>
+                      <li className='mb-75'>
+                        <span className='fw-bolder me-25'>กรุ๊ปเลือด:</span>
+                        <span> {selectedPatient.bloodtype} </span>
+                      </li>
+                      <li className='mb-75'>
+                        <span className='fw-bolder me-25'>เบอร์โทรติดต่อ:</span>
+                        <span>{selectedPatient.phoneNo}</span>
+                      </li>
+                      <li className='mb-75'>
+                        <span className='fw-bolder me-25'>ที่อยู่:</span>
+                        <span>
+                          {selectedPatient.address + ', ' +
+                            selectedPatient.district + ', ' +
+                            selectedPatient.subdistrict + ', ' +
+                            selectedPatient.province + ', ' +
+                            selectedPatient.postalCode}
+                        </span>
+                      </li>
+                      <li className='mb-75'>
+                        <span className='fw-bolder me-25'>ลงทะเบียนเมื่อวันที่:</span>
+                        <span>{addedDate}</span>
+                      </li>
+                      <li className='mb-75'>
+                        <span className='fw-bolder me-25'>แก้ไขเมื่อวันที่:</span>
+                        <span>{editDate}</span>
+                      </li>
+                    </ul>
+                  ) : null}
+                </div>
+                <div className='d-flex justify-content-around pt-2 py-2 '>
+                  <Button color='primary' onClick={() => setShow(true)} outline disabled>
+                    ข้อมูลการซักประวัติผู้ป่วย
+                  </Button>
+                  <Button className='d-flex justify-content-end' color='primary' onClick={() => setShow(true)}>
                     แก้ไขข้อมูลผู้ป่วย
                   </Button>
                 </div>

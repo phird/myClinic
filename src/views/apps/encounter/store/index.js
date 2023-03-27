@@ -122,7 +122,23 @@ export const addUrl = createAsyncThunk('appEncounter/addUrl', async (dataArray) 
   }
 } )
 
-//** ============================================ */
+export const getImg = createAsyncThunk('appEncounter/getImg', async id => {
+  try{
+    const response = await axios.get(`http://localhost:8000/app/Encounter/img/${id}`)
+    return response.data
+  }catch(error){
+    console.log(error)
+  }
+})
+
+export const forExport = createAsyncThunk('appEncounters/forExport', async () => {
+  try{
+    const response = await axios.get(`http://localhost:8000/app/Encounter/forExport`)
+    return response.data
+  }catch(error){
+    console.log(error)
+  }
+})
 
 export const deleteEncounter = createAsyncThunk('appEncounters/deleteEncounter', async (id, { dispatch, getState }) => {
   await axios.delete('/apps/encounter/delete', { id })
@@ -131,7 +147,23 @@ export const deleteEncounter = createAsyncThunk('appEncounters/deleteEncounter',
   return id
 })
 
+export const getDoctorForUser = createAsyncThunk('appEncounters/getDoctorForUser', async () => {
+  try {
+    const doctor =  await axios.get('http://localhost:8000/staff/allData')
+    return {
+      data: doctor.data,
+      total: doctor.data.length
+    }
+  } catch (error) {
+    console.log("error while getting staff")
+    console.error(error)
+  }
+})
 
+
+
+
+//** ============================================ */
 
 export const appEncountersSlice = createSlice({
   name: 'appEncounters',
@@ -144,6 +176,10 @@ export const appEncountersSlice = createSlice({
     params: {},
     allData: [],
     widgetData: [],
+    imgList: [],
+    export: [],
+    doctorList: [],
+    doctorListTotal: 1 ,
     selectedEncounter: null
   },
   reducers: {},
@@ -174,8 +210,16 @@ export const appEncountersSlice = createSlice({
       .addCase(getWidgetEncounter.fulfilled, (state, action) => {
         state.widgetData = action.payload
       })
-      .addCase(addUrl.fulfilled, (state,action) => {
-
+      .addCase(addUrl.fulfilled, (state,action) => {})
+      .addCase(getImg.fulfilled, (state,action) =>{
+        state.imgList = action.payload
+      })
+      .addCase(forExport.fulfilled, (state,action)=>{
+        state.export = action.payload
+      })
+      .addCase(getDoctorForUser.fulfilled, (state,action)=> {
+        state.doctorList = action.payload.data
+        state.doctorListTotal = action.payload.total
       })
 
   }

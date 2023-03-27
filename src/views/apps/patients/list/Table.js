@@ -12,15 +12,13 @@ import { useDispatch, useSelector } from 'react-redux'
 // ** Third Party Components
 import ReactPaginate from 'react-paginate'
 import DataTable from 'react-data-table-component'
-import { ChevronDown, Share, Printer, FileText, File, Grid, Copy, CheckCircle } from 'react-feather'
+import { ChevronDown, Share, Printer, FileText, File, Grid, Copy } from 'react-feather'
 import Flatpickr from 'react-flatpickr'
 import Select from 'react-select'
 import InputAddress from 'react-thailand-address-autocomplete'
 import toast from 'react-hot-toast'
-import * as yup from 'yup'
-import { yupResolver } from '@hookform/resolvers/yup'
-import { useForm, Controller } from 'react-hook-form'
-import classnames from 'classnames'
+import { useForm } from 'react-hook-form'
+
 
 
 // ** Reactstrap Imports
@@ -70,6 +68,8 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
   const dispatch = useDispatch()
   // ** Current Date
   const currentDate = new Date().toISOString().slice(0, 10);
+
+
   const [show, setShow] = useState(false);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState(''); // Fname and Lname
@@ -83,11 +83,6 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
   const [perID, setPerID] = useState('');
   const [perIDError, setPerIDError] = useState('');
 
-
-  const { control } = useForm({ picker })
-
-
-
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -98,7 +93,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
     const month = DateOfBirth.getMonth();
     const day = DateOfBirth.getDate();
     const year = DateOfBirth.getFullYear();
-    const dob = `${year}-${month}-${day}`;
+    const dob = `${year}-${month + 1}-${day}`;
     const bloodtype = bloodType.value;
     const pgender = gender.value;
     const paddress = address.addr;
@@ -137,7 +132,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
       setFirstName('');
       setLastName('');
       setTelNo('');
-      setPicker(new Date());
+      setPicker();
       setBloofType([]);
       setGender([]);
       setAddress([{ district: '', subdistrict: '', province: '', zipcode: '' }]);
@@ -213,7 +208,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
     if (!input) {
       toast.danger("กรุณากรอกข้อมูลให้ครบ  ! ", { duration: 5000 })
     } else {
-      return ;
+      return;
     }
   }
 
@@ -441,25 +436,14 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                         วันเกิด
                       </Label>
 
-                      <Controller
-                        control={control}
-                        id='react-flatpickr'
-                        name='reactFlatpickr'
-                        render={({ field }) => (
-                          <Flatpickr
-                            className={classnames('form-control', {
-                              'is-invalid': picker === null
-                            })}
-                            value={picker}
-                            onChange={date => setPicker(date)}
-                            id='default-picker'
-                            style={{ maxWidth: '250px' }}
-                            required
-                            {...field}
-                          />
-                        )}
+                      <Flatpickr
+                        className='form-control'
+                        value={picker}
+                        onChange={date => setPicker(date)}
+                        id='default-picker'
+                        style={{ maxWidth: '250px' }}
+                        required
                       />
-
                     </Col>
                     <Col>
                       <Label className='h4 form-label font-weight-bold' for='default-picker'>

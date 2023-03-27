@@ -27,6 +27,9 @@ import DataTable from 'react-data-table-component'
 //** dateFormat imports */
 import dateFormat from 'dateformat'
 import { getPrescription } from '../../prescription/store'
+
+import { getPatientEncounter, getWidgetEncounter } from '../../encounter/store'
+
 import { toast } from 'react-hot-toast'
 
 
@@ -48,7 +51,9 @@ export const columns = [
     minWidth: '150px',
     sortField: 'addedDate',
     selector: row => row.addedDate,
-    cell: row => <span>{dateFormat(row.addedDate, "dd/mm/yyyy") || 0}</span>
+    cell: row => <Link className='fw-bolder'
+      to={`/apps/encounter/view/${row.encounterID}`}
+    >{dateFormat(row.addedDate, "dd/mm/yyyy") || 0}</Link>
   },
   {
     name: 'สถานะการตรวจ',
@@ -159,27 +164,25 @@ export const columns = [
     minWidth: '110px',
     cell: row => (
       <div className='column-action d-flex align-items-center'>
-        <>
-          <Link className='text-body' to={`/apps/invoice/preview/${row.invID}`} id={`view-${row.encounterID}`}>
-            <File size={18} className='mx-1' />
-          </Link>
-          <UncontrolledTooltip placement='top' target={`view-${row.encounterID}`}>
-            ดูค่ารักษา
-          </UncontrolledTooltip>
-        </>
-
-        <>
-          <Link className='text-body' to={`/apps/invoice/preview/${row.invID}`} id={`download-${row.encounterID}`}>
-            <Download className='text-body cursor-pointer' size={18}  tag={Link} />
-          </Link>
-          <UncontrolledTooltip placement='top' target={`download-${row.encounterID}`}>
-            ดาวน์โหลดค่ารักษา
-          </UncontrolledTooltip>
-        </>
-
-
-
+        {row.eStatus == 1 ? (
+          <p> </p>
+        ) : (
+          <div>
+            <Link className='text-body' to={`/apps/invoice/preview/${row.invID}`} id={`view-${row.encounterID}`}>
+              <File size={18} className='mx-1' />
+            </Link>
+            <UncontrolledTooltip placement='top' target={`view-${row.encounterID}`}>
+              ดูค่ารักษา
+            </UncontrolledTooltip>
+            <Link className='text-body' to={`/apps/invoice/preview/${row.invID}`} id={`download-${row.encounterID}`}>
+              <Download className='text-body cursor-pointer' size={18} tag={Link} />
+            </Link>
+            <UncontrolledTooltip placement='top' target={`download-${row.encounterID}`}>
+              ดาวน์โหลดค่ารักษา
+            </UncontrolledTooltip>
+          </div>
+        )}
       </div>
     )
-  }
+  },
 ]

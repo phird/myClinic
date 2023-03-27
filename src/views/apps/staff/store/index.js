@@ -4,15 +4,22 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 // ** Axios Imports
 import axios from 'axios'
 
-export const getAllData = createAsyncThunk('appUsers/getAllData', async () => {
-  const response = await axios.get('/api/users/list/all-data')
+
+export const getAllData = createAsyncThunk('appStaffs/getAllData', async () => {
+  const response = await axios.get('http://localhost:8000/staff/')
   console.log("get all data ")
   console.log(response.data)
   return response.data
 })
 
-export const getData = createAsyncThunk('appUsers/getData', async params => {
-  const response = await axios.get('/api/users/list/data', params)
+export const getAllDoc = createAsyncThunk('appStaffs/getAllData', async () => {
+  const response = await axios.get('http://localhost:8000/staff/allData')
+  return response.data
+})
+
+
+export const getData = createAsyncThunk('appStaffs/getData', async params => {
+  const response = await axios.get('http://localhost:8000/staff/list/data', params)
   console.log(response)
   console.log("params : " )
   console.log(params)
@@ -20,9 +27,15 @@ export const getData = createAsyncThunk('appUsers/getData', async params => {
   console.log(response)
   return {
     params,
-    data: response.data.users,
-    totalPages: response.data.total
+    data: response.data,
+    totalPages: response.data.length
   }
+})
+
+// * INSERT NEW PATIENT TO DATABASE
+export const postStaff = createAsyncThunk('appStaffs/postStff', async (newData) => {
+  const response = await axios.post('http://localhost:8000/staff/createStaff', newData)
+  return response.data
 })
 
 export const getUser = createAsyncThunk('appUsers/getUser', async id => {
@@ -50,6 +63,7 @@ export const appStaffsSlice = createSlice({
   name: 'appUsers',
   initialState: {
     data: [],
+    doctor: [],
     total: 1,
     params: {},
     allData: [],
@@ -69,6 +83,10 @@ export const appStaffsSlice = createSlice({
       .addCase(getUser.fulfilled, (state, action) => {
         state.selectedUser = action.payload
       })
+      .addCase(postStaff.fulfilled, (state, action) => {
+        state.total = state.total+ 1 
+      })
+
   }
 })
 

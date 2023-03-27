@@ -9,10 +9,10 @@ import { columns } from './columns'
 
 
 // ** Store & Actions
-import { getAllEncounter, getEncounterData, postEncounter } from '../store';
+import { getAllEncounter, getEncounterData, postEncounter, forExport } from '../store';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllData } from '../../patients/store'
-
+import { getAllDoc } from '../../staff/store';
 // ** Third Party Components
 import ReactPaginate from 'react-paginate'
 import DataTable from 'react-data-table-component'
@@ -48,6 +48,17 @@ import {
 // ** Styles
 import '@styles/react/libs/react-select/_react-select.scss'
 import '@styles/react/libs/tables/react-dataTable-component.scss'
+import axios from 'axios';
+
+
+// @deno-types="https://unpkg.com/xlsx/types/index.d.ts"
+import * as XLSX from 'https://unpkg.com/xlsx/xlsx.mjs';
+
+/* load the codepage support library for extended support with older formats  */
+import * as cptable from 'https://unpkg.com/xlsx/dist/cpexcel.full.mjs';
+XLSX.set_cptable(cptable);
+import { saveAs } from 'file-saver';
+
 
 // ** Table Header
 const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchTerm }) => {
@@ -65,15 +76,33 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
   const [patientEn, setPatientEn] = useState([]);
   // ** in this case use patient instead of doctor  -> please fix
   const [doctor, setDoctor] = useState([]);
+  const [allDoctor, setAllDoctor] = useState([]);
 
   // ** Get Patient Data 
   useEffect(() => {
     const fetchData = async () => {
       const data = await dispatch(getAllData());
       setAllPatients(data.payload)
+      const response = await axios.get('http://localhost:8000/staff/allData')
+      setAllDoctor(response.data)
     };
     fetchData();
+    dispatch(forExport())
   }, [dispatch])
+
+
+  function downloadExcel(array) {
+    const headers = Object.keys(array[0])
+    const data = array.map(obj => headers.map(key => obj[key]))
+
+    const worksheet = XLSX.utils.json_to_sheet(array, { header: headers })
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1')
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' })
+
+    saveAs(new Blob([excelBuffer], { type: 'application/octet-stream' }), 'export.xlsx')
+  }
+
 
 
   const handleSubmitEncounter = (event) => {
@@ -81,11 +110,11 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
     // retrieve the values of the form field 
     const patientID = patient.value;
     const staffID = doctor.value;
-    const note = document.getElementById('note').value;
+    const note ='';  /* document.getElementById('note').value; */
     const addedDate = currentDate;
     const newData = { patientID, staffID, note, addedDate };
     // update state 
-    
+
     if (!patientID || !staffID) {
       return;
     }
@@ -193,11 +222,29 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                 onChange={e => handleFilter(e.target.value)}
                 placeholder='ชื่อ / รหัสการตรวจ'
               />
-
-
             </div>
+            <div className='d-flex align-items-center table-header-actions' >
+              <UncontrolledDropdown className='me-1'>
+                <DropdownToggle color='secondary' caret outline>
+                  <Share className='font-small-4 me-50' />
+                  <span className='align-middle'>Export</span>
+                </DropdownToggle>
+                <DropdownMenu>
+                  <DropdownItem className='w-100' onClick={() => downloadExcel(store.forExport)}>
+                    <FileText className='font-small-4 me-50' />
+                    <span className='align-middle'>EXCEL</span>
+                  </DropdownItem>
+                </DropdownMenu>
+              </UncontrolledDropdown>
 
- 
+              <Button
+                className='add-new-user'
+                color='primary'
+                onClick={() => setShow(true)}
+              >
+                เพิ่มการรักษา
+              </Button>
+            </div>
           </Col>
         </Row>
       </div>
@@ -231,7 +278,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                 <Select
                   id="patientName"
                   placeholder="เลือก หรือ ค้นแพทย์"
-                  options={allPatients.map((patient) => ({ value: patient.patientID, label: patient.fname + "  " + patient.lname }))}
+                  options={allDoctor.map((doc) => ({ value: doc.staffID, label: doc.fname + "  " + doc.lname }))}
                   required
                   value={doctor}
                   onChange={handleDoctorChange}
@@ -239,7 +286,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                   style={{ maxWidth: '100%' }}
                 />
               </Row>
-              <Row md={12} xs={12} style={{ marginBottom: '20px' }}>
+              {/*  <Row md={12} xs={12} style={{ marginBottom: '20px' }}>
                 <Input
                   id="note"
                   type="textarea"
@@ -247,7 +294,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                   rows='5'
                   style={{ textOverflow: "ellipsis", overflow: "hidden", maxWidth: "100%", minHeight: "120px" }}
                 />
-              </Row>
+              </Row> */}
               <Col md={12} xs={12} style={{ marginBottom: '20px' }}>
                 <Row style={{ marginBottom: '20px' }}>
                   <Label className='h4 form-label font-weight-bold' for='billing-email'>
@@ -296,7 +343,7 @@ const EncountersList = () => {
           sortColumn,
           q: searchTerm,
           page: currentPage,
-          
+
         }
       )
     )
@@ -311,7 +358,7 @@ const EncountersList = () => {
           sortColumn,
           q: searchTerm,
           page: page.selected + 1,
-         
+
         }
       )
     )
@@ -328,7 +375,7 @@ const EncountersList = () => {
           sortColumn,
           q: searchTerm,
           page: currentPage,
-          
+
         }
       ))
     setRowsPerPage(value)
@@ -344,7 +391,7 @@ const EncountersList = () => {
           sortColumn,
           q: val,
           page: currentPage,
-          
+
         }
       )
     )
@@ -352,7 +399,7 @@ const EncountersList = () => {
 
   // ** Custom Pagination
   const CustomPagination = () => {
-    const count = Number(Math.ceil(store.total/ rowsPerPage))
+    const count = Number(Math.ceil(store.total / rowsPerPage))
     console.log(Number(store.total))
     console.log("/")
     console.log(rowsPerPage)
@@ -385,10 +432,10 @@ const EncountersList = () => {
     const isFiltered = Object.keys(filters).some(function (k) {
       return filters[k].length > 0;
     })
-    const startIndex = (currentPage - 1)* rowsPerPage;
+    const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage
     if (store.data.length > 0) {
-      return store.data.slice(startIndex,endIndex);
+      return store.data.slice(startIndex, endIndex);
     } else if (store.data.length === 0 && isFiltered) {
       return []
     } else {
@@ -441,7 +488,7 @@ const EncountersList = () => {
               />
             }
           />
-          
+
         </div>
       </Card>
     </Fragment>

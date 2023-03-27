@@ -113,7 +113,7 @@ const CustomHeader = ({ handlePerPage, rowsPerPage, handleFilter, searchTerm }) 
                 <Row>
                     <Col xl='6' className='d-flex align-items-center p-0'>
                         <div className='d-flex align-items-center w-100'>
-                            <label htmlFor='rows-per-page'>Show</label>
+                            <label htmlFor='rows-per-page'>แสดง</label>
                             <Input
                                 className='mx-50'
                                 type='select'
@@ -126,7 +126,7 @@ const CustomHeader = ({ handlePerPage, rowsPerPage, handleFilter, searchTerm }) 
                                 <option value='25'>25</option>
                                 <option value='50'>50</option>
                             </Input>
-                            <label htmlFor='rows-per-page'>Entries</label>
+                            <label htmlFor='rows-per-page'>รายการ</label>
                         </div>
                     </Col>
                     <Col

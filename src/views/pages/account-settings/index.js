@@ -40,7 +40,6 @@ const AccountSettings = () => {
         <Row>
           <Col xs={12}>
             <Tabs className='mb-2' activeTab={activeTab} toggleTab={toggleTab} />
-
             <TabContent activeTab={activeTab}>
               <TabPane tabId='1'>
                 <AccountTabContent data={data.general} />
