@@ -21,7 +21,6 @@ import '@styles/react/libs/react-select/_react-select.scss'
 //* dateFormat imports
 import dateFormat from 'dateformat'
 
-
 const roleColors = {
   editor: 'light-info',
   admin: 'light-danger',

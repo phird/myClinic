@@ -9,13 +9,11 @@ import { getAllData, getData } from '../store'
 import { useDispatch, useSelector } from 'react-redux'
 
 // ** Third Party Components
-import Select from 'react-select'
 import ReactPaginate from 'react-paginate'
 import DataTable from 'react-data-table-component'
-import { ChevronDown, Share, Printer, FileText, File, Grid, Copy } from 'react-feather'
+import { ChevronDown } from 'react-feather'
 
 // ** Utils
-import { selectThemeColors } from '@utils'
 
 // ** Modal 
 import AddStaffModal from './Modal'
@@ -26,16 +24,7 @@ import {
   Col,
   Card,
   Input,
-  Label,
-  Button,
-  CardBody,
-  CardTitle,
-  CardHeader,
-  DropdownMenu,
-  DropdownItem,
-  DropdownToggle,
-  UncontrolledDropdown
-} from 'reactstrap'
+  Button} from 'reactstrap'
 
 // ** Styles
 import '@styles/react/libs/react-select/_react-select.scss'
@@ -70,13 +59,14 @@ const CustomHeader = ({ store, toggleModal, handlePerPage, rowsPerPage, handleFi
           className='d-flex align-items-sm-center justify-content-xl-end justify-content-start flex-xl-nowrap flex-wrap flex-sm-row flex-column pe-xl-1 p-0 mt-xl-0 mt-1'
         >
           <div className='d-flex align-items-center mb-sm-0 mb-1 me-1'>
-            <label className='mb-0' htmlFor='search-invoice'>
-              Search:
+            <label className='mb-0' htmlFor='search-invoice' block>
+              ค้นหา:
             </label>
             <Input
               id='search-invoice'
               className='ms-50 w-100'
               type='text'
+              placeholder='รายชื่อ'
               value={searchTerm}
               onChange={e => handleFilter(e.target.value)}
             />
@@ -102,7 +92,7 @@ const UsersList = () => {
   const [sort, setSort] = useState('desc')
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
-  const [sortColumn, setSortColumn] = useState('id')
+  const [sortColumn, setSortColumn] = useState('staffID')
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [modalOpen, setModalOpen] = useState(false)
   const [currentRole, setCurrentRole] = useState({ value: '', label: 'Select Role' })
@@ -111,20 +101,23 @@ const UsersList = () => {
 
   // ** toggle Modal
   const toggleModal = () => setModalOpen(!modalOpen)
+  const currentUserData = localStorage.getItem('userData');
+  const userData = JSON.parse(currentUserData);
+  const currentUserID = userData.staffID
 
   // ** Get data on mount
+  useEffect(()=>{
+    dispatch(getAllData(currentUserID))
+  },[])
   useEffect(() => {
-    dispatch(getAllData())
     dispatch(
       getData({
+        except: currentUserID,
         sort,
         sortColumn,
         q: searchTerm,
         page: currentPage,
         perPage: rowsPerPage,
-        role: currentRole.value,
-        status: currentStatus.value,
-        currentPlan: currentPlan.value
       })
     )
   }, [dispatch, store.total,store.data.length, sort, sortColumn, currentPage])
@@ -133,14 +126,12 @@ const UsersList = () => {
   const handlePagination = page => {
     dispatch(
       getData({
+        except: currentUserID,
         sort,
         sortColumn,
         q: searchTerm,
+        page: currentPage,
         perPage: rowsPerPage,
-        page: page.selected + 1,
-        role: currentRole.value,
-        status: currentStatus.value,
-        currentPlan: currentPlan.value
       })
     )
     setCurrentPage(page.selected + 1)
@@ -151,14 +142,12 @@ const UsersList = () => {
     const value = parseInt(e.currentTarget.value)
     dispatch(
       getData({
+        except: currentUserID,
         sort,
         sortColumn,
         q: searchTerm,
-        perPage: value,
         page: currentPage,
-        role: currentRole.value,
-        currentPlan: currentPlan.value,
-        status: currentStatus.value
+        perPage: rowsPerPage,
       })
     )
     setRowsPerPage(value)
@@ -169,14 +158,12 @@ const UsersList = () => {
     setSearchTerm(val)
     dispatch(
       getData({
+        except: currentUserID,
         sort,
-        q: val,
         sortColumn,
+        q: searchTerm,
         page: currentPage,
         perPage: rowsPerPage,
-        role: currentRole.value,
-        status: currentStatus.value,
-        currentPlan: currentPlan.value
       })
     )
   }
@@ -207,9 +194,6 @@ const UsersList = () => {
   // ** Table data to render
   const dataToRender = () => {
     const filters = {
-      role: currentRole.value,
-      currentPlan: currentPlan.value,
-      status: currentStatus.value,
       q: searchTerm
     }
 
@@ -231,14 +215,12 @@ const UsersList = () => {
     setSortColumn(column.sortField)
     dispatch(
       getData({
+        except: currentUserID,
         sort,
         sortColumn,
         q: searchTerm,
         page: currentPage,
         perPage: rowsPerPage,
-        role: currentRole.value,
-        status: currentStatus.value,
-        currentPlan: currentPlan.value
       })
     )
   }

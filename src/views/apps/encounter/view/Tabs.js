@@ -39,6 +39,7 @@ import { useDispatch } from 'react-redux'
 import { addSymptom, addNote, handleSubmitEncounter, addUrl } from '../store'
 import { postInvoiceList } from '../../invoice/store'
 import { postDrugList } from '../../prescription/store'
+import { changeStatusInvoice } from '../../invoice/store'
 
 // * Firebase Storage 
 import storage from '../../../../../firebaseConfig'
@@ -134,16 +135,16 @@ const UserTabs = ({ selectedEncounter }) => {
           getDownloadURL(uploadTask.snapshot.ref).then((url) => {
             console.log(url);
             setUrl(url)
-            const exUrl = { encounterID, url};
+            const exUrl = { encounterID, url };
             dispatch(addUrl(exUrl));
           });
         }
       );
-      
-      
+
+
 
       // * put url into Img_url Table
-      
+
     })
   }
 
@@ -156,33 +157,27 @@ const UserTabs = ({ selectedEncounter }) => {
 
   }
 
-  const handleSaveEncounter = (e) => {    //** File Upload also place here */
+  const handleSaveEncounter = async(e) => {    //** File Upload also place here */
     e.preventDefault();
-    // POST EACH SYMPTOM
-    /* symptoms['encounterID'] =  */
+    
     const encounterID = selectedEncounter.encounterID
 
-    // * add each Symtoms to EncounterSymptom
-    symptoms.forEach(symptom => {
-      dispatch(addSymptom({ encounterID, symptom }));
+    await symptoms.forEach(symptom => {    // * add each Symtoms to EncounterSymptom
+       dispatch(addSymptom({ encounterID, symptom }));
     });
 
-    // * add Doctor Note To Encounter
-
-    dispatch(addNote({ encounterID, doctorNote }));
-
-    // * add Each invoice detail to InvoceList
-    invoiceList.forEach(invoice => {
+    await dispatch(addNote({ encounterID, doctorNote }));    // * add Doctor Note To Encounter
+    await invoiceList.forEach(invoice => {    // * add Each invoice detail to InvoceList
       dispatch(postInvoiceList({ invID, invoice }));
     })
-    //* add Each prescription to Prescription List
-    drugsList.forEach(drugDetail => {
+
+    await drugsList.forEach(drugDetail => {    //* add Each prescription to Prescription List
       dispatch(postDrugList({ prescriptionID, drugDetail }));
     })
 
-    //** handleSubmitEncounter by changing eStatus from 1 to 0 */
-    dispatch(handleSubmitEncounter(encounterID));
+    await dispatch(handleSubmitEncounter(encounterID));    //** handleSubmitEncounter by changing eStatus from 1 to 0 */
 
+    await dispatch(changeStatusInvoice(encounterID)); //**  changing Invoice.status from 0 to 1 */
 
     handleReload();
 

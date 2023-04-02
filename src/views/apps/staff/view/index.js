@@ -1,25 +1,25 @@
 // ** React Imports
 import { useEffect, useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 
 // ** Store & Actions
-import { getUser } from '../store'
+import { getStaffData } from '../store'
 import { useSelector, useDispatch } from 'react-redux'
 
 // ** Reactstrap Imports
-import { Row, Col, Alert } from 'reactstrap'
+import { Row, Col, Alert, Button} from 'reactstrap'
 
 // ** User View Components
 import UserTabs from './Tabs'
-import PlanCard from './PlanCard'
 import UserInfoCard from './UserInfoCard'
-
+import UserStat from './UserStat'
 // ** Styles
+import { ChevronLeft } from 'react-feather'
 import '@styles/react/apps/app-users.scss'
 
-const UserView = () => {
+const StaffView = () => {
   // ** Store Vars
-  const store = useSelector(state => state.users)
+  const store = useSelector(state => state.staff)
   const dispatch = useDispatch()
 
   // ** Hooks
@@ -27,7 +27,8 @@ const UserView = () => {
 
   // ** Get suer on mount
   useEffect(() => {
-    dispatch(getUser(parseInt(id)))
+    dispatch(getStaffData(parseInt(id)))
+
   }, [dispatch])
 
   const [active, setActive] = useState('1')
@@ -37,27 +38,48 @@ const UserView = () => {
       setActive(tab)
     }
   }
-  console.log("this is store.selectedUser")
-  console.log(store.selectedUser)
-  return store.selectedUser !== null && store.selectedUser !== undefined ? (
+
+  const navigate = useNavigate();
+
+  const handleGoBack = (e) => {
+    e.preventDefault();
+    navigate(-1)
+  }
+
+
+  return store.selectedStaff !== null && store.selectedStaff !== undefined ? (
     <div className='app-user-view'>
       <Row>
+        <Col>
+          <div>
+            <Button.Ripple
+              className='btn-icon'
+              color='flat-success'
+              onClick={e => handleGoBack(e)}
+            >
+              <ChevronLeft size={24} />
+              กลับ
+            </Button.Ripple>
+          </div>
+        </Col>
+      </Row>
+      <Row>
         <Col xl='4' lg='5' xs={{ order: 1 }} md={{ order: 0, size: 5 }}>
-          <UserInfoCard selectedUser={store.selectedUser} />
-          <PlanCard />
+          <UserInfoCard selectedStaff={store.selectedStaff} />
         </Col>
         <Col xl='8' lg='7' xs={{ order: 0 }} md={{ order: 1, size: 7 }}>
-          <UserTabs active={active} toggleTab={toggleTab} />
+          <UserStat encounterData={store.encounterStaff}/>
+          <UserTabs active={active} toggleTab={toggleTab} selectedStaff={store.selectedStaff} />
         </Col>
       </Row>
     </div>
   ) : (
     <Alert color='danger'>
-      <h4 className='alert-heading'>User not found</h4>
+      <h4 className='alert-heading'>ไม่พบข้อมูลบุคลากร</h4>
       <div className='alert-body'>
-        User with id: {id} doesn't exist. Check list of all Users: <Link to='/apps/user/list'>Users List</Link>
+        ไม่พบข้อมูลบุคลากรหมายเลข : {id}. กลับสู่หน้าจัดการข้อมูลบุตลากร: <Link to='/apps/staff'>จัดการข้อมูลบุคลากร</Link>
       </div>
     </Alert>
   )
 }
-export default UserView
+export default StaffView

@@ -27,30 +27,58 @@ const AppRoutes = [
   {
     element: <Insight />,
     path: '/apps/insight',
+    meta: {
+      action: 'read',
+      resource: 'ACL'
+    }
   },
   {
     element: <Appointment />,
-    path: '/apps/appointment'
+    path: '/apps/appointment',
+    meta: {
+      action: 'read',
+      resource: 'ACL'
+    }
   },
   {
     element: <Encounter />,
-    path: '/apps/encounter'
+    path: '/apps/encounter',
+    meta: {
+      action: 'read',
+      resource: 'ACL'
+    }
   },
   {
     element: <EncounterView />,
-    path: '/apps/encounter/view/:id'
+    path: '/apps/encounter/view/:id',
+    meta: {
+      action: 'read',
+      resource: 'ACL'
+    }
   },
   {
     element: <UploadList />,
-    path: '/apps/encounter/view/:id/upload'
+    path: '/apps/encounter/view/:id/upload',
+    meta: {
+      action: 'read',
+      resource: 'ACL'
+    }
   },
   {
     element: <Patient />,
-    path: '/apps/patient'
+    path: '/apps/patient',
+    meta: {
+      action: 'read',
+      resource: 'ACL'
+    }
   },
   {
     element: <PatientView />,
-    path: '/apps/patient/view/:id'
+    path: '/apps/patient/view/:id',
+    meta: {
+      action: 'read',
+      resource: 'ACL'
+    }
   },
   {
     element: <Services />,
@@ -76,25 +104,38 @@ const AppRoutes = [
   /* INvoice section */
   {
     element: <InvoiceList />,
-    path: '/apps/invoice/list'
+    path: '/apps/invoice/list',
+    meta: {
+      action: 'read',
+      resource: 'ACL'
+    }
   },
   {
     element: <InvoicePreview />,
-    path: '/apps/invoice/preview/:id'
+    path: '/apps/invoice/preview/:id',
+    meta: {
+      action: 'read',
+      resource: 'ACL'
+    }
   },
   {
     element: <InvoiceEdit />,
-    path: '/apps/invoice/edit/:id'
+    path: '/apps/invoice/edit/:id',
+    meta: {
+      action: 'read',
+      resource: 'ACL'
+    }
   },
   {
     path: '/apps/invoice/print/:id',
     element: <InvoicePrint />,
     meta: {
-      layout: 'blank'
+      layout: 'blank',
+      action: 'read',
+      resource: 'ACL'
     }
   },
 
-  /* role & permission */
 
 ]
 

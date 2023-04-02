@@ -1,7 +1,6 @@
 // ** React Imports
 import { Fragment, useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-// ** Invoice List Sidebar
 
 // ** Table Columns
 import { columns } from './columns'
@@ -12,7 +11,8 @@ import { columns } from './columns'
 import { getAllEncounter, getEncounterData, postEncounter, forExport } from '../store';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllData } from '../../patients/store'
-import { getAllDoc } from '../../staff/store';
+import { getDoctorForUser } from '../store';
+
 // ** Third Party Components
 import ReactPaginate from 'react-paginate'
 import DataTable from 'react-data-table-component'
@@ -62,13 +62,10 @@ import { saveAs } from 'file-saver';
 
 // ** Table Header
 const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchTerm }) => {
-
   // ** Current Date
   const currentDate = new Date().toISOString().slice(0, 10);
-
   // ** useDispatch 
   const dispatch = useDispatch()
-
   // ** State
   const [show, setShow] = useState(false)
   const [patient, setPatient] = useState([]);
@@ -78,17 +75,22 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
   const [doctor, setDoctor] = useState([]);
   const [allDoctor, setAllDoctor] = useState([]);
 
+
+
   // ** Get Patient Data 
   useEffect(() => {
     const fetchData = async () => {
       const data = await dispatch(getAllData());
       setAllPatients(data.payload)
-      const response = await axios.get('http://localhost:8000/staff/allData')
-      setAllDoctor(response.data)
     };
     fetchData();
-    dispatch(forExport())
-  }, [dispatch])
+    setAllPatients(store.allData)
+    setAllDoctor(store.doctorList)
+    dispatch(forExport());
+  }, [dispatch, store.doctorList.length, store.allData.length])
+
+  console.log("all Patient  : ")
+  console.log(allPatients)
 
 
   function downloadExcel(array) {
@@ -103,14 +105,12 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
     saveAs(new Blob([excelBuffer], { type: 'application/octet-stream' }), 'export.xlsx')
   }
 
-
-
   const handleSubmitEncounter = (event) => {
     event.preventDefault();
     // retrieve the values of the form field 
     const patientID = patient.value;
     const staffID = doctor.value;
-    const note ='';  /* document.getElementById('note').value; */
+    const note = '';  /* document.getElementById('note').value; */
     const addedDate = currentDate;
     const newData = { patientID, staffID, note, addedDate };
     // update state 
@@ -128,8 +128,6 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
       console.log(error)
     }
   }
-
-
   const handlePatientChange = (selectedOption) => {
     setPatient(selectedOption);
   }
@@ -286,15 +284,6 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                   style={{ maxWidth: '100%' }}
                 />
               </Row>
-              {/*  <Row md={12} xs={12} style={{ marginBottom: '20px' }}>
-                <Input
-                  id="note"
-                  type="textarea"
-                  placeholder='หมายเหตุ'
-                  rows='5'
-                  style={{ textOverflow: "ellipsis", overflow: "hidden", maxWidth: "100%", minHeight: "120px" }}
-                />
-              </Row> */}
               <Col md={12} xs={12} style={{ marginBottom: '20px' }}>
                 <Row style={{ marginBottom: '20px' }}>
                   <Label className='h4 form-label font-weight-bold' for='billing-email'>
@@ -347,6 +336,7 @@ const EncountersList = () => {
         }
       )
     )
+    dispatch(getDoctorForUser())
   }, [dispatch, store.data.length, sort, sortColumn, currentPage])
 
   // ** Function in get data on page change

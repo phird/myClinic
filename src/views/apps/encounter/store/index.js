@@ -140,6 +140,9 @@ export const forExport = createAsyncThunk('appEncounters/forExport', async () =>
   }
 })
 
+
+
+
 export const deleteEncounter = createAsyncThunk('appEncounters/deleteEncounter', async (id, { dispatch, getState }) => {
   await axios.delete('/apps/encounter/delete', { id })
   await dispatch(getData(getState().encounters.params))
@@ -149,7 +152,7 @@ export const deleteEncounter = createAsyncThunk('appEncounters/deleteEncounter',
 
 export const getDoctorForUser = createAsyncThunk('appEncounters/getDoctorForUser', async () => {
   try {
-    const doctor =  await axios.get('http://localhost:8000/staff/allData')
+    const doctor =  await axios.get('http://localhost:8000/staff/list/doctor')
     return {
       data: doctor.data,
       total: doctor.data.length

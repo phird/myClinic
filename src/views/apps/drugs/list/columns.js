@@ -73,6 +73,19 @@ export const columns = [
     )
   },
   {
+    name: 'ราคา',
+    sortable: true,
+    minWidth: '172px',
+    sortField: 'drugPrice',
+    selector: row =>
+      <div className='d-flex justify-content-left align-items-center'>
+        <div className='d-flex flex-column'>
+          <span className='fw-bolder'>{row.drugPrice + ' ' + 'บาท'} </span>
+        </div>
+      </div>
+  },
+
+  {
     name: '',
     minWidth: '120px',
     cell: row => {
@@ -199,28 +212,30 @@ export const columns = [
       return (
         <div className='text-capitalize'>
           {/* View */}
-          <Link>
-            <Button.Ripple
-              id={`view-${row.drugID}`}
-              className='btn-icon'
-              color='flat-success'
-              onClick={handleShow}
-            >
-              <FileText size={18} />
-            </Button.Ripple>
-          </Link>
-          <UncontrolledTooltip target={`view-${row.drugID}`}>
-            ดูข้อมูลยา
-          </UncontrolledTooltip>
-          {/* Delete  */}
-          <Link>
-            <Button.Ripple id={`delete-${row.drugID}`} onClick={handleDeleteSubmit} className='btn-icon' color='flat-danger'>
-              <Trash2 size={18} />
-            </Button.Ripple>
-          </Link>
-          <UncontrolledTooltip target={`delete-${row.drugID}`}>
-            ลบ
-          </UncontrolledTooltip>
+          <div className='column-action d-flex align-items-center' >
+            <Link>
+              <Button.Ripple
+                id={`view-${row.drugID}`}
+                className='btn-icon'
+                color='flat-success'
+                onClick={handleShow}
+              >
+                <FileText size={18} />
+              </Button.Ripple>
+            </Link>
+            <UncontrolledTooltip target={`view-${row.drugID}`}>
+              ดูข้อมูลยา
+            </UncontrolledTooltip>
+            {/* Delete  */}
+            <Link>
+              <Button.Ripple id={`delete-${row.drugID}`} onClick={handleDeleteSubmit} className='btn-icon' color='flat-danger'>
+                <Trash2 size={18} />
+              </Button.Ripple>
+            </Link>
+            <UncontrolledTooltip target={`delete-${row.drugID}`}>
+              ลบ
+            </UncontrolledTooltip>
+          </div>
 
           {/* Modal */}
           <Modal className='modal-dialog-centered modal-lg ' isOpen={showModal} onClosed={handleModalClose}>

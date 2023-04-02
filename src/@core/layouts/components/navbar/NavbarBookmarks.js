@@ -148,7 +148,7 @@ const NavbarBookmarks = props => {
           </NavLink>
         </NavItem>
       </ul>
-      <ul className='nav navbar-nav bookmark-icons align-items-center'>
+ {/*      <ul className='nav navbar-nav bookmark-icons align-items-center'>
         {renderBookmarks()}
         {renderExtraBookmarksDropdown()}
         <NavItem className='nav-item d-none d-lg-block'>
@@ -223,7 +223,7 @@ const NavbarBookmarks = props => {
             ) : null}
           </div>
         </NavItem>
-      </ul>
+      </ul> */}
     </Fragment>
   )
 }

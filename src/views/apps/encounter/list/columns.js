@@ -138,8 +138,6 @@ export const columns = [
           }
         },
       ]
-
-      console.log(store)
       useEffect(() => {
         setDrugList(store.prescriptions)
       }, [store.prescriptions])

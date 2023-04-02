@@ -27,33 +27,39 @@ const UserDropdown = () => {
 
   // ** State
   const [userData, setUserData] = useState(null)
-
+  const [userID, setUserID] = useState(0)
   //** ComponentDidMount
   useEffect(() => {
-    if (isUserLoggedIn() !== null) {
-      setUserData(JSON.parse(localStorage.getItem('userData')))
-    }
-  }, [])
+    const fetchData = async () => {
+      if (isUserLoggedIn() !== null) {
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        await setUserData(userData);
+        setUserID(userData.staffID);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   //** Vars
   const userAvatar = (userData && userData.avatar) || defaultAvatar
- 
+
   return (
     <UncontrolledDropdown tag='li' className='dropdown-user nav-item'>
       <DropdownToggle href='/' tag='a' className='nav-link dropdown-user-link' onClick={e => e.preventDefault()}>
         <div className='user-nav d-sm-flex d-none'>
           <span className='user-name fw-bold'>{(userData && userData['fullname']) || ' - '}</span>
-          <span className='user-status'>{(userData && userData.role === 'admin' ? 'ผู้ดูแล' : 'ทั่วไป' ) || 'Admin'}</span>
+          <span className='user-status'>{(userData && userData.role === 'admin' ? 'ผู้ดูแล' : 'ทั่วไป') || 'Admin'}</span>
         </div>
         <Avatar img={userAvatar} imgHeight='40' imgWidth='40' status='online' />
       </DropdownToggle>
       <DropdownMenu end>
-        <DropdownItem tag={Link} to='/pages/profile'>
+        <DropdownItem tag={Link} to={`/apps/staff/view/${userID}`}>
           <User size={14} className='me-75' />
           <span className='align-middle'>โปรไฟล์</span>
         </DropdownItem>
         <DropdownItem divider />
-        <DropdownItem tag={Link} to='/pages/account-settings'>
+        <DropdownItem tag={Link} to={`/apps/staff/view/${userID}`}>
           <Settings size={14} className='me-75' />
           <span className='align-middle'>ตั้งค่า</span>
         </DropdownItem>

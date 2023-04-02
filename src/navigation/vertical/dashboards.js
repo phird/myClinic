@@ -6,6 +6,8 @@ export default [
     id: 'dashboards',
     title: 'หน้าแรก',
     icon: <Home size={20} />,
-    navLink: '/home'
+    navLink: '/home',
+    action: 'read',
+    resource: 'ACL',
   }
 ]

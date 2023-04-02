@@ -7,6 +7,7 @@ import staff from '@src/views/apps/staff/store'
 import encounters from '@src/views/apps/encounter/store'
 import drugs from '@src/views/apps/drugs/store'
 import prescription from '@src/views/apps/prescription/store'
+import role from '@src/views/apps/setting/Role/store'
 import invoice from '@src/views/apps/invoice/store'
 import service from '@src/views/apps/services/store'
 import calendar from '@src/views/apps/calendar/store'
@@ -29,6 +30,7 @@ const rootReducer = combineReducers({
   navbar,
   layout,
   invoice,
+  role,
   calendar,
   dataTables,
   service,

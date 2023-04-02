@@ -92,7 +92,7 @@ export const columns = [
           ดูค่ารักษา
         </UncontrolledTooltip>
 
-        <Link to={`/apps/invoice/print/${row.invID}`} id={`dl-tooltip-${row.invID}`}>
+        <Link to={`/apps/invoice/print/${row.invID}`}  id={`dl-tooltip-${row.invID}`} target='_blank'>
           <Button.Ripple
             className='btn-icon'
             color='flat-success'

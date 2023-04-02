@@ -8,7 +8,7 @@ import { store } from '@store/store'
 import { deleteService, getServiceData, editService, getData } from '../store'
 
 // ** Icons Imports
-import { Trash2, Edit, Edit2 } from 'react-feather'
+import { Trash2, Edit, Edit2, FileText } from 'react-feather'
 
 // ** Reactstrap Imports
 import { UncontrolledTooltip, Button, Modal, ModalBody, ModalHeader, Row, Col, Form, Input, InputGroup, InputGroupText, FormGroup, Label } from 'reactstrap'
@@ -29,7 +29,7 @@ export const columns = [
     cell: row =>
       <div className='d-flex justify-content-left align-items-center'>
         <div className='d-flex flex-column'>
-            <span className='text-capitalize fw-bolder'>#SV{row.serviceID}</span>         
+          <span className='text-capitalize fw-bolder'>#SV{row.serviceID}</span>
         </div>
       </div>
 
@@ -53,7 +53,7 @@ export const columns = [
     )
   },
   {
-    name: 'จำนวน',
+    name: 'ราคา',
     minWidth: '230px',
     sortable: true,
     sortField: 'sprice',
@@ -174,22 +174,25 @@ export const columns = [
 
       return (
         <div className='text-capitalize'>
-          <>
-            <Button.Ripple className='btn-icon' id={`edit-${row.serviceID}`} color='flat-success'
-              onClick={handleOpenModal}>
-              <Edit size={16} onClick={handleOpenModal} />
-            </Button.Ripple>
-            <UncontrolledTooltip target={`edit-${row.serviceID}`}>
-              แก้ไข
-            </UncontrolledTooltip>
 
-            <Button.Ripple className='btn-icon' color='flat-danger' id={`del-${row.serviceID}`} onClick={handleDeleteSubmit} >
-              <Trash2 size={16} />
-            </Button.Ripple>
-            <UncontrolledTooltip target={`del-${row.serviceID}`} >
-              ลบ
-            </UncontrolledTooltip>
-          </>
+          <div className='column-action d-flex align-items-center'>
+            <>
+              <Button.Ripple className='btn-icon' id={`edit-${row.serviceID}`} color='flat-success'
+                onClick={handleOpenModal}>
+                <FileText size={16} onClick={handleOpenModal} />
+              </Button.Ripple>
+              <UncontrolledTooltip target={`edit-${row.serviceID}`}>
+                แก้ไข
+              </UncontrolledTooltip>
+
+              <Button.Ripple className='btn-icon' color='flat-danger' id={`del-${row.serviceID}`} onClick={handleDeleteSubmit} >
+                <Trash2 size={16} />
+              </Button.Ripple>
+              <UncontrolledTooltip target={`del-${row.serviceID}`} >
+                ลบ
+              </UncontrolledTooltip>
+            </>
+          </div>
 
           <Modal isOpen={showModal} className='modal-dialog-centered modal-lg' backdrop="static">
             <ModalHeader className='bg-transparent' toggle={() => setShowModal(!showModal)}>

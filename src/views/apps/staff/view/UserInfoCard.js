@@ -2,14 +2,15 @@
 import { useState, Fragment } from 'react'
 
 // ** Reactstrap Imports
-import { Row, Col, Card, Form, CardBody, Button, Badge, Modal, Input, Label, ModalBody, ModalHeader } from 'reactstrap'
+import { Alert, Row, Col, Card, Form, CardBody, Button, Badge, Modal, Input, Label, ModalBody, ModalHeader } from 'reactstrap'
 
 // ** Third Party Components
 import Swal from 'sweetalert2'
 import Select from 'react-select'
-import { Check, Briefcase, X } from 'react-feather'
+import { Check, Briefcase, X, Calendar} from 'react-feather'
 import { useForm, Controller } from 'react-hook-form'
 import withReactContent from 'sweetalert2-react-content'
+import { Icon } from '@iconify/react';
 
 // ** Custom Components
 import Avatar from '@components/avatar'
@@ -19,6 +20,11 @@ import { selectThemeColors } from '@utils'
 
 // ** Styles
 import '@styles/react/libs/react-select/_react-select.scss'
+
+//* dateFormat imports
+import dateFormat from 'dateformat'
+
+
 
 const roleColors = {
   editor: 'light-info',
@@ -34,34 +40,31 @@ const statusColors = {
   inactive: 'light-secondary'
 }
 
-const statusOptions = [
-  { value: 'active', label: 'Active' },
-  { value: 'inactive', label: 'Inactive' },
-  { value: 'suspended', label: 'Suspended' }
-]
-
-const countryOptions = [
-  { value: 'uk', label: 'UK' },
-  { value: 'usa', label: 'USA' },
-  { value: 'france', label: 'France' },
-  { value: 'russia', label: 'Russia' },
-  { value: 'canada', label: 'Canada' }
-]
-
-const languageOptions = [
-  { value: 'english', label: 'English' },
-  { value: 'spanish', label: 'Spanish' },
-  { value: 'french', label: 'French' },
-  { value: 'german', label: 'German' },
-  { value: 'dutch', label: 'Dutch' }
-]
+const genderColors = {
+  ชาย: 'light-primary',
+  หญิง: 'light-info'
+}
+  // ** for converting date into thai date
+  const option = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  };
 
 const MySwal = withReactContent(Swal)
 
-const UserInfoCard = ({ selectedUser }) => {
+const UserInfoCard = ({ selectedStaff }) => {
   // ** State
-  const [show, setShow] = useState(false)
+  const currentUserData = localStorage.getItem('userData');
+  const userData = JSON.parse(currentUserData);
+  const currentUserID = userData.staffID
 
+  console.log(currentUserID)
+
+
+  const [show, setShow] = useState(false)
+  const dob = new Date(selectedStaff.dob);
+  const birthday = dob.toLocaleDateString('th-TH', option);
   // ** Hook
   const {
     reset,
@@ -71,46 +74,34 @@ const UserInfoCard = ({ selectedUser }) => {
     formState: { errors }
   } = useForm({
     defaultValues: {
-      username: selectedUser.username,
-      lastName: selectedUser.fullName.split(' ')[1],
-      firstName: selectedUser.fullName.split(' ')[0]
+      username: selectedStaff.username,
+      lastName: selectedStaff.fname,
+      firstName: selectedStaff.lname
     }
   })
 
   // ** render user img
   const renderUserImg = () => {
-    if (selectedUser !== null && selectedUser.avatar.length) {
-      return (
-        <img
-          height='110'
-          width='110'
-          alt='user-avatar'
-          src={selectedUser.avatar}
-          className='img-fluid rounded mt-3 mb-2'
-        />
-      )
-    } else {
-      return (
-        <Avatar
-          initials
-          color={selectedUser.avatarColor || 'light-primary'}
-          className='rounded mt-3 mb-2'
-          content={selectedUser.fullName}
-          contentStyles={{
-            borderRadius: 0,
-            fontSize: 'calc(48px)',
-            width: '100%',
-            height: '100%'
-          }}
-          style={{
-            height: '110px',
-            width: '110px'
-          }}
-        />
-      )
-    }
+    const fullname = selectedStaff.fname + ' ' + selectedStaff.lname
+    return (
+      <Avatar
+        initials
+        color={'light-primary'}
+        className='rounded mt-3 mb-2'
+        content={fullname}
+        contentStyles={{
+          borderRadius: 0,
+          fontSize: 'calc(48px)',
+          width: '100%',
+          height: '100%'
+        }}
+        style={{
+          height: '110px',
+          width: '110px'
+        }}
+      />
+    )
   }
-
   const onSubmit = data => {
     if (Object.values(data).every(field => field.length > 0)) {
       setShow(false)
@@ -127,45 +118,23 @@ const UserInfoCard = ({ selectedUser }) => {
 
   const handleReset = () => {
     reset({
-      username: selectedUser.username,
-      lastName: selectedUser.fullName.split(' ')[1],
-      firstName: selectedUser.fullName.split(' ')[0]
+      username: selectedStaff.username,
+      lastName: selectedStaff.fullName.split(' ')[1],
+      firstName: selectedStaff.fullName.split(' ')[0]
     })
   }
 
-  const handleSuspendedClick = () => {
-    return MySwal.fire({
-      title: 'Are you sure?',
-      text: "You won't be able to revert user!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, Suspend user!',
-      customClass: {
-        confirmButton: 'btn btn-primary',
-        cancelButton: 'btn btn-outline-danger ms-1'
-      },
-      buttonsStyling: false
-    }).then(function (result) {
-      if (result.value) {
-        MySwal.fire({
-          icon: 'success',
-          title: 'Suspended!',
-          text: 'User has been suspended.',
-          customClass: {
-            confirmButton: 'btn btn-success'
-          }
-        })
-      } else if (result.dismiss === MySwal.DismissReason.cancel) {
-        MySwal.fire({
-          title: 'Cancelled',
-          text: 'Cancelled Suspension :)',
-          icon: 'error',
-          customClass: {
-            confirmButton: 'btn btn-success'
-          }
-        })
-      }
-    })
+  const handleWithDob = (dob) => {
+    const today = new Date();
+    const staffDob = dateFormat(dob, 'yyyy');
+    const age = today.getFullYear() - staffDob
+    return age
+  }
+
+  const formatPhoneNo = (phoneNo) => {
+    const firstPart = phoneNo.slice(0, 3);
+    const secondPart = phoneNo.slice(3);
+    return `${firstPart}-${secondPart}`
   }
 
   return (
@@ -177,10 +146,10 @@ const UserInfoCard = ({ selectedUser }) => {
               {renderUserImg()}
               <div className='d-flex flex-column align-items-center text-center'>
                 <div className='user-info'>
-                  <h4>{selectedUser !== null ? selectedUser.fullName : 'Eleanor Aguilar'}</h4>
-                  {selectedUser !== null ? (
-                    <Badge color={roleColors[selectedUser.role]} className='text-capitalize'>
-                      {selectedUser.role}
+                  <h4>{selectedStaff !== null ? selectedStaff.fullName : 'Eleanor Aguilar'}</h4>
+                  {selectedStaff !== null ? (
+                    <Badge color={roleColors[selectedStaff.role]} className='text-capitalize'>
+                      {selectedStaff.role}
                     </Badge>
                   ) : null}
                 </div>
@@ -189,236 +158,85 @@ const UserInfoCard = ({ selectedUser }) => {
           </div>
           <div className='d-flex justify-content-around my-2 pt-75'>
             <div className='d-flex align-items-start me-2'>
-              <Badge color='light-primary' className='rounded p-75'>
-                <Check className='font-medium-2' />
+              <Badge color={genderColors[selectedStaff.gender]}
+                className='rounded p-75'>
+                <Icon className='font-medium-5' icon="mdi:gender-female" />
               </Badge>
               <div className='ms-75'>
-                <h4 className='mb-0'>1.23k</h4>
-                <small>Tasks Done</small>
+                <span>เพศ</span>
+                <h4 className='mb-0'>{selectedStaff.gender}</h4>
               </div>
             </div>
             <div className='d-flex align-items-start'>
               <Badge color='light-primary' className='rounded p-75'>
-                <Briefcase className='font-medium-2' />
+                <Calendar className='font-medium-4' />
               </Badge>
               <div className='ms-75'>
-                <h4 className='mb-0'>568</h4>
-                <small>Projects Done</small>
+                <span>อายุ</span>
+                <h4 className='mb-0'>{handleWithDob(selectedStaff.dob)} ปี</h4>
               </div>
             </div>
           </div>
 
-
-          
-          <h4 className='fw-bolder border-bottom pb-50 mb-1'>Details</h4>
+          <h4 className='fw-bolder border-bottom pb-50 mb-1'>ข้อมูลส่วนตัว</h4>
           <div className='info-container'>
-            {selectedUser !== null ? (
+            {selectedStaff !== null ? (
               <ul className='list-unstyled'>
                 <li className='mb-75'>
-                  <span className='fw-bolder me-25'>Username:</span>
-                  <span>{selectedUser.username}</span>
+                  <span className='fw-bolder me-25'>ชื่อผู้ใช้: </span>
+                  <span>{selectedStaff.username}</span>
                 </li>
                 <li className='mb-75'>
-                  <span className='fw-bolder me-25'>Billing Email:</span>
-                  <span>{selectedUser.email}</span>
+                  <span className='fw-bolder me-25'>เลขบัตรประชาชน: </span>
+                  <span>{selectedStaff.personalID}</span>
                 </li>
                 <li className='mb-75'>
-                  <span className='fw-bolder me-25'>Status:</span>
-                  <Badge className='text-capitalize' color={statusColors[selectedUser.status]}>
-                    {selectedUser.status}
-                  </Badge>
+                  <span className='fw-bolder me-25'>ชื่อ: </span>
+                  <span>{selectedStaff.fname + ' ' + selectedStaff.lname}</span>
                 </li>
                 <li className='mb-75'>
-                  <span className='fw-bolder me-25'>Role:</span>
-                  <span className='text-capitalize'>{selectedUser.role}</span>
+                  <span className='fw-bolder me-25'>อายุ: </span>
+                  <span>{handleWithDob(selectedStaff.dob)} ปี</span>
                 </li>
                 <li className='mb-75'>
-                  <span className='fw-bolder me-25'>Tax ID:</span>
-                  <span>Tax-{selectedUser.contact.substr(selectedUser.contact.length - 4)}</span>
+                  <span className='fw-bolder me-25'>วันเกิด: </span>
+                  <span>{birthday}</span>
                 </li>
                 <li className='mb-75'>
-                  <span className='fw-bolder me-25'>Contact:</span>
-                  <span>{selectedUser.contact}</span>
+                  <span className='fw-bolder me-25'>หมู่เลือด: </span>
+                  <span>{selectedStaff.bloodtype}</span>
+                </li>
+
+                <br/>
+                <li className='mb-75'>
+                  <h5 className='fw-bolder me-25 border-bottom pb-50 mb-1'>ข้อมูลติดต่อ: </h5>
                 </li>
                 <li className='mb-75'>
-                  <span className='fw-bolder me-25'>Language:</span>
-                  <span>English</span>
+                  <span className='fw-bolder me-25'>เบอร์โทรติดต่อ: </span>
+                  <span>{formatPhoneNo(selectedStaff.phoneNo)}</span>
                 </li>
                 <li className='mb-75'>
-                  <span className='fw-bolder me-25'>Country:</span>
-                  <span>England</span>
+                  <span className='fw-bolder me-25'>ที่อยู่: </span>
+                  <span>{selectedStaff.address + 
+                  ' ตำบล '+selectedStaff.subdistrict+ 
+                  ' อำเภอ '+ selectedStaff.district + 
+                  ' จังหวัด ' + selectedStaff.province+
+                  ' ' + selectedStaff.postalCode
+                  }</span>
+                  
                 </li>
+                
               </ul>
             ) : null}
           </div>
           <div className='d-flex justify-content-center pt-2'>
             <Button color='primary' onClick={() => setShow(true)}>
-              Edit
-            </Button>
-            <Button className='ms-1' color='danger' outline onClick={handleSuspendedClick}>
-              Suspended
+              แก้ไขข้อมูล
             </Button>
           </div>
         </CardBody>
       </Card>
-      <Modal isOpen={show} toggle={() => setShow(!show)} className='modal-dialog-centered modal-lg'>
-        <ModalHeader className='bg-transparent' toggle={() => setShow(!show)}></ModalHeader>
-        <ModalBody className='px-sm-5 pt-50 pb-5'>
-          <div className='text-center mb-2'>
-            <h1 className='mb-1'>Edit User Information</h1>
-            <p>Updating user details will receive a privacy audit.</p>
-          </div>
-          <Form onSubmit={handleSubmit(onSubmit)}>
-            <Row className='gy-1 pt-75'>
-              <Col md={6} xs={12}>
-                <Label className='form-label' for='firstName'>
-                  First Name
-                </Label>
-                <Controller
-                  defaultValue=''
-                  control={control}
-                  id='firstName'
-                  name='firstName'
-                  render={({ field }) => (
-                    <Input {...field} id='firstName' placeholder='John' invalid={errors.firstName && true} />
-                  )}
-                />
-              </Col>
-              <Col md={6} xs={12}>
-                <Label className='form-label' for='lastName'>
-                  Last Name
-                </Label>
-                <Controller
-                  defaultValue=''
-                  control={control}
-                  id='lastName'
-                  name='lastName'
-                  render={({ field }) => (
-                    <Input {...field} id='lastName' placeholder='Doe' invalid={errors.lastName && true} />
-                  )}
-                />
-              </Col>
-              <Col xs={12}>
-                <Label className='form-label' for='username'>
-                  Username
-                </Label>
-                <Controller
-                  defaultValue=''
-                  control={control}
-                  id='username'
-                  name='username'
-                  render={({ field }) => (
-                    <Input {...field} id='username' placeholder='john.doe.007' invalid={errors.username && true} />
-                  )}
-                />
-              </Col>
-              <Col md={6} xs={12}>
-                <Label className='form-label' for='billing-email'>
-                  Billing Email
-                </Label>
-                <Input
-                  type='email'
-                  id='billing-email'
-                  defaultValue={selectedUser.email}
-                  placeholder='example@domain.com'
-                />
-              </Col>
-              <Col md={6} xs={12}>
-                <Label className='form-label' for='status'>
-                  Status:
-                </Label>
-                <Select
-                  id='status'
-                  isClearable={false}
-                  className='react-select'
-                  classNamePrefix='select'
-                  options={statusOptions}
-                  theme={selectThemeColors}
-                  defaultValue={statusOptions[statusOptions.findIndex(i => i.value === selectedUser.status)]}
-                />
-              </Col>
-              <Col md={6} xs={12}>
-                <Label className='form-label' for='tax-id'>
-                  Tax ID
-                </Label>
-                <Input
-                  id='tax-id'
-                  placeholder='Tax-1234'
-                  defaultValue={selectedUser.contact.substr(selectedUser.contact.length - 4)}
-                />
-              </Col>
-              <Col md={6} xs={12}>
-                <Label className='form-label' for='contact'>
-                  Contact
-                </Label>
-                <Input id='contact' defaultValue={selectedUser.contact} placeholder='+1 609 933 4422' />
-              </Col>
-              <Col md={6} xs={12}>
-                <Label className='form-label' for='language'>
-                  language
-                </Label>
-                <Select
-                  id='language'
-                  isClearable={false}
-                  className='react-select'
-                  classNamePrefix='select'
-                  options={languageOptions}
-                  theme={selectThemeColors}
-                  defaultValue={languageOptions[0]}
-                />
-              </Col>
-              <Col md={6} xs={12}>
-                <Label className='form-label' for='country'>
-                  Country
-                </Label>
-                <Select
-                  id='country'
-                  isClearable={false}
-                  className='react-select'
-                  classNamePrefix='select'
-                  options={countryOptions}
-                  theme={selectThemeColors}
-                  defaultValue={countryOptions[0]}
-                />
-              </Col>
-              <Col xs={12}>
-                <div className='d-flex align-items-center mt-1'>
-                  <div className='form-switch'>
-                    <Input type='switch' defaultChecked id='billing-switch' name='billing-switch' />
-                    <Label className='form-check-label' htmlFor='billing-switch'>
-                      <span className='switch-icon-left'>
-                        <Check size={14} />
-                      </span>
-                      <span className='switch-icon-right'>
-                        <X size={14} />
-                      </span>
-                    </Label>
-                  </div>
-                  <Label className='form-check-label fw-bolder' for='billing-switch'>
-                    Use as a billing address?
-                  </Label>
-                </div>
-              </Col>
-              <Col xs={12} className='text-center mt-2 pt-50'>
-                <Button type='submit' className='me-1' color='primary'>
-                  Submit
-                </Button>
-                <Button
-                  type='reset'
-                  color='secondary'
-                  outline
-                  onClick={() => {
-                    handleReset()
-                    setShow(false)
-                  }}
-                >
-                  Discard
-                </Button>
-              </Col>
-            </Row>
-          </Form>
-        </ModalBody>
-      </Modal>
+
     </Fragment>
   )
 }

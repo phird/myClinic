@@ -1,18 +1,20 @@
 // ** React Imports
 import { Link } from 'react-router-dom'
 
-// ** Custom Components
-import Avatar from '@components/avatar'
-
-// ** Store & Actions
-import { store } from '@store/store'
-import { getUser, deleteUser } from '../store'
-
 // ** Icons Imports
-import { Slack, User, Settings, Database, Edit2, MoreVertical, FileText, Trash2, Archive } from 'react-feather'
+import {
+  FileText,
+  Trash2,
+
+
+} from 'react-feather'
 
 // ** Reactstrap Imports
-import { Badge, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap'
+import {
+  Button,
+  UncontrolledTooltip
+
+} from 'reactstrap'
 
 
 export const columns = [
@@ -34,9 +36,9 @@ export const columns = [
       <div className='d-flex justify-content-left align-items-center'>
         <div className='d-flex flex-column'>
           <Link
-            to={`/apps/user/view/${row.id}`}
+            to={`/apps/staff/view/${row.staffID}`}
             className='user_name text-truncate text-body'
-            onClick={() => store.dispatch(getUser(row.id))}
+            
           >
             <span className='fw-bolder'>{row.fname + ' ' + row.lname}</span>
           </Link>
@@ -54,10 +56,40 @@ export const columns = [
 
   },
   {
-    name: 'Actions',
+    name: 'บทบาท',
+    selector: row => row.role,
+    cell: row => (
+      <div>
+        {row.role === 'general' ? 'ทั่วไป' : 'ผู้ดูแล'}
+      </div>
+    )
+  },
+  {
+    name: ' ',
     minWidth: '100px',
     cell: row => (
-      <div className='column-action'>
+      <div className='column-action d-flex align-items-center'>
+        <>
+          <Link to={`/apps/staff/view/${row.staffID}`}>
+            <Button.Ripple
+              className='btn-icon'
+              id={`edit-${row.serviceID}`}
+              color='flat-success'
+              to={`/view/${row.staffID}`}
+            >
+              <FileText size={16} />
+            </Button.Ripple>
+            <UncontrolledTooltip target={`edit-${row.serviceID}`}>
+              ดูข้อมูล
+            </UncontrolledTooltip>
+          </Link>
+          <Button.Ripple className='btn-icon' color='flat-danger' id={`del-${row.serviceID}`}>
+            <Trash2 size={16} />
+          </Button.Ripple>
+          <UncontrolledTooltip target={`del-${row.serviceID}`} >
+            ลบ
+          </UncontrolledTooltip>
+        </>
       </div>
     )
   }

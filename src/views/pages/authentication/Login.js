@@ -52,7 +52,7 @@ const ToastContent = ({ t, name, role }) => {
   if( role === 'admin'){
     newRole = 'ผู้ดูแล'
   }
-  if(role === 'doctor' ){
+  if(role === 'general' ){
     newRole = 'แพทย์'
   }
   return (

@@ -4,11 +4,8 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 // ** Axios Imports
 import axios from 'axios'
 
-
-export const getAllData = createAsyncThunk('appStaffs/getAllData', async () => {
-  const response = await axios.get('http://localhost:8000/staff/')
-  console.log("get all data ")
-  console.log(response.data)
+export const getAllData = createAsyncThunk('appStaffs/getAllData', async (params) => {
+  const response = await axios.get(`http://localhost:8000/staff/allData/${params}`)
   return response.data
 })
 
@@ -19,16 +16,34 @@ export const getAllDoc = createAsyncThunk('appStaffs/getAllData', async () => {
 
 
 export const getData = createAsyncThunk('appStaffs/getData', async params => {
-  const response = await axios.get('http://localhost:8000/staff/list/data', params)
-  console.log(response)
-  console.log("params : " )
-  console.log(params)
-  console.log("get data")
-  console.log(response)
-  return {
-    params,
-    data: response.data,
-    totalPages: response.data.length
+  try {
+    const response = await axios.get('http://localhost:8000/staff/list/data', { params: params })
+    return {
+      params,
+      data: response.data,
+      totalPages: response.data.length
+    }
+  } catch (error) {
+    console.log("here an error")
+    console.log(error)
+  }
+})
+
+export const getCurrentStaff = createAsyncThunk('appStaffs/getCurrentStaff', async id => {
+  try {
+    const response = await axios.get(`/${id}`)
+    return response.data
+  } catch (error) {
+    console.error(error)
+  }
+})
+
+export const getStaffData = createAsyncThunk('appStaffs/getStaffData', async id => {
+  try {
+    const response = await axios.get(`http://localhost:8000/staff/getStaffData/${id}`);
+    return response.data[0]
+  } catch (error) {
+    console.log(error)
   }
 })
 
@@ -38,40 +53,75 @@ export const postStaff = createAsyncThunk('appStaffs/postStff', async (newData) 
   return response.data
 })
 
-export const getUser = createAsyncThunk('appUsers/getUser', async id => {
-  const response = await axios.get('/api/users/user', { id })
-  console.log("this is getUser")
-  console.log(response.data.user)
-  return response.data.user
+
+export const getEncounterStaff = createAsyncThunk('appStaffs/getEncounterStaff', async id => {
+  try {
+    const response = await axios.get(`http://localhost:8000/staff/getEncounterStaff/${id}`)
+    console.log(response)
+    return response.data
+  } catch (error) {
+    console.log(error)
+    console.error(error)
+  }
 })
 
-export const addUser = createAsyncThunk('appUsers/addUser', async (user, { dispatch, getState }) => {
-  await axios.post('/apps/users/add-user', user)
-  await dispatch(getData(getState().users.params))
-  await dispatch(getAllData())
-  return user
+export const updateRole = createAsyncThunk('appStaff/updateRole' , async (newData) =>{
+  const staffID = newData[0];
+  const roleID = newData[1];
+  console.log(staffID);
+  console.log(roleID);
+  await axios.put(`http://localhost:8000/staff/updateRole/${staffID}`, {roleID})
+  .then(response => {
+    console.log(response.data); // handle response from server
+  })
+  .catch(error => {
+    console.log(error); // handle error from server
+  });
 })
 
-export const deleteUser = createAsyncThunk('appUsers/deleteUser', async (id, { dispatch, getState }) => {
-  await axios.delete('/apps/users/delete', { id })
-  await dispatch(getData(getState().users.params))
-  await dispatch(getAllData())
-  return id
+
+export const updatePassword = createAsyncThunk('appStaffs/updatePassword', async (newData) => {
+  const userID = newData[0]
+  const password = newData[1] 
+  await axios.put(`http://localhost:8000/jwt/updatePassword/${userID}`, { password })
+    .then(response => {
+      console.log(response.data); // handle response from server
+    })
+    .catch(error => {
+      console.log(error); // handle error from server
+    });
 })
+
+
+export const getWidgetData = createAsyncThunk('/appStaffs/getWidgetData', async staffID => {
+  try {
+    const response = await axios.get(`http://localhost:8000/staff/widget/${staffID}`)
+    return response.data[0]
+  } catch (error) {
+    console.log(error)
+  }
+})
+
 
 export const appStaffsSlice = createSlice({
   name: 'appUsers',
   initialState: {
+    currentStaff: [],
     data: [],
+    allData: [],
     doctor: [],
+    encounterStaff: [],
+    widgetData: [],
     total: 1,
     params: {},
-    allData: [],
-    selectedUser: null
+    selectedStaff: null
   },
   reducers: {},
   extraReducers: builder => {
     builder
+      .addCase(getCurrentStaff.fulfilled, (state, action) => {
+        state.currentStaff = action.payload
+      })
       .addCase(getAllData.fulfilled, (state, action) => {
         state.allData = action.payload
       })
@@ -80,11 +130,19 @@ export const appStaffsSlice = createSlice({
         state.params = action.payload.params
         state.total = action.payload.totalPages
       })
-      .addCase(getUser.fulfilled, (state, action) => {
-        state.selectedUser = action.payload
-      })
       .addCase(postStaff.fulfilled, (state, action) => {
-        state.total = state.total+ 1 
+        state.total = state.total + 1
+      })
+      .addCase(getStaffData.fulfilled, (state, action) => {
+        state.selectedStaff = action.payload
+      })
+      .addCase(getEncounterStaff.fulfilled, (state, action) => {
+        state.encounterStaff = action.payload
+      })
+      .addCase(updatePassword.fulfilled, (state, action) => {
+      })
+      .addCase(getWidgetData.fulfilled, (state,action) => {
+        state.widgetData = action.payload
       })
 
   }

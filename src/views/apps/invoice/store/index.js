@@ -20,6 +20,9 @@ export const deleteInvoice = createAsyncThunk('appInvoice/deleteInvoice', async 
   return id
 })
 
+export const changeStatusInvoice = createAsyncThunk('appInvoice/changeStatusInvoice', async (id) => {
+  await axios.put(`http://localhost:8000/invoice/status/${id}`)
+} )
 
 export const createInvoice = createAsyncThunk('appInvoice/createInvoice', async(data,{dispatch,getState})=> {
   const encounterID = await dispatch(getLatestEncounterID());

@@ -11,6 +11,7 @@ const StatsHorizontal = ({ icon, color, stats, renderStats, statTitle, className
       <CardBody className={className}>
         <div className='d-flex justify-content-between align-items-center'>
           <div>
+            <p className='card-text'>{statTitle}</p>
             {renderStats ? (
               renderStats
             ) : (
@@ -23,8 +24,6 @@ const StatsHorizontal = ({ icon, color, stats, renderStats, statTitle, className
                 {stats}
               </h2>
             )}
-
-            <p className='card-text'>{statTitle}</p>
           </div>
           <div className={`avatar avatar-stats p-50 m-0 ${color ? `bg-light-${color}` : 'bg-light-primary'}`}>
             <div className='avatar-content'>{icon}</div>
