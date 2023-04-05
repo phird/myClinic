@@ -4,15 +4,17 @@ import { Fragment } from 'react'
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap'
 
 // ** Icons Imports
-import { User, Lock, Bookmark, Bell, Link, Shield} from 'react-feather'
+import { User, Lock, Bookmark, Bell, Link, Shield } from 'react-feather'
 
 // ** User Components
 
 import SecurityTab from './SecurityTab'
 import RolePermission from './Role'
+import SetUsername from './Username'
 import UserEncounterList from './UserEncounterList'
 
-const UserTabs = ({ active, toggleTab , selectedStaff}) => {
+const UserTabs = ({ active, toggleTab, selectedStaff }) => {
+
 
   return (
     <Fragment>
@@ -28,16 +30,17 @@ const UserTabs = ({ active, toggleTab , selectedStaff}) => {
             <Lock className='font-medium-3 me-50' />
             <span className='fw-bold'>ตั้งค่าความปลอดภัย & บทบาท</span>
           </NavLink>
-        </NavItem>  
-        
+        </NavItem>
+
       </Nav>
 
       <TabContent activeTab={active}>
         <TabPane tabId='1'>
-          <UserEncounterList/>
+          <UserEncounterList />
         </TabPane>
         <TabPane tabId='2'>
-          <SecurityTab  staffRole={selectedStaff.roleID} staffID={selectedStaff.staffID}  selectedStaff={selectedStaff.newStaff} />
+          <SetUsername staffID={selectedStaff.staffID} staffUsername={selectedStaff.username} />
+          <SecurityTab staffRole={selectedStaff.roleID} staffID={selectedStaff.staffID} selectedStaff={selectedStaff.newStaff} />
           <RolePermission staffID={selectedStaff.staffID} staffRole={selectedStaff.roleID} />
         </TabPane>
       </TabContent>

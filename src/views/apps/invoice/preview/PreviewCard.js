@@ -19,9 +19,10 @@ const PreviewCard = ({ data, details, prescriptionData }) => {
             <div className='logo-wrapper'>
               <h3 className='text-primary invoice-logo'>ใบเสร็จค่ารักษา</h3>
             </div>
-            <CardText className='mb-25'>ที่อยู่: </CardText>
-            <CardText className='mb-25'> อำเภอ  ตำบล  จังหวัด </CardText>
-            <CardText className='mb-0'>  เบอร์โทรติดต่อ  </CardText>
+            <CardText className='mb-25'> คลินิกแพทย์แผนไทย </CardText>
+            <CardText className='mb-25'>ที่อยู่ 100/10</CardText>
+            <CardText className='mb-25'> ตำบล สุเทพ อำเภอ เมืองเชียงใหม่ จังหวัด เชียงใหม่ 50200 </CardText>
+            <CardText className='mb-0'> เบอร์โทรติดต่อ 089-5523123 </CardText>
           </div>
           <div className='mt-md-0 mt-2'>
             <h4 className='invoice-title'>

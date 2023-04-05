@@ -23,6 +23,7 @@ export const getData = createAsyncThunk('appPatients/getData', async (params) =>
     totalPages: response.data.patient.length,
   }
 })
+
 // * INSERT NEW PATIENT TO DATABASE
 export const postPatient = createAsyncThunk('appPatients/postPatient', async (newData) => {
   const response = await axios.post('http://localhost:8000/app/Patient/createPatient', newData)
@@ -44,6 +45,8 @@ export const getPatient = createAsyncThunk('appPatients/getPatient', async id =>
   console.log("this is getPatient")
   return response.data.patient[0]
 })
+
+
 
 export const appPatientsSlice = createSlice({
   name: 'appPatients',

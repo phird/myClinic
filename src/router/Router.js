@@ -11,7 +11,7 @@ import BlankLayout from '@layouts/BlankLayout'
 import { useLayout } from '@hooks/useLayout'
 
 // ** Utils
-import { getUserData, getHomeRouteForLoggedInUser } from '../utility/Utils'
+import { getUserData } from '../utility/Utils'
 
 // ** GetRoutes
 import { getRoutes } from './routes'
@@ -29,7 +29,7 @@ const Router = () => {
   const getHomeRoute = () => {
     const user = getUserData()
     if (user) {
-      return getHomeRouteForLoggedInUser(user.role)
+      return '/home'
     } else {
       return '/login'
     }

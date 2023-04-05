@@ -51,9 +51,10 @@ const Print = () => {
           <div className='d-flex mb-1'>
             <h3 className='text-primary fw-bold ms-1'>ใบเสร็จค่ารักษา</h3>
           </div>
-          <p className='mb-25'>ที่อยู่ </p>
-          <p className='mb-25'>อำเภอ  ตำบล  จังหวัด </p>
-          <p className='mb-0'>เบอร์โทรติดต่อ</p>
+          <p className='mb-25'> คลินิกแพทย์แผนไทย</p>
+          <p className='mb-25'>ที่อยู่ 100/10</p>
+          <p className='mb-25'>ตำบล สุเทพ อำเภอ เมืองเชียงใหม่ จังหวัด เชียงใหม่ 50200</p>
+          <p className='mb-0'>เบอร์โทรติดต่อ 089-5523123</p>
         </div>
         <div className='mt-md-0 mt-2'>
           <h4 className='fw-bold text-end mb-1'>#{data.invID}</h4>

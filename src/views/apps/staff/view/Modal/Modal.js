@@ -1,16 +1,17 @@
 // ** React Imports
-import { useState } from 'react'
-// ** Table Columns
+import { useState, useEffect } from 'react'
 
-
+// ** Store & Actions
+import { updateStaff } from '../../store'
+import { selectThemeColors } from '@utils'
+import { useDispatch } from 'react-redux'
 
 // ** Third Party Components
 import Flatpickr from 'react-flatpickr'
 import Select from 'react-select'
 import InputAddress from 'react-thailand-address-autocomplete'
 import toast from 'react-hot-toast'
-import { postStaff, createUser} from '../store'
-
+import withReactContent from 'sweetalert2-react-content'
 
 // ** Reactstrap Imports
 import {
@@ -23,6 +24,7 @@ import {
     ModalBody,
     ModalHeader,
     Label,
+    Alert,
 } from 'reactstrap'
 
 // ** Styles
@@ -30,8 +32,10 @@ import '@styles/react/libs/react-select/_react-select.scss'
 import '@styles/react/libs/tables/react-dataTable-component.scss'
 import 'flatpickr/dist/themes/dark.css';
 import '@styles/react/libs/flatpickr/flatpickr.scss'
-import { selectThemeColors } from '@utils'
-import { useDispatch } from 'react-redux'
+import Swal from 'sweetalert2'
+
+const MySwal = withReactContent(Swal)
+
 
 const genderOptions = [
     { value: 'ชาย', label: 'ชาย' },
@@ -45,11 +49,14 @@ const bloodTypeOption = [
     { value: "AB", label: "AB" },
 ];
 
-const AddStaffModal = ({ open, toggleModal }) => {
+const EditStaffModal = ({ selectedStaff, open, toggleModal }) => {
+
+    console.log("here selectedStaff in Modal")
+    console.log(selectedStaff)
+
     const dispatch = useDispatch()
     // ** Current Date
     const currentDate = new Date().toISOString().slice(0, 10);
-
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState(''); // Fname and Lname
     const [picker, setPicker] = useState(new Date()); // DOB
@@ -62,8 +69,23 @@ const AddStaffModal = ({ open, toggleModal }) => {
     const [perID, setPerID] = useState('');
     const [perIDError, setPerIDError] = useState('');
 
+    useEffect(() => {
+        setFirstName(selectedStaff.fname);
+        setLastName(selectedStaff.lname);
+        setPicker(selectedStaff.dob);
+        setGender({ value: selectedStaff.gender, label: selectedStaff.gender });
+        setBloofType({ value: selectedStaff.bloodtype, label: selectedStaff.bloodtype });
+        setHouseNo(selectedStaff.address)
+        setAddress({ district: selectedStaff.district, subdistrict: selectedStaff.subdistrict, province: selectedStaff.province, zipcode: selectedStaff.postalCode });
+        setTelNo(selectedStaff.phoneNo);
+        setPerID(selectedStaff.personalID)
+    }, [open])
+
+
+
     const handleSubmit = (event) => {
         event.preventDefault();
+        const id = selectedStaff.staffID
         const fname = firstName;
         const lname = lastName;
         const phoneNo = telNo;
@@ -74,14 +96,14 @@ const AddStaffModal = ({ open, toggleModal }) => {
         const dob = `${year}-${month + 1}-${day}`;
         const bloodtype = bloodType.value;
         const pgender = gender.value;
-        const paddress = address.addr;
+        const paddress = houseNo;
         const district = address.district;
         const subdistrict = address.subdistrict;
         const province = address.province
         const postalCode = address.zipcode;
-        const personalID = perID
-        const addedDate = currentDate;
+        const editDate = currentDate;
         const newData = {
+            id,
             fname,
             lname,
             phoneNo,
@@ -93,38 +115,41 @@ const AddStaffModal = ({ open, toggleModal }) => {
             subdistrict,
             province,
             postalCode,
-            personalID,
-            addedDate
+            editDate
         }
-        console.log("here is newData")
+        console.log("here is newData in edit staff modal ")
         console.log(newData)
-        if (!fname || !lname || !phoneNo || !dob || !bloodtype || !pgender || !paddress || !district || !subdistrict || !province || !postalCode || !personalID || !addedDate ) {
+        if (!fname || !lname || !phoneNo || !dob || !bloodtype || !pgender || !paddress || !district || !subdistrict || !province || !postalCode || !editDate) {
             toast.error("กรุณากรอกข้อมูลให้ครบ  ! ", { duration: 5000 })
             return; // validation failed
         }
         try {
-            console.log("im trying")
-            dispatch(postStaff(newData))
-            .then((response) => {
-                const staffID = response.payload.staffID
-                dispatch(createUser(staffID))
-            })
-
+            dispatch(updateStaff(newData));
             toggleModal();
-            toast.success("เพิ่มผู้ป่วยสำเร็จ ! ", { duration: 5000 })
-            setFirstName('');
-            setLastName('');
-            setTelNo('');
-            setPicker();
-            setBloofType([]);
-            setGender([]);
-            setAddress([{ district: '', subdistrict: '', province: '', zipcode: '' }]);
-            setPerID('');
-            setHouseNo('');
-
         } catch (error) {
             console.log(error)
         }
+    }
+
+    const handleConfirmSubmit = (event) => {
+        event.preventDefault();
+        return MySwal.fire({
+            title: 'ยืนยันการแก้ไขข้อมูลบุคลากร?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'ยืนยันการแก้ไข',
+            cancelButtonText: 'ยกเลิก',
+            customClass: {
+                confirmButton: 'btn btn-primary',
+                cancelButton: 'btn btn-outline-danger ms-1'
+            },
+            buttonsStyling: false
+        }).then(function (result) {
+            if (result.value) {
+                handleSubmit(event)
+                toast.success("แก้ไขข้อมูลบุคลากรสำเร็จ ! ", { duration: 5000 })
+            }
+        })
     }
 
     const handlePIDChange = (e) => {
@@ -241,9 +266,9 @@ const AddStaffModal = ({ open, toggleModal }) => {
             </ModalHeader>
             <ModalBody className='px-sm-5 pt-50 pb-5'>
                 <div className='text-center mb-2'>
-                    <h1 className='mb-1'> เพิ่มข้อมูลบุคลากร  </h1>
+                    <h1 className='mb-1'> แก้ไขข้อมูลบุคลากร  </h1>
                 </div>
-                <Form onSubmit={handleSubmit}>
+                <Form onSubmit={handleConfirmSubmit}>
                     <Row className='gy-1 pt-75'>
                         <Col>
                             <Label className='form-label font-weight-bold' for='firstName'>
@@ -254,9 +279,10 @@ const AddStaffModal = ({ open, toggleModal }) => {
                                 type='number'
                                 placeholder='15xxxxxxxxxxx'
                                 pattern='[0-9]{13}'
-                                value={perID}
+                                value={selectedStaff.personalID}
                                 onChange={handlePIDChange}
                                 onInvalid={handleInvalidPID}
+                                disabled
                             />
                             {perIDError && <div style={{ color: 'red' }}>{perIDError}</div>}
                         </Col>
@@ -450,13 +476,12 @@ const AddStaffModal = ({ open, toggleModal }) => {
                             </div>
                         </Row>
                         <Col xs={12} className='text-center mt-2 pt-50'>
-
                             <Button
                                 type='submit'
                                 className='me-1'
                                 color='primary'
                             >
-                                เพิ่ม
+                                ยืนยันการแก้ไข
                             </Button>
                         </Col>
                     </Row>
@@ -466,4 +491,4 @@ const AddStaffModal = ({ open, toggleModal }) => {
     )
 }
 
-export default AddStaffModal
+export default EditStaffModal

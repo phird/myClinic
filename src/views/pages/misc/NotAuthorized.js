@@ -8,7 +8,7 @@ import { Button } from 'reactstrap'
 import { useSkin } from '@hooks/useSkin'
 
 // ** Utils
-import { getUserData, getHomeRouteForLoggedInUser } from '@utils'
+import { getUserData } from '@utils'
 
 // ** Illustrations Imports
 import illustrationsLight from '@src/assets/images/pages/not-authorized.svg'
@@ -42,7 +42,7 @@ const NotAuthorized = () => {
             tag={Link}
             color='primary'
             className='btn-sm-block mb-1'
-            to={user ? getHomeRouteForLoggedInUser(user.role) : '/'}
+            to={'/home'}
           >
             Back to Home
           </Button>

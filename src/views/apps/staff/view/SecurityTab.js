@@ -28,7 +28,8 @@ import { Lock } from 'react-feather'
 import { toast } from 'react-hot-toast'
 
 // * Store Imports
-import { updatePassword } from '../store'
+import { updatePassword, getStaffData } from '../store'
+
 
 const SignupSchema = yup.object().shape({
   password: yup.string().min(8).required(),
@@ -43,8 +44,7 @@ const defaultValues = {
 }
 
 const SecurityTab = ({ staffRole, staffID, selectedStaff }) => {
-  
-
+  const dispatch = useDispatch()
   const {
     control,
     trigger,
@@ -57,26 +57,28 @@ const SecurityTab = ({ staffRole, staffID, selectedStaff }) => {
     const userID = staffID
     const newPassword = data.password
     const newData = [userID, newPassword]
-    dispatch(updatePassword( newData ))
+    dispatch(updatePassword(newData))
     toast.success('อัพเดตรหัสผ่านสำเร็จ')
+    dispatch(getStaffData(staffID))
   }
+
   return (
     <Fragment>
       <Card>
         <CardHeader>
           {selectedStaff == 1 ? (
             <div>
-              <CardTitle tag='h4'><Lock size={16}/>  ตั้งรหัสรหัสผ่าน</CardTitle>
+              <CardTitle tag='h4'><Lock size={16} />  ตั้งรหัสรหัสผ่าน</CardTitle>
             </div>) :
             (
-              <CardTitle tag='h4'><Lock size={16}/>   เปลี่ยนรหัสผ่าน</CardTitle>
+              <CardTitle tag='h4'><Lock size={16} />   เปลี่ยนรหัสผ่าน</CardTitle>
             )
           }
         </CardHeader>
         <CardBody>
           <Form onSubmit={handleSubmit(onSubmit)}>
             <Alert color='warning' className='mb-2'>
-              <div className='alert-body'>รหัสผ่านอย่างน้อย 8 ตัว</div>
+              <div className='alert-body'>ความยาวรหัสผ่านอย่างน้อย 8 ตัว</div>
             </Alert>
             <Row>
               <Col className='mb-2' md={6}>
@@ -94,7 +96,7 @@ const SecurityTab = ({ staffRole, staffID, selectedStaff }) => {
                     />
                   )}
                 />
-                {errors.password && <FormFeedback className='d-block'>{errors.password.message}</FormFeedback>}
+                {errors.password && <FormFeedback className='d-block'>{'กรุณากรอกรหัสผ่านอย่างน้อย 8 ตัว'}</FormFeedback>}
               </Col>
               <Col className='mb-2' md={6}>
                 <Controller
@@ -112,7 +114,7 @@ const SecurityTab = ({ staffRole, staffID, selectedStaff }) => {
                   )}
                 />
                 {errors.confirmPassword && (
-                  <FormFeedback className='d-block'>{errors.confirmPassword.message}</FormFeedback>
+                  <FormFeedback className='d-block'>{'กรุณากรอกรหัสผ่านอย่างน้อย 8 ตัว'}</FormFeedback>
                 )}
               </Col>
               <Col xs={12}>

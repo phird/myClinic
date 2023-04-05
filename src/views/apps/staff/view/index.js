@@ -28,8 +28,7 @@ const StaffView = () => {
   // ** Get suer on mount
   useEffect(() => {
     dispatch(getStaffData(parseInt(id)))
-
-  }, [dispatch])
+  }, [dispatch, id])
 
   const [active, setActive] = useState('1')
 

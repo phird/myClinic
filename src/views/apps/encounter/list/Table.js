@@ -341,17 +341,6 @@ const EncountersList = () => {
 
   // ** Function in get data on page change
   const handlePagination = page => {
-    dispatch(
-      getEncounterData(
-        {
-          sort,
-          sortColumn,
-          q: searchTerm,
-          page: page.selected + 1,
-
-        }
-      )
-    )
     setCurrentPage(page.selected + 1)
   }
 
@@ -390,11 +379,6 @@ const EncountersList = () => {
   // ** Custom Pagination
   const CustomPagination = () => {
     const count = Number(Math.ceil(store.total / rowsPerPage))
-    console.log(Number(store.total))
-    console.log("/")
-    console.log(rowsPerPage)
-    console.log("=")
-    console.log(count)
     return (
       <ReactPaginate
         previousLabel={''}

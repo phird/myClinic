@@ -53,6 +53,17 @@ export const postStaff = createAsyncThunk('appStaffs/postStff', async (newData) 
   return response.data
 })
 
+// ** create users acount for staff 
+export const createUser = createAsyncThunk('appStaffs/createUser', async (staffID) => {
+  try {
+    await axios.post('http://localhost:8000/jwt/createUser', {staffID})
+  } catch (error) {
+    console.log(error)
+    console.error(error)
+  }
+})
+
+
 
 export const getEncounterStaff = createAsyncThunk('appStaffs/getEncounterStaff', async id => {
   try {
@@ -65,24 +76,36 @@ export const getEncounterStaff = createAsyncThunk('appStaffs/getEncounterStaff',
   }
 })
 
-export const updateRole = createAsyncThunk('appStaff/updateRole' , async (newData) =>{
+export const updateStaff = createAsyncThunk('appStaffs/updateStaff', async (newData, { dispatch }) => {
+  const { id, ...updatedStaff } = newData
+  try {
+    await axios.put(`http://localhost:8000/staff/editStaffData/${id}`, updatedStaff);
+    const refresh = await dispatch(getStaffData(id))
+    console.log(refresh)
+    return refresh.payload
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+export const updateRole = createAsyncThunk('appStaffs/updateRole', async (newData) => {
   const staffID = newData[0];
   const roleID = newData[1];
   console.log(staffID);
   console.log(roleID);
-  await axios.put(`http://localhost:8000/staff/updateRole/${staffID}`, {roleID})
-  .then(response => {
-    console.log(response.data); // handle response from server
-  })
-  .catch(error => {
-    console.log(error); // handle error from server
-  });
+  await axios.put(`http://localhost:8000/staff/updateRole/${staffID}`, { roleID })
+    .then(response => {
+      console.log(response.data); // handle response from server
+    })
+    .catch(error => {
+      console.log(error); // handle error from server
+    });
 })
 
 
-export const updatePassword = createAsyncThunk('appStaffs/updatePassword', async (newData) => {
+export const updatePassword = createAsyncThunk('appStaffs/updatePassword', async (newData, {dispatch}) => {
   const userID = newData[0]
-  const password = newData[1] 
+  const password = newData[1]
   await axios.put(`http://localhost:8000/jwt/updatePassword/${userID}`, { password })
     .then(response => {
       console.log(response.data); // handle response from server
@@ -91,6 +114,25 @@ export const updatePassword = createAsyncThunk('appStaffs/updatePassword', async
       console.log(error); // handle error from server
     });
 })
+
+export const updateUsername = createAsyncThunk('appStaffs/updateUsername', async (newData, {dispatch}) => {
+  const staffID = newData[0]
+  const username = newData[1]
+  try {
+    await axios.put(`http://localhost:8000/jwt/setUsername`, {staffID, username})
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+export const deleteStaff = createAsyncThunk('appStaffs/deleteStaff' , async id => {
+  try {
+    await axios.put(`http://localhost:8000/staff/deleteStaff/${id}`)
+  } catch (error) {
+    console.error(error)
+  }
+})
+
 
 
 export const getWidgetData = createAsyncThunk('/appStaffs/getWidgetData', async staffID => {
@@ -136,13 +178,19 @@ export const appStaffsSlice = createSlice({
       .addCase(getStaffData.fulfilled, (state, action) => {
         state.selectedStaff = action.payload
       })
+      .addCase(updateStaff.fulfilled, (state, action) => {
+        state.selectedStaff = action.payload
+      })
       .addCase(getEncounterStaff.fulfilled, (state, action) => {
         state.encounterStaff = action.payload
       })
       .addCase(updatePassword.fulfilled, (state, action) => {
       })
-      .addCase(getWidgetData.fulfilled, (state,action) => {
+      .addCase(getWidgetData.fulfilled, (state, action) => {
         state.widgetData = action.payload
+      })
+      .addCase(deleteStaff.fulfilled, (state,action)=>{
+        state.total = state.total-1
       })
 
   }

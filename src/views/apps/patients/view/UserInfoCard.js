@@ -2,16 +2,18 @@
 import { useState, Fragment, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 // ** Reactstrap Imports
-import { Row, Col, Card, Form, CardBody, Button, Badge, Modal, Input, Label, ModalBody, ModalHeader } from 'reactstrap'
+import { Alert, Row, Col, Card, Form, CardBody, Button, Badge, Modal, Input, Label, ModalBody, ModalHeader } from 'reactstrap'
 
 // ** Third Party Components
 import Swal from 'sweetalert2'
-import { User, Smile } from 'react-feather'
+import { Calendar } from 'react-feather'
 import withReactContent from 'sweetalert2-react-content'
 import Flatpickr from 'react-flatpickr'
 import Select from 'react-select'
 import InputAddress from 'react-thailand-address-autocomplete'
 import toast from 'react-hot-toast'
+import { Icon } from '@iconify/react';
+
 
 // ** Custom Components
 import Avatar from '@components/avatar'
@@ -32,6 +34,10 @@ const genderOptions = [
   { value: 'ชาย', label: 'ชาย' },
   { value: 'หญิง', label: 'หญิง' }
 ]
+const genderColors = {
+  ชาย: 'light-primary',
+  หญิง: 'light-info'
+}
 const bloodTypeOption = [
   { value: "A+", label: "A+" },
   { value: "A-", label: "A-" },
@@ -122,7 +128,8 @@ const UserInfoCard = ({ selectedPatient }) => {
     }
     console.log("here is newData")
     console.log(newData)
-    if (!fname || !lname || !personalID) {
+    if (!fname || !lname || !phoneNo || !dob || !bloodtype || !pgender || !paddress || !district || !subdistrict || !province || !postalCode || !personalID || !addedDate) {
+      toast.error("กรุณากรอกข้อมูลให้ครบ  ! ", { duration: 5000 })
       return;
     }
     try {
@@ -239,6 +246,7 @@ const UserInfoCard = ({ selectedPatient }) => {
   return (
     <Fragment>
       <Card>
+
         <CardBody>
           <>
             <Row className='my-2'>
@@ -254,21 +262,22 @@ const UserInfoCard = ({ selectedPatient }) => {
                       </div>
                       <div className='d-flex justify-content-around my-2 '>
                         <div className='d-flex align-items-start me-2'>
-                          <Badge color='light-primary' className='rounded '>
-                            <User className='font-large-1' />
+                          <Badge color='light-primary' className='rounded p-75'>
+                            <Calendar className='font-medium-4' />
                           </Badge>
                           <div className='ms-75'>
+                            <span>อายุ</span>
                             <h4 className='mb-0'>{Age}</h4>
-                            <small>อายุ</small>
                           </div>
                         </div>
                         <div className='d-flex align-items-start'>
-                          <Badge color='light-primary' className='rounded p-75'>
-                            <Smile className='font-medium-2' />
+                          <Badge color={genderColors[selectedPatient.gender]}
+                            className='rounded p-75'>
+                            <Icon className='font-medium-5' icon="mdi:gender-female" />
                           </Badge>
                           <div className='ms-75'>
+                            <span>เพศ</span>
                             <h4 className='mb-0'>{selectedPatient.gender}</h4>
-                            <small>เพศ</small>
                           </div>
                         </div>
                       </div>
@@ -283,28 +292,34 @@ const UserInfoCard = ({ selectedPatient }) => {
                 <div className='info-container'>
                   {selectedPatient !== null ? (
                     <ul className='list-unstyled'>
-
                       <li className='mb-75'>
-                        <span className='fw-bolder me-25'>วัน/เดือน/ปี เกิด:</span>
+                        <span className='fw-bolder me-25'>ชื่อ: </span>
+                        <span>{selectedPatient.fname + ' ' + selectedPatient.lname}</span>
+                      </li>
+                      <li className='mb-75'>
+                        <span className='fw-bolder me-25'>วันเกิด: </span>
                         <span className='text-capitalize' >
                           {birthday}
                         </span>
                       </li>
-
                       <li className='mb-75'>
-                        <span className='fw-bolder me-25'>กรุ๊ปเลือด:</span>
+                        <span className='fw-bolder me-25'>อายุ: </span>
+                        <span>{Age} ปี</span>
+                      </li>
+                      <li className='mb-75'>
+                        <span className='fw-bolder me-25'>กรุ๊ปเลือด: </span>
                         <span> {selectedPatient.bloodtype} </span>
                       </li>
                       <li className='mb-75'>
-                        <span className='fw-bolder me-25'>เบอร์โทรติดต่อ:</span>
+                        <span className='fw-bolder me-25'>เบอร์โทรติดต่อ: </span>
                         <span>{selectedPatient.phoneNo}</span>
                       </li>
                       <li className='mb-75'>
-                        <span className='fw-bolder me-25'>ที่อยู่:</span>
+                        <span className='fw-bolder me-25'>ที่อยู่: </span>
                         <span>
                           {selectedPatient.address + ', ' +
-                            selectedPatient.district + ', ' +
                             selectedPatient.subdistrict + ', ' +
+                            selectedPatient.district + ', ' +
                             selectedPatient.province + ', ' +
                             selectedPatient.postalCode}
                         </span>
@@ -321,9 +336,9 @@ const UserInfoCard = ({ selectedPatient }) => {
                   ) : null}
                 </div>
                 <div className='d-flex justify-content-around pt-2 py-2 '>
-                  <Button color='primary' onClick={() => setShow(true)} outline disabled>
+                  {/* <Button color='primary' onClick={() => setShow(true)} outline disabled>
                     ข้อมูลการซักประวัติผู้ป่วย
-                  </Button>
+                  </Button> */}
                   <Button className='d-flex justify-content-end' color='primary' onClick={() => setShow(true)}>
                     แก้ไขข้อมูลผู้ป่วย
                   </Button>

@@ -85,7 +85,6 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
     const fname = firstName;
     const lname = lastName;
     const phoneNo = telNo;
@@ -290,9 +289,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
     link.setAttribute('download', filename)
     link.click()
   }
-
   return (
-
     <Fragment>
       <div className='invoice-list-table-header w-100 me-1 ms-50 mt-2 mb-75'>
         <Row>

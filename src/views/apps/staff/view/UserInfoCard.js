@@ -2,27 +2,30 @@
 import { useState, Fragment } from 'react'
 
 // ** Reactstrap Imports
-import { Alert, Row, Col, Card, Form, CardBody, Button, Badge, Modal, Input, Label, ModalBody, ModalHeader } from 'reactstrap'
+import { Alert, Card, CardBody, Button, Badge, CardHeader } from 'reactstrap'
 
 // ** Third Party Components
 import Swal from 'sweetalert2'
-import Select from 'react-select'
-import { Check, Briefcase, X, Calendar} from 'react-feather'
-import { useForm, Controller } from 'react-hook-form'
+import { Calendar } from 'react-feather'
+import { useForm } from 'react-hook-form'
 import withReactContent from 'sweetalert2-react-content'
 import { Icon } from '@iconify/react';
 
 // ** Custom Components
 import Avatar from '@components/avatar'
 
-// ** Utils
-import { selectThemeColors } from '@utils'
+// ** Store 
+import { updateStaff } from '../store'
+
 
 // ** Styles
 import '@styles/react/libs/react-select/_react-select.scss'
 
 //* dateFormat imports
 import dateFormat from 'dateformat'
+
+// * Modal Imports 
+import EditStaffModal from './Modal/Modal'
 
 
 
@@ -44,25 +47,21 @@ const genderColors = {
   ชาย: 'light-primary',
   หญิง: 'light-info'
 }
-  // ** for converting date into thai date
-  const option = {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  };
+// ** for converting date into thai date
+const option = {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+};
 
 const MySwal = withReactContent(Swal)
 
 const UserInfoCard = ({ selectedStaff }) => {
   // ** State
-  const currentUserData = localStorage.getItem('userData');
-  const userData = JSON.parse(currentUserData);
-  const currentUserID = userData.staffID
+  const [modalOpen, setModalOpen] = useState(false)
 
-  console.log(currentUserID)
-
-
-  const [show, setShow] = useState(false)
+  // ** toggle Modal
+  const toggleModal = () => setModalOpen(!modalOpen)
   const dob = new Date(selectedStaff.dob);
   const birthday = dob.toLocaleDateString('th-TH', option);
   // ** Hook
@@ -102,27 +101,6 @@ const UserInfoCard = ({ selectedStaff }) => {
       />
     )
   }
-  const onSubmit = data => {
-    if (Object.values(data).every(field => field.length > 0)) {
-      setShow(false)
-    } else {
-      for (const key in data) {
-        if (data[key].length === 0) {
-          setError(key, {
-            type: 'manual'
-          })
-        }
-      }
-    }
-  }
-
-  const handleReset = () => {
-    reset({
-      username: selectedStaff.username,
-      lastName: selectedStaff.fullName.split(' ')[1],
-      firstName: selectedStaff.fullName.split(' ')[0]
-    })
-  }
 
   const handleWithDob = (dob) => {
     const today = new Date();
@@ -137,13 +115,23 @@ const UserInfoCard = ({ selectedStaff }) => {
     return `${firstPart}-${secondPart}`
   }
 
+
   return (
     <Fragment>
       <Card>
+        {selectedStaff.username == null || selectedStaff.pstatus == 0 ?
+          <CardHeader>
+            <Alert color='warning'>
+              <h4 className='alert-heading'>คำเตือน</h4>
+              <div className='alert-body'>ยังไม่ได้กำหนด ชื่อผู้ใช้ และ รหัสผ่าน สำหรับการเข้าสู่ระบบของบุคลากรท่านนี้</div>
+            </Alert>
+          </CardHeader>
+          : <div></div>}
         <CardBody>
           <div className='user-avatar-section'>
             <div className='d-flex align-items-center flex-column'>
               {renderUserImg()}
+              <h2>{selectedStaff.fname + ' ' + selectedStaff.lname}</h2>
               <div className='d-flex flex-column align-items-center text-center'>
                 <div className='user-info'>
                   <h4>{selectedStaff !== null ? selectedStaff.fullName : 'Eleanor Aguilar'}</h4>
@@ -206,8 +194,7 @@ const UserInfoCard = ({ selectedStaff }) => {
                   <span className='fw-bolder me-25'>หมู่เลือด: </span>
                   <span>{selectedStaff.bloodtype}</span>
                 </li>
-
-                <br/>
+                <br />
                 <li className='mb-75'>
                   <h5 className='fw-bolder me-25 border-bottom pb-50 mb-1'>ข้อมูลติดต่อ: </h5>
                 </li>
@@ -217,26 +204,26 @@ const UserInfoCard = ({ selectedStaff }) => {
                 </li>
                 <li className='mb-75'>
                   <span className='fw-bolder me-25'>ที่อยู่: </span>
-                  <span>{selectedStaff.address + 
-                  ' ตำบล '+selectedStaff.subdistrict+ 
-                  ' อำเภอ '+ selectedStaff.district + 
-                  ' จังหวัด ' + selectedStaff.province+
-                  ' ' + selectedStaff.postalCode
+                  <span>{selectedStaff.address +
+                    ' ตำบล ' + selectedStaff.subdistrict +
+                    ' อำเภอ ' + selectedStaff.district +
+                    ' จังหวัด ' + selectedStaff.province +
+                    ' ' + selectedStaff.postalCode
                   }</span>
-                  
+
                 </li>
-                
+
               </ul>
             ) : null}
           </div>
           <div className='d-flex justify-content-center pt-2'>
-            <Button color='primary' onClick={() => setShow(true)}>
+            <Button color='primary' onClick={toggleModal}>
               แก้ไขข้อมูล
             </Button>
           </div>
         </CardBody>
       </Card>
-
+      <EditStaffModal selectedStaff={selectedStaff} open={modalOpen} toggleModal={toggleModal} />
     </Fragment>
   )
 }

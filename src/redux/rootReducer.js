@@ -12,6 +12,8 @@ import invoice from '@src/views/apps/invoice/store'
 import service from '@src/views/apps/services/store'
 import calendar from '@src/views/apps/calendar/store'
 import dataTables from '@src/views/tables/data-tables/store'
+import clinic from '@src/views/apps/setting/General/store'
+import disease from '@src/views/apps/setting/Disease/store'
 import { combineReducers } from 'redux'
 import { DESTROY_SESSION } from './actions/types';
 
@@ -34,6 +36,8 @@ const rootReducer = combineReducers({
   calendar,
   dataTables,
   service,
+  clinic,
+  disease,
 })
 
 export {rootReducer, combineReducers} 

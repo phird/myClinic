@@ -10,7 +10,7 @@ import {
   Settings,
   Shield,
   Circle,
-  User
+  User,
 } from 'react-feather'
 
 export default [
@@ -39,7 +39,20 @@ export default [
     id: 'setting',
     title: 'ตั้งค่า',
     icon: <Settings size={20} />,
-    navLink: '/apps/setting'
+    children: [
+      {
+        id: 'general',
+        title: 'ข้อมูลคลินิก',
+        icon: <Circle size={12} />,
+        navLink: '/setting/general'
+      },
+      {
+        id: 'disease',
+        title: 'ข้อมูลโรค',
+        icon: <Circle size={12} />,
+        navLink: '/setting/disease'
+      },
+    ]
   },
 
 

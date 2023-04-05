@@ -37,7 +37,6 @@ const StatUserCard = ({ selectedPatient }) => {
 
 
     // ** State
-    const [latestSymp, setLatestSymp] = useState([]);
     const [latestDoctor, setLastestDoctor] = useState(); // ** Need to create doctor table !!!!
 
     // ** Context
@@ -64,11 +63,8 @@ const StatUserCard = ({ selectedPatient }) => {
                 </Col>
             </Row>
             <Row>
-                <Col xl='6' md='6' sm='6'>
-                    <StatsVertical icon={<Eye size={21} />} color='info' stats={`${store.encounter.length}`} statTitle='จำนวนการตรวจทั้งหมด' />
-                </Col>
-                <Col xl='6' md='6' sm='6'>
-                    <StatsVertical icon={<UserCheck size={21} />} color='danger' stats={`ชื่อ: ${store.widgetData?.staffID || '-'}`} statTitle='หมอคนที่ตรวจล่าสุด' />
+                <Col xl='12' md='12' sm='12'>
+                    <StatsVertical icon={<UserCheck size={21} />} color='danger' stats={`ศิณรัตน์ ไชยรัตน์ศิริ`} statTitle='หมอคนที่ตรวจล่าสุด' />
                 </Col>
             </Row>
 

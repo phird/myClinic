@@ -1,19 +1,24 @@
 // ** React Imports
 import { Link } from 'react-router-dom'
 
+import { useDispatch } from 'react-redux'
+
+
 // ** Icons Imports
 import {
   FileText,
   Trash2,
-
-
 } from 'react-feather'
+
+// ** Store 
+import { store } from '@store/store'
+import { deleteStaff } from '../store'
+
 
 // ** Reactstrap Imports
 import {
   Button,
   UncontrolledTooltip
-
 } from 'reactstrap'
 
 
@@ -38,7 +43,7 @@ export const columns = [
           <Link
             to={`/apps/staff/view/${row.staffID}`}
             className='user_name text-truncate text-body'
-            
+
           >
             <span className='fw-bolder'>{row.fname + ' ' + row.lname}</span>
           </Link>
@@ -54,15 +59,6 @@ export const columns = [
     sortField: 'role',
     selector: row => row.gender,
 
-  },
-  {
-    name: 'บทบาท',
-    selector: row => row.role,
-    cell: row => (
-      <div>
-        {row.role === 'general' ? 'ทั่วไป' : 'ผู้ดูแล'}
-      </div>
-    )
   },
   {
     name: ' ',
@@ -83,7 +79,11 @@ export const columns = [
               ดูข้อมูล
             </UncontrolledTooltip>
           </Link>
-          <Button.Ripple className='btn-icon' color='flat-danger' id={`del-${row.serviceID}`}>
+          <Button.Ripple className='btn-icon' color='flat-danger' id={`del-${row.serviceID}`}
+            onClick={e => {
+                e.preventDefault()
+                store.dispatch(deleteStaff(row.staffID))}
+                }>
             <Trash2 size={16} />
           </Button.Ripple>
           <UncontrolledTooltip target={`del-${row.serviceID}`} >

@@ -107,9 +107,7 @@ const RolePermission = ({ staffID, staffRole }) => {
                 </CardHeader>
                 <CardBody>
                     <Form onSubmit={handleSubmit(onSubmitRole)}>
-                        <Alert color='warning' className='mb-2'>
-                            <div className='alert-body'> กรุณาตรวจสอบบทบาทให้ครบถ้วน </div>
-                        </Alert>
+                        
                         <Row>
                             <Col className='mb-2' md={6}>
                                 <h4> บทบาทปัจจุบัน: <Badge color={RoleColorList[getRoleName(roleID)]} > {getRoleName(roleID)} </Badge>  </h4>

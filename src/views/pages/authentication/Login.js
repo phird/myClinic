@@ -10,7 +10,7 @@ import useJwt from '@src/auth/jwt/useJwt'
 import toast from 'react-hot-toast'
 import { useDispatch } from 'react-redux'
 import { useForm, Controller } from 'react-hook-form'
-import { Facebook, Twitter, Mail, GitHub, HelpCircle, Coffee, X } from 'react-feather'
+import { Coffee, X } from 'react-feather'
 
 // ** Actions
 import { handleLogin } from '@store/authentication'
@@ -22,9 +22,6 @@ import { AbilityContext } from '@src/utility/context/Can'
 import Avatar from '@components/avatar'
 import InputPasswordToggle from '@components/input-password-toggle'
 
-// ** Utils
-import { getHomeRouteForLoggedInUser } from '@utils'
-
 // ** Reactstrap Imports
 import {
   Row,
@@ -32,13 +29,10 @@ import {
   Form,
   Input,
   Label,
-  Alert,
   Button,
   CardText,
   CardTitle,
-  FormFeedback,
-  UncontrolledTooltip
-} from 'reactstrap'
+  FormFeedback} from 'reactstrap'
 
 // ** Illustrations Imports
 import illustrationsLight from '@src/assets/images/pages/login-v2.svg'
@@ -48,13 +42,6 @@ import illustrationsDark from '@src/assets/images/pages/login-v2-dark.svg'
 import '@styles/react/pages/page-authentication.scss'
 
 const ToastContent = ({ t, name, role }) => {
-  let newRole = '' 
-  if( role === 'admin'){
-    newRole = 'ผู้ดูแล'
-  }
-  if(role === 'general' ){
-    newRole = 'แพทย์'
-  }
   return (
     <div className='d-flex'>
       <div className='me-1'>
@@ -65,14 +52,14 @@ const ToastContent = ({ t, name, role }) => {
           <h6>{name}</h6>
           <X size={12} className='cursor-pointer' onClick={() => toast.dismiss(t.id)} />
         </div>
-        <span> คุณเข้าสู่ระบบในฐานะ {newRole} ของ myClinic สำเร็จแล้ว. ยินดีต้อนรับ 🙏🏻 </span>
+        <span> คุณเข้าสู่ระบบสำเร็จแล้ว. ยินดีต้อนรับ 🙏🏻 </span>
       </div>
     </div>
   )
 }
 
 const defaultValues = {
-  password: 'admin',
+  password: 'palm2543',
   loginEmail: 'admin'
 }
 
@@ -102,7 +89,7 @@ const Login = () => {
           const data = { ...res.data.userData, accessToken: res.data.accessToken, refreshToken: res.data.refreshToken }
           dispatch(handleLogin(data))
           ability.update(res.data.userData.ability)
-          navigate(getHomeRouteForLoggedInUser(data.role))
+          navigate('/home')
           toast(t => (
             <ToastContent t={t} role={data.role || 'admin'} name={data.fullname || data.username || 'John Doe'} />
           ))
@@ -140,33 +127,10 @@ const Login = () => {
               ยินดีต้อนรับเข้าสู่ myClinc! 👋
             </CardTitle>
             <CardText className='mb-2'>myClinic ระบบจัดการข้อมูลคลินิกทางการแพทย์</CardText>
-            <Alert color='primary'>
-              <div className='alert-body font-small-2'>
-                <p>
-                  <small className='me-50'>
-                    <span className='fw-bold'>Admin:</span> admin  | admin
-                  </small>
-                </p>
-                <p>
-                  <small className='me-50'>
-                    <span className='fw-bold'>Client:</span> client@demo.com | client
-                  </small>
-                </p>
-              </div>
-              <HelpCircle
-                id='login-tip'
-                className='position-absolute'
-                size={18}
-                style={{ top: '10px', right: '10px' }}
-              />
-              <UncontrolledTooltip target='login-tip' placement='left'>
-                DEMO ACL
-              </UncontrolledTooltip>
-            </Alert>
             <Form className='auth-login-form mt-2' onSubmit={handleSubmit(onSubmit)}>
               <div className='mb-1'>
                 <Label className='form-label' for='login-email'>
-                  Email / Username
+                  ชื่อผุ้ใช้
                 </Label>
                 <Controller
                   id='loginEmail'
@@ -187,7 +151,7 @@ const Login = () => {
               <div className='mb-1'>
                 <div className='d-flex justify-content-between'>
                   <Label className='form-label' for='login-password'>
-                    Password
+                    รหัสผ่าน
                   </Label>
                   <Link to='/forgot-password'>
                     <small>ลืมรหัสผ่าน?</small>
@@ -202,12 +166,7 @@ const Login = () => {
                   )}
                 />
               </div>
-              <div className='form-check mb-1'>
-                <Input type='checkbox' id='remember-me' />
-                <Label className='form-check-label' for='remember-me'>
-                  จดจำการเข้าสู่ระบบ
-                </Label>
-              </div>
+              
               <Button type='submit' color='primary' block>
                 เข้าสู่ระบบ
               </Button>

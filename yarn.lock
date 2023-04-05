@@ -3928,6 +3928,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dotenv@npm:^16.0.3":
+  version: 16.0.3
+  resolution: "dotenv@npm:16.0.3"
+  checksum: afcf03f373d7a6d62c7e9afea6328e62851d627a4e73f2e12d0a8deae1cd375892004f3021883f8aec85932cd2834b091f568ced92b4774625b321db83b827f8
+  languageName: node
+  linkType: hard
+
 "draft-js@npm:0.11.7":
   version: 0.11.7
   resolution: "draft-js@npm:0.11.7"
@@ -5425,6 +5432,16 @@ __metadata:
   peerDependencies:
     csstype: ^3.0.10
   checksum: c37c14f476f65f7c66d94ac1a1686a130b4fa42fc512175444e3c708fa1815f6ea579e1b23567e57d41de2e62ff8b5913915ec829f05a3b995d1a7a0016c0bdf
+  languageName: node
+  linkType: hard
+
+"google-maps-react@npm:^2.0.6":
+  version: 2.0.6
+  resolution: "google-maps-react@npm:2.0.6"
+  peerDependencies:
+    react: ~0.14.8 || ^15.0.0 || ^16.0.0
+    react-dom: ~0.14.8 || ^15.0.0 || ^16.0.0
+  checksum: cf5120d6ff7234bb58953d3a475b30bbd20f67cb3167865c2c64ce4eba772463e0b6e621fd51e93d383f451e86677374c0ed4b0645dc18bcd14666eac52e5e7b
   languageName: node
   linkType: hard
 
@@ -7156,6 +7173,7 @@ __metadata:
     crypto-browserify: ^3.12.0
     date-fns: ^2.29.3
     dateformat: ^5.0.3
+    dotenv: ^16.0.3
     draft-js: 0.11.7
     draftjs-to-html: 0.9.1
     electron: ^23.2.1
@@ -7169,6 +7187,7 @@ __metadata:
     firebase: ^9.18.0
     flatpickr: ^4.6.13
     fullcalendar: ^6.0.3
+    google-maps-react: ^2.0.6
     history: ^5.3.0
     html-to-draftjs: 1.5.0
     i18next: ^22.0.5

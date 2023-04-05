@@ -1,29 +1,21 @@
 // ** Reactstrap Imports
-import { Card, CardHeader, Progress } from 'reactstrap'
+import { Card, CardHeader } from 'reactstrap'
 
 // ** React Imports 
 import { useParams, Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect } from 'react'
 // ** Third Party Components
-import { ChevronDown } from 'react-feather'
+import ReactPaginate from 'react-paginate'
 import DataTable from 'react-data-table-component'
-
-// ** Custom Components
-import Avatar from '@components/avatar'
-
-// ** Label Images
-import xdLabel from '@src/assets/images/icons/brands/xd-label.png'
-import vueLabel from '@src/assets/images/icons/brands/vue-label.png'
-import htmlLabel from '@src/assets/images/icons/brands/html-label.png'
-import reactLabel from '@src/assets/images/icons/brands/react-label.png'
-import sketchLabel from '@src/assets/images/icons/brands/sketch-label.png'
+import { useState } from 'react'
 
 // ** Styles
 import '@styles/react/libs/tables/react-dataTable-component.scss'
 
 // ** Store 
-import { getEncounterStaff } from '../store'
+import { getEncounterStaff} from '../store'
+
 
 
 export const columns = [
@@ -84,9 +76,50 @@ const UserEncountersList = () => {
   const id = useParams()
   // ** get data
   const store = useSelector(state => state.staff)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
   useEffect(() => {
     dispatch(getEncounterStaff(parseInt(id.id)))
   }, [store.selectedStaff.length])
+
+
+  const handlePagination = page => {
+    setCurrentPage(page.selected + 1)
+  }
+  const CustomPagination = () => {
+    const count = Number(Math.ceil(store.encounterStaff.length / rowsPerPage))
+    return (
+      <ReactPaginate
+        previousLabel={''}
+        nextLabel={''}
+        pageCount={count || 1}
+        activeClassName='active'
+        forcePage={currentPage !== 0 ? currentPage - 1 : 0}
+        onPageChange={page => handlePagination(page)}
+        pageClassName={'page-item'}
+        nextLinkClassName={'page-link'}
+        nextClassName={'page-item next'}
+        previousClassName={'page-item prev'}
+        previousLinkClassName={'page-link'}
+        pageLinkClassName={'page-link'}
+        containerClassName={'pagination react-paginate justify-content-end my-2 pe-1'}
+      />
+    )
+  }
+
+  const dataToRender = () => {
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage
+
+    if (store.encounterStaff.length > 0) {
+      return store.encounterStaff.slice(startIndex, endIndex)
+    } else if (store.encounterStaff.length === 0) {
+      return []
+    } else {
+      return store.encounterStaff
+    }
+  }
+
 
   return (
     <Card>
@@ -95,10 +128,13 @@ const UserEncountersList = () => {
         <DataTable
           noHeader
           responsive
+          pagination
+          paginationServer
+          paginationComponent={CustomPagination}
           columns={columns}
-          data={store.encounterStaff}
+          data={dataToRender()}
           className='react-dataTable'
-          /* sortIcon={<ChevronDown size={10} />} */
+        /* sortIcon={<ChevronDown size={10} />} */
         />
       </div>
     </Card>

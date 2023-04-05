@@ -236,7 +236,7 @@ const UserTabs = ({ selectedEncounter }) => {
                 <div className='my-2'>
                   {eStatus == 0 ? (
                     <>
-                      <Badge color='danger' className='d-block'>
+                      <Badge color='success' className='d-block'>
                         <span>การตรวจเสร็จสิ้น</span>
                       </Badge>
                     </>
@@ -255,7 +255,7 @@ const UserTabs = ({ selectedEncounter }) => {
               <div>
                 {eStatus == 0 ? (
                   <>
-                    <Badge color='danger' className='d-block'>
+                    <Badge color='success' className='d-block'>
                       <span>การตรวจเสร็จสิ้น</span>
                     </Badge>
                   </>
