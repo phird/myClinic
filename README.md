@@ -1,6 +1,6 @@
-# myClnic Project 
+# myClnic Project
 
-myClinic is built using Vite. You don't need to install or configure tools like Webpack or Babel. Vite is a
+myClinic is built using Vite. You don't need to install or configure tools like Webpack or Babel.
 
 ## Installation
 
@@ -50,3 +50,5 @@ npm run start
 Now you will find some output after running above command in console as below:
 
 ![Screenshot 1](/image/yarn%20start.png)
+
+Visit <http://localhost:3000/> to check frontend.
