@@ -22,17 +22,6 @@ yarn
 npm install
 ```
 
-Now to run development server of myClinic, run below command:
-
-```bash
-# For Yarn
-yarn start
-
-# For npm
-npm run start
-
-```
-
 📍 Important
 Before Installing the node_modules make sure you have files starting with a dot(.eslintrc). it mostly happens when hidden files are not enabled and you try to copy our project at other place on your system
 
