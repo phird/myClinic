@@ -29,8 +29,8 @@ Now to run development server of myClinic, run below command:
 yarn start
 
 # For npm
-npm run start# For Yarn (Highly Recommended)
-yarn
+npm run start
+
 ```
 
 📍 Important
