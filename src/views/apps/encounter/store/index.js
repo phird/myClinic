@@ -83,7 +83,12 @@ export const addNote = createAsyncThunk('appEncounter/addNote', async (dataArray
 export const getWidgetEncounter = createAsyncThunk('appEncounter/getWidgetEncounter', async id => {
   try {
     const response = await axios.get(`http://localhost:8000/app/Encounter/widgetData/${id}`)
-    return response.data[0]
+    console.log(response)
+    return {
+      data: response.data[0],
+      total : response.data
+    }
+    
   } catch (error) {
     console.log("error in store Encoutner GetWidget")
     console.error(error)
@@ -179,6 +184,7 @@ export const appEncountersSlice = createSlice({
     params: {},
     allData: [],
     widgetData: [],
+    widgetlength : 0, 
     imgList: [],
     export: [],
     doctorList: [],
@@ -211,7 +217,8 @@ export const appEncountersSlice = createSlice({
         state.etotal = action.payload.totalPage
       })
       .addCase(getWidgetEncounter.fulfilled, (state, action) => {
-        state.widgetData = action.payload
+        state.widgetData = action.payload.data
+        state.widgetlength = action.payload.total
       })
       .addCase(addUrl.fulfilled, (state,action) => {})
       .addCase(getImg.fulfilled, (state,action) =>{

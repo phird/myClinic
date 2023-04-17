@@ -25,6 +25,9 @@ import dateFormat from 'dateformat'
 import { getPrescription } from '../../prescription/store'
 import { toast } from 'react-hot-toast'
 
+
+
+
 export const columns = [
   {
     name: 'รหัสการรักษา',
@@ -57,10 +60,10 @@ export const columns = [
         <div className='d-flex flex-column'>
           <Link
             to={`/apps/patient/view/${row.patientID}`}
-            className='user_name text-truncate text-body'
-            onClick={() => store.dispatch(getAllEncounter(row.encounterID))}
+            className='user_name text-truncate text-body '
           >
-            <span className='fw-bolder'>{row.fname + ' ' + row.lname}</span>
+            <span className='fw-bolder me-1'>{row.fname + ' ' + row.lname } </span>
+            {row.delStatus == 1 ? <Badge color='danger'>ข้อมูลผู้ป่วยถูกลบ </Badge> : ''}         
           </Link>
         </div>
       </div>

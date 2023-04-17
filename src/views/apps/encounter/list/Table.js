@@ -409,6 +409,8 @@ const EncountersList = () => {
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage
     if (store.data.length > 0) {
+      console.log("here what inside store data")
+      console.log(store.data)
       return store.data.slice(startIndex, endIndex);
     } else if (store.data.length === 0 && isFiltered) {
       return []

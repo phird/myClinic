@@ -1,6 +1,6 @@
 // ** React Imports
 import { useState, Fragment, useEffect } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 // ** Reactstrap Imports
 import { Card, CardBody, Badge } from 'reactstrap'
 import axios from 'axios'
@@ -13,7 +13,8 @@ import withReactContent from 'sweetalert2-react-content'
 // ** Custom Components
 import Avatar from '@components/avatar'
 
-// ** Utils
+// ** Store 
+import { getDoctorForUser } from '../store'
 
 // ** Styles
 import '@styles/react/libs/react-select/_react-select.scss'
@@ -39,29 +40,50 @@ const MySwal = withReactContent(Swal)
 
 
 const UserInfoCard = ({ selectedEncounter }) => {
+  console.log("here selectedEncounter ++++++= ")
+  console.log(selectedEncounter)
   // ** State
   const dispatch = useDispatch()
   const [show, setShow] = useState(false)
   const [doctor, setDoctor] = useState([])
   const [dName, setDname] = useState('')
+  const store = useSelector(state => state.encounters)
+  console.log(store)
 
   useEffect(() => {
-    const fetcgDoc = async () => {
-      const response = await axios.get('http://localhost:8000/staff/allData')
-      setDoctor(response.data)
-    }
-    fetcgDoc();
-  }, [dispatch]);
+    dispatch(getDoctorForUser())
+  }, [selectedEncounter]);
 
   useEffect(() => {
-    const setName = async () => {
-      const d = doctor.find((e) => e.staffID === selectedEncounter.staffID)
-      setDname(d.fname + ' ' + d.lname)
+    setDoctor(store.doctorList)
+  }, [dispatch, store.doctorList.length])
+
+
+  useEffect(() => {
+    const findDoc = (id) => {
+      let firstName = '';
+      let lastName = '';
+      doctor.forEach((doc) => {
+        console.log(doc)
+        if (doc.staffID === id) {
+          firstName = doc.fname
+          console.log(firstName)
+          lastName = doc.lname
+          console.log(lastName)
+        }
+      });
+      let doctorName = firstName + ' ' + lastName
+      console.log("Doctor Name 2")
+      console.log(doctorName)
+      setDname(doctorName)
     }
-    setName()
-  }, [doctor.length])
+    findDoc(selectedEncounter.staffID)
+  }, [doctor.length ,selectedEncounter.staffID])
 
 
+
+  console.log("&&&&&&&&&&&&&&&&&&&&&&&")
+  console.log(doctor)
   // ** Hook
   const {
     reset,
@@ -198,7 +220,7 @@ const UserInfoCard = ({ selectedEncounter }) => {
                     }
                   </span>
                 </li>
-                
+
               </ul>
             ) : null}
           </div>

@@ -41,6 +41,7 @@ const MySwal = withReactContent(Swal)
 // ** Imports From Store 
 import { getPrescription } from '../../prescription/store'
 
+import { getAllData } from '../../drugs/store'
 
 
 export function handleDelete(drugID, drugList, setDrugList) {
@@ -126,8 +127,6 @@ const PrescriptionList = (props) => {
   // ** State
   const [show, setShow] = useState(false);
   const [drugs, setDrugs] = useState([]);
-  console.log("here an avaliable drugs")
-  console.log(drugs)
 
   const [selectedDrugs, setSelectedDrugs] = useState([]);
   // sent this to patent 
@@ -136,15 +135,11 @@ const PrescriptionList = (props) => {
   const [unit, setUnit ] = useState('');
   const [inputValue, setInputValue] = useState('');
 
-  const [filteredData, setFilteredData] = useState([]);
   // * PROPS Retrive
   const selectedEncounter = props.selectedEncounter
   const enID = selectedEncounter.encounterID
   const enStatus = selectedEncounter.eStatus
   const store = useSelector(state => state.prescription)
-
-  console.log(" Selected Drug ====>  ")
-  console.log(selectedDrugs)
 
   useEffect(() => {
     fetchDrugsData();
@@ -159,10 +154,11 @@ const PrescriptionList = (props) => {
   }, [drugList]);
 
   const fetchDrugsData = async () => {
-    const response = await axios.get('http://localhost:8000/drugs//list/allDrugs');
-    console.log("from fetch data")
-    console.log(response.data)
-    setDrugs(response.data)
+    const response = await dispatch(getAllData());
+    setDrugs(response.payload)
+
+    console.log("Selet drug")
+    console.log(drugs)
   };
 
   //** HANDLE MODAL */

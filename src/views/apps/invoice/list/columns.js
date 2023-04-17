@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom'
 // ** Reactstrap Imports
 import {
   UncontrolledTooltip,
-  Button
+  Button,
+  Badge
 } from 'reactstrap'
 
 // ** Third Party Components
@@ -50,7 +51,8 @@ export const columns = [
             <Link
               to={`/apps/patient/view/${row.patientID}`}
               className='user_name text-truncate text-body'>
-              <span className='user-name mb-0 fw-bolder'>{name}</span>
+              <span className='user-name mb-0 fw-bolder me-1'>{name}</span>
+              {row.delStatus == 1 ? <Badge color='danger'> ข้อมูลผู้ป่วยถูกลบ </Badge> : ''}         
             </Link>
           </div>
         </div>

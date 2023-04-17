@@ -14,6 +14,7 @@ import ReactPaginate from 'react-paginate'
 import DataTable from 'react-data-table-component'
 import { ChevronDown, Share, Printer, FileText, File, Grid, Copy } from 'react-feather'
 import Flatpickr from 'react-flatpickr'
+import { Thai } from 'flatpickr/dist/l10n/th'
 import Select from 'react-select'
 import InputAddress from 'react-thailand-address-autocomplete'
 import toast from 'react-hot-toast'
@@ -48,28 +49,25 @@ import 'flatpickr/dist/themes/dark.css';
 // ** Utils
 import { selectThemeColors } from '@utils'
 
+
+
 const genderOptions = [
   { value: 'ชาย', label: 'ชาย' },
   { value: 'หญิง', label: 'หญิง' }
 ]
 const bloodTypeOption = [
-  { value: "A+", label: "A+" },
-  { value: "A-", label: "A-" },
-  { value: "B+", label: "B+" },
-  { value: "B-", label: "B-" },
-  { value: "O+", label: "O+" },
-  { value: "O-", label: "O-" },
-  { value: "AB+", label: "AB+" },
-  { value: "AB-", label: "AB-" }
+  { value: "A", label: "A" },
+  { value: "B", label: "B" },
+  { value: "O", label: "O" },
+  { value: "AB", label: "AB" },
 ];
 
 // ** Table Header
 const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchTerm }) => {
+
   const dispatch = useDispatch()
   // ** Current Date
   const currentDate = new Date().toISOString().slice(0, 10);
-
-
   const [show, setShow] = useState(false);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState(''); // Fname and Lname
@@ -432,13 +430,16 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                       <Label className='h4 form-label font-weight-bold' for='default-picker'>
                         วันเกิด
                       </Label>
-
                       <Flatpickr
                         className='form-control'
                         value={picker}
                         onChange={date => setPicker(date)}
                         id='default-picker'
                         style={{ maxWidth: '250px' }}
+                        options={{
+                          locale: Thai,
+                          disableMobile : true
+                        }}
                         required
                       />
                     </Col>
