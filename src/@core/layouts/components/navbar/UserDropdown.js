@@ -43,13 +43,12 @@ const UserDropdown = () => {
 
   //** Vars
   const userAvatar = (userData && userData.avatar) || defaultAvatar
-
   return (
     <UncontrolledDropdown tag='li' className='dropdown-user nav-item'>
       <DropdownToggle href='/' tag='a' className='nav-link dropdown-user-link' onClick={e => e.preventDefault()}>
         <div className='user-nav d-sm-flex d-none'>
           <span className='user-name fw-bold'>{(userData && userData['fullname']) || ' - '}</span>
-          <span className='user-status'>{(userData && userData.role === 'admin' ? 'ผู้ดูแล' : 'ทั่วไป') || 'Admin'}</span>
+          <span className='user-status'>{(userData && userData.roleID === 1 ? 'ผู้ดูแล' : 'ทั่วไป') || 'Admin'}</span>
         </div>
         <Avatar img={userAvatar} imgHeight='40' imgWidth='40' status='online' />
       </DropdownToggle>

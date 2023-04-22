@@ -52,7 +52,8 @@ import axios from 'axios';
 
 
 // @deno-types="https://unpkg.com/xlsx/types/index.d.ts"
-import * as XLSX from 'https://unpkg.com/xlsx/xlsx.mjs';
+/* import * as XLSX from 'https://unpkg.com/xlsx/xlsx.mjs'; */
+import * as XLSX from 'xlsx'
 
 /* load the codepage support library for extended support with older formats  */
 import * as cptable from 'https://unpkg.com/xlsx/dist/cpexcel.full.mjs';

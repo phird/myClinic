@@ -21,6 +21,7 @@ export const getEncounterData = createAsyncThunk('appEncounters/getEncounterData
   }
 })
 
+// to create an empty encounter 
 export const postEncounter = createAsyncThunk('appEncounter/postEncounter', async (newData, { dispatch, getState }) => {
   const response = await axios.post('http://localhost:8000/app/Encounter/createEncounter', newData)
   await dispatch(createInvoice(newData));

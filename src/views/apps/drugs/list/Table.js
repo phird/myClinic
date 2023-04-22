@@ -120,12 +120,12 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
   function downloadExcel(array) {
     const headers = Object.keys(array[0])
     const data = array.map(obj => headers.map(key => obj[key]))
-  
+
     const worksheet = XLSX.utils.json_to_sheet(array, { header: headers })
     const workbook = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1')
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' })
-  
+
     saveAs(new Blob([excelBuffer], { type: 'application/octet-stream' }), 'export.xlsx')
   }
 
@@ -332,8 +332,6 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
           </Form>
         </ModalBody>
       </Modal>
-
-
     </div>
   )
 }
