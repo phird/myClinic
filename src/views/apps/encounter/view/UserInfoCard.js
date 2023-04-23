@@ -40,15 +40,14 @@ const MySwal = withReactContent(Swal)
 
 
 const UserInfoCard = ({ selectedEncounter }) => {
-  console.log("here selectedEncounter ++++++= ")
-  console.log(selectedEncounter)
+
   // ** State
   const dispatch = useDispatch()
   const [show, setShow] = useState(false)
   const [doctor, setDoctor] = useState([])
   const [dName, setDname] = useState('')
   const store = useSelector(state => state.encounters)
-  console.log(store)
+
 
   useEffect(() => {
     dispatch(getDoctorForUser())
@@ -64,26 +63,20 @@ const UserInfoCard = ({ selectedEncounter }) => {
       let firstName = '';
       let lastName = '';
       doctor.forEach((doc) => {
-        console.log(doc)
+        
         if (doc.staffID === id) {
           firstName = doc.fname
-          console.log(firstName)
+          
           lastName = doc.lname
-          console.log(lastName)
+          
         }
       });
       let doctorName = firstName + ' ' + lastName
-      console.log("Doctor Name 2")
-      console.log(doctorName)
       setDname(doctorName)
     }
     findDoc(selectedEncounter.staffID)
   }, [doctor.length ,selectedEncounter.staffID])
 
-
-
-  console.log("&&&&&&&&&&&&&&&&&&&&&&&")
-  console.log(doctor)
   // ** Hook
   const {
     reset,
@@ -139,12 +132,9 @@ const UserInfoCard = ({ selectedEncounter }) => {
       username: selectedEncounter.username,
     })
   }
-
-  console.log(selectedEncounter.dob)
   const ageCal = () => {
     const today = new Date()
     const dob = dateFormat(selectedEncounter.dob, "yyyy")
-    console.log(dob)
     const age = today.getFullYear() - dob
     return age
   }

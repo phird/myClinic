@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link, useNavigate,} from 'react-router-dom'
 
 // ** Store & Actions
-import { getEncounter } from '../store'
+import { getEncounter, getDisease} from '../store'
 import { useSelector, useDispatch } from 'react-redux'
 
 // ** Reactstrap Imports
@@ -29,6 +29,7 @@ const UserView = () => {
   // ** Get suer on mount
   useEffect(() => {
     dispatch(getEncounter(parseInt(id)))
+    dispatch(getDisease())
   }, [dispatch])
 
   const navigate = useNavigate()
@@ -60,7 +61,7 @@ const UserView = () => {
           <UserInfoCard selectedEncounter={store.selectedEncounter} />
         </Col>
         <Col xl='9' lg='7' xs={{ order: 1 }} md={{ order: 1, size: 7 }}>
-          <UserTabs selectedEncounter={store.selectedEncounter} />
+          <UserTabs selectedEncounter={store.selectedEncounter} suggestDisease={store.suggestDisease} />
         </Col>
       </Row>
     </div>

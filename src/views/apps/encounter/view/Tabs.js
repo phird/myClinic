@@ -33,13 +33,14 @@ import DoctorBoxs from './DoctorBoxes'
 import Invoice from './Invoice'
 
 //** Import from REDUX */
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from "react-redux";
 
 //* STORE imports
 import { addSymptom, addNote, handleSubmitEncounter, addUrl } from '../store'
 import { postInvoiceList } from '../../invoice/store'
 import { postDrugList } from '../../prescription/store'
 import { changeStatusInvoice } from '../../invoice/store'
+
 
 // * Firebase Storage 
 import storage from '../../../../../firebaseConfig'
@@ -51,7 +52,8 @@ import {
 
 
 
-const UserTabs = ({ selectedEncounter }) => {
+const UserTabs = ({ selectedEncounter, suggestDisease }) => {
+
   const [show, setShow] = useState(false);
   const [symptoms, setSymptoms] = useState([]);
   const [doctorNote, setDoctorNote] = useState('');
@@ -133,18 +135,13 @@ const UserTabs = ({ selectedEncounter }) => {
         () => {
           // download url
           getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-            console.log(url);
             setUrl(url)
             const exUrl = { encounterID, url };
             dispatch(addUrl(exUrl));
           });
         }
       );
-
-
-
       // * put url into Img_url Table
-
     })
   }
 
@@ -159,9 +156,7 @@ const UserTabs = ({ selectedEncounter }) => {
 
   const handleSaveEncounter = async(e) => {    //** File Upload also place here */
     e.preventDefault();
-    
     const encounterID = selectedEncounter.encounterID
-
     await symptoms.forEach(symptom => {    // * add each Symtoms to EncounterSymptom
        dispatch(addSymptom({ encounterID, symptom }));
     });
@@ -178,9 +173,7 @@ const UserTabs = ({ selectedEncounter }) => {
     await dispatch(handleSubmitEncounter(encounterID));    //** handleSubmitEncounter by changing eStatus from 1 to 0 */
 
     await dispatch(changeStatusInvoice(encounterID)); //**  changing Invoice.status from 0 to 1 */
-
     handleReload();
-
     toast.success("บันทึกการตรวจผู้ป้วยเสร็จสิ้น ", { duration: 5000 })
   }
 
@@ -206,7 +199,6 @@ const UserTabs = ({ selectedEncounter }) => {
       <Card>
         {(
           <div>
-            {/* Render your component here */}
             <CardBody>
               <Container className='my-2' fluid>
                 <Row>
@@ -248,7 +240,7 @@ const UserTabs = ({ selectedEncounter }) => {
 
               </Container>
               <div>
-                <DoctorBoxs onSymptomChange={handleSymptom} onNoteAdded={handleNoteAdded} selectedEncounter={selectedEncounter} />
+                <DoctorBoxs onSymptomChange={handleSymptom} onNoteAdded={handleNoteAdded} selectedEncounter={selectedEncounter} suggestDisease= {suggestDisease} />
                 <Prescription onDrugSelected={handleDrugSelected} selectedEncounter={selectedEncounter} />
                 <Invoice onInvoiceAdded={handleInvoiceAdded} selectedEncounter={selectedEncounter} />
               </div>

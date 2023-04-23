@@ -157,8 +157,7 @@ const PrescriptionList = (props) => {
     const response = await dispatch(getAllData());
     setDrugs(response.payload)
 
-    console.log("Selet drug")
-    console.log(drugs)
+
   };
 
   //** HANDLE MODAL */
@@ -228,10 +227,6 @@ const PrescriptionList = (props) => {
   }
 
   
-
-
-  console.log("here drug Retrive ")
-  console.log(drugRetrive)
 
   const NoDataComponent = props => {
     <NoData noDataTitle="ไม่มีบันทึกที่จะแสดง" {...props}/>

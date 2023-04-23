@@ -6,6 +6,7 @@ import axios from 'axios'
 //* IMPORT 
 import { createInvoice } from '../../invoice/store'
 import { createPrescription } from '../../prescription/store'
+ 
 
 export const getAllEncounter = createAsyncThunk('appEncounters/getAllEncounter', async () => {
   const response = await axios.get('http://localhost:8000/app/Encounter/list/data')
@@ -96,8 +97,6 @@ export const getWidgetEncounter = createAsyncThunk('appEncounter/getWidgetEncoun
   }
 })
 
-
-
 //* For Encounter SYMPTOM 
 export const getSymptoms = createAsyncThunk('appEncounter/getSymptoms', async(encounterID)=> {
   try{
@@ -146,8 +145,26 @@ export const forExport = createAsyncThunk('appEncounters/forExport', async () =>
   }
 })
 
+// * get Suggest Disease 
+export const getDisease = createAsyncThunk('appEncounter/getDisease', async () => {
+  try {
+    const response = await axios.get('http://localhost:8000/v1/diseases/api/')
+    return response.data
+  } catch (error) {
+    console.log("Error occur in Client Side - > getDisease")
+    console.error(error)
+  }
+})
 
-
+export const getDiseaseSymptom = createAsyncThunk('appEncounter/getDiseaseSymptom', async(id) => {
+  try {
+    const response = await axios.get(`http://localhost:8000/v1/diseases/api/disease/${id}`)
+    return response.data.sympList
+  } catch (error) {
+    console.log("Error in Client Side - getDiseaseSymptom")
+    console.error(error)
+  }
+})
 
 export const deleteEncounter = createAsyncThunk('appEncounters/deleteEncounter', async (id, { dispatch, getState }) => {
   await axios.delete('/apps/encounter/delete', { id })
@@ -190,7 +207,9 @@ export const appEncountersSlice = createSlice({
     export: [],
     doctorList: [],
     doctorListTotal: 1 ,
-    selectedEncounter: null
+    suggestDisease : [],
+    selectedEncounter: null,
+    selectedDisease: null,
   },
   reducers: {},
   extraReducers: builder => {
@@ -232,7 +251,12 @@ export const appEncountersSlice = createSlice({
         state.doctorList = action.payload.data
         state.doctorListTotal = action.payload.total
       })
-
+      .addCase(getDisease.fulfilled, (state, action) => {
+        state.suggestDisease = action.payload
+      })
+      .addCase(getDiseaseSymptom.fulfilled, (state, action) => {
+        state.selectedDisease = action.payload
+      })
   }
 })
 

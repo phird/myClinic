@@ -18,28 +18,29 @@ import {
 import { X } from 'react-feather'
 
 //* Imports Store
-import { getSymptoms, getEncounter } from "../store";
-
+import { getSymptoms, getDiseaseSymptom } from "../store";
 
 const MOCKDISEASE = {
-  Diabetes: [{name: 'ผิวแห้ง'},{name:'เป็นแผลแล้วหายยาก'}, {name:'ชาบริเวณปลายมือปลายเท้า'}],
+  Diabetes: [{ name: 'ผิวแห้ง' }, { name: 'เป็นแผลแล้วหายยาก' }, { name: 'ชาบริเวณปลายมือปลายเท้า' }],
   Pressure: [],
-  Muscle: [{name:'มีอาการตึง'}],
-  Beriberi: [{name:'อ่อนเพลีย'}, {name:'เหนื่อยง่าย'}, {name:'เบื่ออาหาร'}, {name:'ท้องผูก'}, {name:'ท้องอืดเฟ้อ'}, {name:'รู้สึกชา'}],
+  Muscle: [{ name: 'มีอาการตึง' }],
+  Beriberi: [{ name: 'อ่อนเพลีย' }, { name: 'เหนื่อยง่าย' }, { name: 'เบื่ออาหาร' }, { name: 'ท้องผูก' }, { name: 'ท้องอืดเฟ้อ' }, { name: 'รู้สึกชา' }],
 }
 
 const DoctorBoxs = (props) => {
   // ** Dispatch 
   const dispatch = useDispatch();
   const [notes, setNotes] = useState('');
-  const [noteRetrive, setNoteRetrive] = useState('');  
+  const [noteRetrive, setNoteRetrive] = useState('');
   const [disease, setDisease] = useState('');
   const [symptoms, setSymptoms] = useState([]); //* Retrive Things
   const [inputSymptoms, setInputSymptoms] = useState([]);
   const store = useSelector(state => state.encounters)
   const enID = props.selectedEncounter.encounterID
   const enStatus = props.selectedEncounter.eStatus
+  const suggestDisease = props.suggestDisease
   const arraySymp = store.symptoms
+
 
   useEffect(() => {
     dispatch(getSymptoms(enID));
@@ -59,8 +60,6 @@ const DoctorBoxs = (props) => {
   const handleSubmit = (e) => {  //* for add symtoms
     e.preventDefault();
     const newSymptom = e.target.elements.symptom.value;
-    console.log("here what new symptom value : ")
-    console.log(newSymptom)
     if (inputSymptoms.length === 0) {
       setInputSymptoms([{ name: newSymptom }]);
     } else {
@@ -84,17 +83,18 @@ const DoctorBoxs = (props) => {
   const handleNoteChange = (event) => {
     event.preventDefault();
     const newNote = event.target.value;
-    console.log("NewNote:")
-    console.log(newNote)
     setNotes(newNote);
   };
 
-  const handleDiseaseClick = (disease) => {
-    setInputSymptoms(MOCKDISEASE[disease]);
+  const handleDiseaseClick = async (id) => {
+    const data = await dispatch(getDiseaseSymptom(id))
+    setInputSymptoms(data.payload)
+
   };
 
-  console.log("note after onNoteChange")
-  console.log(notes)
+  console.log("here are suggest disease")
+  console.log(suggestDisease)
+
   if (enStatus == 1) {
     return (
       <div className="shadow">
@@ -146,7 +146,7 @@ const DoctorBoxs = (props) => {
                             id='floatingInput'
                             placeholder='เพิ่มอาการ'
                             style={{ textOverflow: "ellipsis", overflow: "hidden", maxWidth: "100%" }}
-                            
+
                             required
                           />
                           <label htmlFor='floatingInput' style={{ maxWidth: "90%" }} >เพิ่มอาการ</label>
@@ -200,47 +200,19 @@ const DoctorBoxs = (props) => {
                 💡 โรคที่พบบ่อย
               </CardTitle>
               <CardBody>
-                <Row>
-                  <Col sm="auto">
-                    <Button.Ripple
-                      color='success'
-                      outline
-                      onClick={() => handleDiseaseClick("Diabetes")}
-                      block
-                    >
-                      เบาหวาน
-                    </Button.Ripple>
-                  </Col>
-                  <Col sm="auto">
-                    <Button.Ripple
-                      color='success'
-                      outline
-                      onClick={() => handleDiseaseClick("Pressure")}
-                      block
-                    >
-                      ความดัน
-                    </Button.Ripple>
-                  </Col>
-                  <Col sm="auto">
-                    <Button.Ripple
-                      color='success'
-                      outline
-                      onClick={() => handleDiseaseClick("Muscle")}
-                      block
-                    >
-                      ปวดเมื่อยกล้ามเนื้อ
-                    </Button.Ripple>
-                  </Col>
-                  <Col sm="auto">
-                    <Button.Ripple
-                      color='success'
-                      outline
-                      onClick={() => handleDiseaseClick("Beriberi")}
-                      block
-                    >
-                      เหน็บชา
-                    </Button.Ripple>
-                  </Col>
+                <Row style={{ overflow: 'scroll' }}>
+                  {suggestDisease.map((disease, index) => (
+                    <Col key={index} sm="auto">
+                      <Button.Ripple
+                        color='success'
+                        outline
+                        onClick={() => handleDiseaseClick(disease.diseaseID)}
+                        block
+                      >
+                        {disease.name}
+                      </Button.Ripple>
+                    </Col>
+                  ))}
                 </Row>
               </CardBody>
 
