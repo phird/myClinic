@@ -46,6 +46,8 @@ const ModalDisease = ({ open, toggleModal }) => {
                 dispatch(createDisease(newData))
                 toggleModal()
                 toast.success('เพิ่มข้อมูลโรคสำเร็จ')
+                setSName('');
+                setInputSymptoms([]);
             } catch (error) {
                 console.log(error)
             }

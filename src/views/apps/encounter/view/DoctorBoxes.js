@@ -200,20 +200,25 @@ const DoctorBoxs = (props) => {
                 💡 โรคที่พบบ่อย
               </CardTitle>
               <CardBody>
-                <Row style={{ overflow: 'scroll' }}>
-                  {suggestDisease.map((disease, index) => (
-                    <Col key={index} sm="auto">
-                      <Button.Ripple
-                        color='success'
-                        outline
-                        onClick={() => handleDiseaseClick(disease.diseaseID)}
-                        block
-                      >
-                        {disease.name}
-                      </Button.Ripple>
-                    </Col>
-                  ))}
-                </Row>
+                <div style={{ maxHeight: '200px', overflowY: 'scroll', width: '100%' }}>
+                  <Row className="justify-content-between flex-nowrap">
+                    {suggestDisease.map((disease, index) => (
+                      <Col className="d-flex justify-content-between" key={index} sm="auto" style={{ minWidth: '150px', }}>
+                        <Button.Ripple
+                          color='success'
+                          outline
+                          onClick={() => handleDiseaseClick(disease.diseaseID)}
+                          style={{ maxWidth: '150px', whiteSpace: 'nowrap' }}
+                          block
+                        >
+                          {disease.name}
+                        </Button.Ripple>
+                      </Col>
+                    ))}
+                  </Row>
+
+                </div>
+
               </CardBody>
 
             </div>
