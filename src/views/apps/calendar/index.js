@@ -3,12 +3,13 @@ import { Fragment, useState, useEffect } from 'react'
 
 // ** Third Party Components
 import classnames from 'classnames'
-import { Row, Col } from 'reactstrap'
+import { Row, Col, CardBody } from 'reactstrap'
 
 // ** Calendar App Component Imports
 import Calendar from './Calendar'
 import SidebarLeft from './SidebarLeft'
 import AddEventSidebar from './AddEventSidebar'
+
 
 // ** Custom Hooks
 import { useRTL } from '@hooks/useRTL'
@@ -16,6 +17,9 @@ import { useRTL } from '@hooks/useRTL'
 // ** Store & Actions
 import { useSelector, useDispatch } from 'react-redux'
 import { fetchEvents, selectEvent, updateEvent, updateFilter, updateAllFilters, addEvent, removeEvent } from './store'
+// * Component
+import Table from './list/Table'
+
 
 // ** Styles
 import '@styles/react/apps/app-calendar.scss'
@@ -78,8 +82,8 @@ const CalendarComponent = () => {
   return (
     <Fragment>
       <div className='app-calendar overflow-hidden border'>
-        <Row className='g-0'>
-          <Col
+        <Row className='g-0' style={{ height: "100%" }}>
+        <Col
             id='app-calendar-sidebar'
             className={classnames('col app-calendar-sidebar flex-grow-0 overflow-hidden d-flex flex-column', {
               show: leftSidebarOpen
@@ -95,19 +99,7 @@ const CalendarComponent = () => {
             />
           </Col>
           <Col className='position-relative'>
-            <Calendar
-              isRtl={isRtl}
-              store={store}
-              dispatch={dispatch}
-              blankEvent={blankEvent}
-              calendarApi={calendarApi}
-              selectEvent={selectEvent}
-              updateEvent={updateEvent}
-              toggleSidebar={toggleSidebar}
-              calendarsColor={calendarsColor}
-              setCalendarApi={setCalendarApi}
-              handleAddEventSidebar={handleAddEventSidebar}
-            />
+            <Table />
           </Col>
           <div
             className={classnames('body-content-overlay', {

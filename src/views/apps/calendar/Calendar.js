@@ -13,6 +13,7 @@ import interactionPlugin from '@fullcalendar/interaction'
 import toast from 'react-hot-toast'
 import { Menu } from 'react-feather'
 import { Card, CardBody } from 'reactstrap'
+import th from '@fullcalendar/core/locales/th'
 
 const Calendar = props => {
   // ** Refs
@@ -46,7 +47,7 @@ const Calendar = props => {
     plugins: [interactionPlugin, dayGridPlugin, timeGridPlugin, listPlugin],
     initialView: 'dayGridMonth',
     headerToolbar: {
-      start: 'sidebarToggle, prev,next, title',
+      start: 'prev,title,next,',
       end: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
     },
     /*
@@ -146,7 +147,10 @@ const Calendar = props => {
   return (
     <Card className='shadow-none border-0 mb-0 rounded-0'>
       <CardBody className='pb-0'>
-        <FullCalendar {...calendarOptions} />{' '}
+        <FullCalendar {...calendarOptions} 
+        locale={th}
+        height={40}
+        />{' '}
       </CardBody>
     </Card>
   )

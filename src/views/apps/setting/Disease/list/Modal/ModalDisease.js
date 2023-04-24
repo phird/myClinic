@@ -36,15 +36,21 @@ const ModalDisease = ({ open, toggleModal }) => {
 
     const handleAddDisease = (e) => {
         e.preventDefault()
-        const newData = {sName, inputSymptoms}
-        console.log(newData)
-        try {
-            dispatch(createDisease(newData))
-            toggleModal()
-            toast.success('เพิ่มข้อมูลโรคสำเร็จ')
-        } catch (error) {
-            console.log(error)
+        const newData = { sName, inputSymptoms }
+
+        if (inputSymptoms.length === 0) {
+            toast.error('โรคต้องมีอย่างน้อย 1 อาการ', 5000)
+            return 
+        } else {
+            try {
+                dispatch(createDisease(newData))
+                toggleModal()
+                toast.success('เพิ่มข้อมูลโรคสำเร็จ')
+            } catch (error) {
+                console.log(error)
+            }
         }
+
     }
 
 
@@ -85,7 +91,7 @@ const ModalDisease = ({ open, toggleModal }) => {
                         <Input
                             autoFocus={true}
                             value={sName}
-                            onChange={(e)=> setSName(e.target.value)}
+                            onChange={(e) => setSName(e.target.value)}
                             id='drugName'
                             type='text'
                             placeholder='ชื่อโรค'

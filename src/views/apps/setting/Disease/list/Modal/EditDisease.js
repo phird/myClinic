@@ -79,17 +79,11 @@ const EditDisease = ({ id, open, toggleModal, store }) => {
         return missingDiseases;
     }
     const handleEditDisease = async (e) => {
-        console.log("Old ")
-        console.log(oldSymptoms)
-        console.log("New")
-        console.log(inputSymptoms)
         e.preventDefault()
         const newDi = findNewDisease(newSymptom)
         const newDiseaseSymp = { id, newDi }
         const delDi = findMissingDisease(oldSymptoms, inputSymptoms)
         const isDelete = { id, delDi }
-        console.log("Delete List ")
-        console.log(isDelete)
         const newName = { id, sName }
         if (inputSymptoms.length === 0) {
             toast.error('โรคต้องมีอย่างน้อย 1 อาการ', 5000)
