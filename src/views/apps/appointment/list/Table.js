@@ -5,14 +5,14 @@ import { Fragment, useState, useEffect } from 'react'
 import { columns } from './columns'
 
 // ** Store & Actions
-import { getAllData, getData } from '../store'
+import { getAllData, getData, getEvent } from '../store'
 import { useDispatch, useSelector } from 'react-redux'
 
 // ** Third Party Components
 import Select from 'react-select'
 import ReactPaginate from 'react-paginate'
 import DataTable from 'react-data-table-component'
-import { ChevronDown, Share, Printer, FileText, File, Grid, Copy, Plus, PlusCircle } from 'react-feather'
+import { ChevronDown, Share, Printer, FileText, File, Grid, Copy, Plus, PlusCircle, Check, Info } from 'react-feather'
 
 // @deno-types="https://unpkg.com/xlsx/types/index.d.ts"
 import * as XLSX from 'https://unpkg.com/xlsx/xlsx.mjs';
@@ -62,75 +62,23 @@ import '@styles/react/libs/react-select/_react-select.scss'
 import '@styles/react/libs/tables/react-dataTable-component.scss'
 import { toast } from 'react-hot-toast'
 
+const calendarsColor = {
+  Business: 'primary',
+  Holiday: 'success',
+  Personal: 'danger',
+  Family: 'warning',
+  ETC: 'info'
+}
+
 // ** Table Header
 const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchTerm }) => {
-
   const dispatch = useDispatch()
-
   // **state
-  const [show, setShow] = useState(false)
+  const [show, setShow] = useState(false)  // boolean state for opening a modal 
   const [inputDrug, setInputDrug] = useState('')
   const [inputPrice, setInputPrice] = useState(0)
   const [inputUnit, setInputUnit] = useState('')
   const [inputDes, setInputDes] = useState('')
-
-
-  // ** Converts table to CSV
-  function convertArrayOfObjectsToCSV(array) {
-    let result
-
-    const columnDelimiter = ','
-    const lineDelimiter = '\n'
-    const keys = Object.keys(store.data[0])
-
-    result = ''
-    result += keys.join(columnDelimiter)
-    result += lineDelimiter
-
-    array.forEach(item => {
-      let ctr = 0
-      keys.forEach(key => {
-        if (ctr > 0) result += columnDelimiter
-
-        result += item[key]
-
-        ctr++
-      })
-      result += lineDelimiter
-    })
-
-    return result
-  }
-
-  // ** Downloads CSV
-  function downloadCSV(array) {
-    const link = document.createElement('a')
-    let csv = convertArrayOfObjectsToCSV(array)
-    if (csv === null) return
-
-    const filename = 'export.csv'
-
-    if (!csv.match(/^data:text\/csv;charset=utf-8/i)) {
-      csv = `data:text/csv;charset=utf-8,${csv}`
-    }
-
-    link.setAttribute('href', encodeURI(csv))
-    link.setAttribute('download', filename)
-    link.click()
-  }
-
-  function downloadExcel(array) {
-    const headers = Object.keys(array[0])
-    const data = array.map(obj => headers.map(key => obj[key]))
-
-    const worksheet = XLSX.utils.json_to_sheet(array, { header: headers })
-    const workbook = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1')
-    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' })
-
-    saveAs(new Blob([excelBuffer], { type: 'application/octet-stream' }), 'export.xlsx')
-  }
-
 
   // ** Handle Modal 
   const handleModalClosed = () => {
@@ -221,69 +169,64 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
           </div>
 
           <div className='d-flex align-items-center table-header-actions'>
-            <UncontrolledDropdown className='me-1'>
-              <DropdownToggle color='secondary' caret outline>
-                <Share className='font-small-4 me-50' />
-                <span className='align-middle'>Export</span>
-              </DropdownToggle>
-              <DropdownMenu>
-                <DropdownItem className='w-100'>
-                  <Printer className='font-small-4 me-50' />
-                  <span className='align-middle'>Print</span>
-                </DropdownItem>
-                <DropdownItem className='w-100' onClick={() => downloadCSV(store.data)}>
-                  <FileText className='font-small-4 me-50' />
-                  <span className='align-middle'>CSV</span>
-                </DropdownItem>
-                <DropdownItem className='w-100' onClick={() => downloadExcel(store.data)}>
-                  <FileText className='font-small-4 me-50' />
-                  <span className='align-middle'>EXCEL</span>
-                </DropdownItem>
-              </DropdownMenu>
-            </UncontrolledDropdown>
-
             <Button className='add-new-user' color='primary' onClick={() => setShow(true)}>
-              เพิ่มยา
+              เพิ่มการนัดหมาย
             </Button>
           </div>
         </Col>
       </Row>
-      {/* // Modal */}
+
+
+      {/* // Modal SECTION */}
       <Modal isOpen={show} toggle={() => setShow(!show)} className='modal-dialog-centered modal-lg' onClosed={handleModalClosed} backdrop="static">
         <ModalHeader className='bg-transparent' toggle={() => setShow(!show)}></ModalHeader>
         <ModalBody className='px-sm-5 pt-50 pb-5'>
           <div className='text-center mb-2'>
-            <h1 className='mb-1'>เพิ่มข้อมูลยา</h1>
-            <p>🚨 กรุณาตรวจสอบ ชื่อยา หน่วย ขอยาให้ครบถ้วน</p>
+            <h1 className='mb-1'>เพิ่มข้อการนัดหมาย</h1>
           </div>
           <Form onSubmit={handlesubmit}>
             <Row className='gy-1 pt-75' >
+              <div className='divider'>
+                <div className='divider-text'>ข้อมูลการนัดหมาย</div>
+              </div>
               <Row md={12} xs={12} style={{ marginBottom: '10px' }}>
                 <Col>
-                  <FormGroup>
-                    <Label className='form-label font-weight-bold' for='drugName'>
-                      ชื่อยา
-                    </Label>
-                    <Input
-                      autoFocus={true}
-                      id='drugName'
-                      type='text'
-                      placeholder='ชื่อยา'
-                      value={inputDrug}
-                      onChange={handleNameChange}
-                      required
-                    />
-                  </FormGroup>
+                  <Label className='form-label font-weight-bold' for='fname'>
+                    ชื่อผู้ป่วย
+                  </Label>
+                  <Input
+                    autoFocus={true}
+                    id='fname'
+                    type='text'
+                    placeholder='ชื่อจริง'
+                    value={inputDrug}
+                    onChange={handleNameChange}
+                    required
+                  />
+                </Col>
+                <Col>
+                  <Label className='form-label font-weight-bold' for='lname'>
+                    นามสกุล
+                  </Label>
+                  <Input
+                    autoFocus={true}
+                    id='lname'
+                    type='text'
+                    placeholder='นามสกุล'
+                    value={inputDrug}
+                    onChange={handleNameChange}
+                    required
+                  />
                 </Col>
               </Row>
               <Row>
                 <Col sm={6}>
                   <FormGroup>
-                    <Label className='h4 form-label font-weight-bold' for='unit'>
-                      ราคาต่อหน่วย
+                    <Label className='h4 form-label font-weight-bold' for='telNo'>
+                      เบอร์โืทรติดต่อ
                     </Label>
                     <Input
-                      id='unit'
+                      id='telNo'
                       type='number'
                       placeholder='ราคาต่อหน่วย'
                       value={inputPrice}
@@ -293,21 +236,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                   </FormGroup>
                 </Col>
 
-                <Col sm={6}>
-                  <FormGroup>
-                    <Label className='h4 form-label font-weight-bold' for='unit'>
-                      หน่วย
-                    </Label>
-                    <Input
-                      id='unit'
-                      type='text'
-                      placeholder='หน่วยของยา: แผง, เม็ด'
-                      value={inputUnit}
-                      onChange={handleUnitChange}
-                      required
-                    />
-                  </FormGroup>
-                </Col>
+                
 
               </Row>
               <Row md={12} xs={12} style={{ marginBottom: '10px' }}>
@@ -339,16 +268,16 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
 }
 
 
-const DrugsList = () => {
+const AppointmentList = () => {
   // ** Store Vars
   const dispatch = useDispatch()
-  const store = useSelector(state => state.drugs)
+  const store = useSelector(state => state.appointment)
 
   // ** States
   const [sort, setSort] = useState('desc')
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
-  const [sortColumn, setSortColumn] = useState('drugID')
+  const [sortColumn, setSortColumn] = useState('appointmentID')
   const [rowsPerPage, setRowsPerPage] = useState(10)
 
   // ** Get data on mount
@@ -356,15 +285,23 @@ const DrugsList = () => {
     dispatch(getAllData())
     dispatch(
       getData({
+        q: searchTerm,
         sort,
         sortColumn,
-        q: searchTerm,
         page: currentPage,
         perPage: rowsPerPage,
       })
     )
-  }, [dispatch, store.data.length, store.total, sort, sortColumn, searchTerm, currentPage, store.selectedDrug])
+    dispatch(getEvent())
+  }, [dispatch, store.data.length, store.events.length, store.total, sort, sortColumn, searchTerm, currentPage, store.selectedDrug])
 
+  // ** Blank Event Object
+  const blankEvent = {
+    title: '',
+    start: '',
+    end: '',
+    allDay: false,
+  }
 
   // ** Function in get data on page change
   const handlePagination = page => {
@@ -477,8 +414,16 @@ const DrugsList = () => {
   return (
     <Fragment>
       <Card className='overflow-hidden'>
-        <CardBody>
-          <AppointmentCard/>
+        <CardBody >
+          <AppointmentCard
+            dispatch={dispatch}
+            store={store}
+            blankEvent={blankEvent}
+            calendarsColor={calendarsColor}
+          />
+          <div className='d-flex p-1 justify-content-end'>
+
+          </div>
         </CardBody>
         <div className='react-dataTable'>
           <DataTable
@@ -505,6 +450,9 @@ const DrugsList = () => {
               />
             }
           />
+          <div className='d-flex p-1 justify-content-end border'>
+            <span><Info size={16} color='red' /> เครื่องหมาย <Check size={16} color='green' /> หมายถึง การนัดหมายที่ผ่านไปแล้ว  </span>
+          </div>
         </div>
       </Card>
 
@@ -513,4 +461,4 @@ const DrugsList = () => {
   )
 }
 
-export default DrugsList
+export default AppointmentList

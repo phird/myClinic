@@ -83,7 +83,7 @@ export const columns = [
     cell: row => row.dueDate
   },
   {
-    name: 'Action',
+    name: '',
     minWidth: '110px',
     cell: row => (
       <div className='column-action d-flex align-items-center'>

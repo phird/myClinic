@@ -12,7 +12,7 @@ import { store } from '@store/store'
 import { getDrug, editDrug, deleteDrug } from '../store'
 
 // ** Icons Imports
-import { Save, Plus, Edit, Slack, User, Settings, Database, Edit2, MoreVertical, FileText, Trash2, Archive } from 'react-feather'
+import { Save, Plus, Edit, Slack, User, Settings, Database, Edit2, MoreVertical, FileText, Trash2, Archive, Check} from 'react-feather'
 
 // ** Reactstrap Imports
 import {
@@ -50,7 +50,7 @@ export const columns = [
     selector: row =>
       <div className='d-flex justify-content-left align-items-center'>
         <div className='d-flex flex-column'>
-          <span className='fw-bolder'>#DG{row.drugID}</span>
+          <span className='fw-bolder'>#{row.appointmentID}</span>
         </div>
       </div>
   },
@@ -59,14 +59,14 @@ export const columns = [
     sortable: true,
     minWidth: '300px',
     sortField: 'fullName',
-    selector: row => row.drugName,
+    selector: row => row.patient_name,
     cell: row => (
       <div className='d-flex justify-content-left align-items-center'>
         <div className='d-flex flex-column'>
           <Link
             className='user_name text-truncate text-body'
           >
-            <span className='fw-bolder'>{row.drugName}</span>
+            <span className='fw-bolder'>{row.patient_name}</span>
           </Link>
         </div>
       </div>
@@ -77,14 +77,24 @@ export const columns = [
     sortable: true,
     minWidth: '172px',
     sortField: 'drugPrice',
-    selector: row =>
-      <div className='d-flex justify-content-left align-items-center'>
-        <div className='d-flex flex-column'>
-          <span className='fw-bolder'>{row.drugPrice + ' ' + 'บาท'} </span>
-        </div>
-      </div>
-  },
+    selector: row => row.date,
+    cell: row => {
+      const currentdate = new Date()
+      const date = new Date(row.date)
+      const options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Bangkok' };  // month if want to make it as a number can change it into numeric
+      const thaidate = date.toLocaleDateString('th-TH', options)
 
+      const isPassedDate = currentdate > date
+     
+      return (
+        <div className='d-flex justify-content-left align-items-center'>
+          <div className='d-flex flex-column'>
+            <span className='fw-bolder'> {isPassedDate ? <Check size={16} color='green'/>  : <></>}  {thaidate} </span>
+          </div>
+        </div>
+      )
+    }
+  },
   {
     name: '',
     minWidth: '120px',

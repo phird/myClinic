@@ -3,11 +3,12 @@ import { useEffect, useState, useRef, memo } from 'react'
 
 // ** Third Party Components
 import axios from 'axios'
-import { Calendar, Menu } from 'react-feather'
+import { Calendar, Menu, ChevronDown } from 'react-feather'
 
 import { Collapse, Button, Card, CardBody } from 'reactstrap'
 
 import collapseImg from '@src/assets/images/slider/04.jpg'
+
 
 // ** Full Calendar & it's Plugins
 import '@fullcalendar/react/dist/vdom'
@@ -21,28 +22,42 @@ import interactionPlugin from '@fullcalendar/interaction'
 import toast from 'react-hot-toast'
 import th from '@fullcalendar/core/locales/th'
 
+// * Store 
+import { getEvent } from '../store'
+import { useDispatch } from 'react-redux'
 
-const AppointmentCard = () => {
+
+const AppointmentCard = (props) => {
     // ** State
+
     const [isOpen, setIsOpen] = useState(false)
     const toggle = () => setIsOpen(!isOpen)
 
     // ** Refs
     const calendarRef = useRef(null)
+    const {
+        store,
+        dispatch,
+        blankEvent,
+        calendarsColor,
+    } = props
 
-    // ** Props
 
 
-    // ** UseEffect checks for CalendarAPI Update
+    /*     // ** UseEffect checks for CalendarAPI Update
+          console.log("Event")
+          console.log(store.events) */
+
 
     // ** calendarOptions(Props)
     const calendarOptions = {
-        events: [],
-        plugins: [interactionPlugin, timeGridPlugin],
-        initialView: 'timeGridWeek',
+        events: store.events.length ? store.events : [],
+        //events: store.events,
+        plugins: [interactionPlugin, dayGridPlugin, timeGridPlugin, listPlugin],
+        initialView: 'dayGridMonth',
         headerToolbar: {
-            start: 'prev,title,next,',
-            end: 'timeGridWeek'
+            start: 'prev,next,title',
+            end: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
         },
         /*
           Enable dragging and resizing event
@@ -66,51 +81,33 @@ const AppointmentCard = () => {
           Max number of events within a given day
           ? Docs: https://fullcalendar.io/docs/dayMaxEvents
         */
-        dayMaxEvents: 2,
+        dayMaxEvents: 3,
 
         /*
           Determines if day names and week names are clickable
           ? Docs: https://fullcalendar.io/docs/navLinks
         */
-        navLinks: true,
+        navLinks: false,
+
+        displayEventTime: false,
 
         eventClassNames({ event: calendarEvent }) {
             // eslint-disable-next-line no-underscore-dangle
-            const colorName = calendarsColor[calendarEvent._def.extendedProps.calendar]
-
+            // const colorName = calendarsColor[calendarEvent._def.extendedProps.calendar]
+            //const colorName = calendarsColor['ETC']
+            const colorName = 'primary'
             return [
                 // Background Color
                 `bg-light-${colorName}`
             ]
         },
 
-        eventClick({ event: clickedEvent }) {
-            dispatch(selectEvent(clickedEvent))
-            handleAddEventSidebar()
-
-            // * Only grab required field otherwise it goes in infinity loop
-            // ! Always grab all fields rendered by form (even if it get `undefined`) otherwise due to Vue3/Composition API you might get: "object is not extensible"
-            // event.value = grabEventDataFromEventApi(clickedEvent)
-
-            // eslint-disable-next-line no-use-before-define
-            // isAddNewEventSidebarActive.value = true
-        },
-
-        customButtons: {
-            sidebarToggle: {
-                text: <Menu className='d-xl-none d-block' />,
-                click() {
-                    toggleSidebar(true)
-                }
-            }
-        },
-
         dateClick(info) {
             const ev = blankEvent
             ev.start = info.date
             ev.end = info.date
-            dispatch(selectEvent(ev))
-            handleAddEventSidebar()
+            dispatch(selectEvent(ev))  /// load data of each appointment (view-only)
+            handleAddEventSidebar() // handle it with open modal
         },
 
         /*
@@ -141,37 +138,25 @@ const AppointmentCard = () => {
     return (
         <div>
             <Button.Ripple className='mb-2 justify-content-end align-items-center d-flex' color='primary' onClick={toggle} outline>
-                <Calendar size={16} className='mr-10 d-flex' />
+                <ChevronDown size={16} className='mr-10 d-flex' />
                 <span className='d-flex ml-10'>
-                    ปฏิทิน
+                    แสดงปฏิทิน
                 </span>
             </Button.Ripple>
             <Collapse isOpen={isOpen}>
-                <div className='d-flex p-1 border' style={{minHeight: "400px"}}>
-                    {/* <img className='me-2' src={collapseImg} alt='collapse-img' height='400' />
-                <span>
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
-                    industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and
-                    scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into
-                    electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of
-                    Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like
-                    Aldus PageMaker including versions of Lorem Ipsum.It is a long established fact that a reader will be
-                    distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is
-                    that it has a more-or-less normal distribution of letters.
-                </span> */}
-                    <Card className='shadow-none border-0 mb-0 rounded-0' style={{minHeight: "400"}}>
-                        <CardBody className='pb-0'>
-                            <FullCalendar {...calendarOptions}
-                                locale={th}
-                                height={40}
-                            />{' '}
-                        </CardBody>
-                    </Card>
-                </div>
+                <Card className='d-flex shadow-none border-0 mb-0 rounded-0' style={{minHeight: "450px"}}  >
+                    <CardBody className='pb-0'>
+                        <FullCalendar {...calendarOptions}
+                            locale={th}
+                            height={350}
+                        />{' '}
+                    </CardBody>
+                </Card>
+
             </Collapse>
         </div>
     )
 }
 
 
-export default AppointmentCard
+export default memo(AppointmentCard)

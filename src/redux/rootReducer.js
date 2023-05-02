@@ -6,6 +6,7 @@ import patients from '@src/views/apps/patients/store'
 import staff from '@src/views/apps/staff/store'
 import encounters from '@src/views/apps/encounter/store'
 import drugs from '@src/views/apps/drugs/store'
+import appointment from '@src/views/apps/appointment/store'
 import prescription from '@src/views/apps/prescription/store'
 import role from '@src/views/apps/setting/Role/store'
 import invoice from '@src/views/apps/invoice/store'
@@ -32,6 +33,7 @@ const rootReducer = combineReducers({
   navbar,
   layout,
   invoice,
+  appointment,
   role,
   calendar,
   dataTables,

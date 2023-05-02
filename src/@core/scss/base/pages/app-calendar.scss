@@ -3,7 +3,7 @@
 @import '../bootstrap-extended/include'; // Bootstrap includes
 @import '../components/include'; // Components includes
 
-$fc-calendar-height: 650px;
+$fc-calendar-height: 400px;
 $fc-sidebar-width: 18rem;
 $fc-event-font-weight: 600;
 $fc-event-font-size: 0.8rem;
@@ -60,13 +60,13 @@ $fc-day-toggle-btn-padding: 0.55rem 1.5rem;
         &:not(.fc-prev-button):not(.fc-next-button) {
           // background-color: rgba($primary, 0.1);
           background-color: transparent;
-          border-color: $primary;
-          color: $primary;
+          border-color: $primary !important;
+          color: $primary !important;
           &.fc-button-active,
           &:hover {
             background-color: rgba($color: $primary, $alpha: 0.2) !important;
             border-color: $primary !important;
-            color: $primary;
+            color: $primary !important;
           }
         }
         &.fc-sidebarToggle-button {
@@ -97,11 +97,11 @@ $fc-day-toggle-btn-padding: 0.55rem 1.5rem;
       .fc-timeGridWeek-button,
       .fc-timeGridDay-button,
       .fc-listMonth-button {
-        padding: $fc-day-toggle-btn-padding;
+        padding: $fc-day-toggle-btn-padding !important;
 
         &:last-child,
         &:first-child {
-          border-radius: $btn-border-radius;
+          border-radius: $btn-border-radius !important; 
         }
         &:first-child {
           border-top-right-radius: 0;
@@ -117,8 +117,7 @@ $fc-day-toggle-btn-padding: 0.55rem 1.5rem;
       margin-left: 0rem;
     }
     .fc-toolbar-title {
-      margin-left: 0.25rem ;
-      font-size: 1.00em !important;
+      margin-left: 0.25rem;
     }
     .fc--button:empty,
     .fc-toolbar-chunk:empty {
@@ -236,15 +235,11 @@ $fc-day-toggle-btn-padding: 0.55rem 1.5rem;
   position: relative;
   border-radius: $card-border-radius;
   margin-bottom: 2rem;
-  
   .app-calendar-sidebar {
     position: absolute;
     left: calc(-#{$fc-sidebar-width} - 1.2rem);
     width: $fc-sidebar-width;
-    height: 100%;
-    min-width: 400px;
-    align-items: center;
-    justify-content: center;
+    height: 400px;
     z-index: 5;
     background-color: $card-bg;
     border-right: 1px solid $border-color;
@@ -254,7 +249,7 @@ $fc-day-toggle-btn-padding: 0.55rem 1.5rem;
       left: 0;
     }
     .sidebar-content-title {
-      font-size: 0.30rem;
+      font-size: 0.85rem;
       color: $text-muted;
       text-transform: uppercase;
       letter-spacing: 0.6px;
@@ -280,8 +275,9 @@ $fc-day-toggle-btn-padding: 0.55rem 1.5rem;
     transition: all 0.3s ease-in-out;
 
     .card {
-      height: calc(100vh - 12.96rem);
-      height: calc(var(--vh, 1vh) * 100 - 12.96rem);
+      height: calc(100vh - 14rem);
+      //height: calc(100vh - 12.96rem);
+      //height: calc(var(--vh, 1vh) * 100 - 12.96rem);
       border-radius: 0 $border-radius-sm $border-radius-sm 0;
 
       .close-bar {
@@ -313,11 +309,11 @@ $fc-day-toggle-btn-padding: 0.55rem 1.5rem;
 
   .fc-toolbar {
     h2 {
-      font-size: 1.00rem;
+      font-size: 1.45rem;
     }
   }
   .fc-header-toolbar {
-    margin-bottom: 1.00rem !important;
+    margin-bottom: 1.75rem !important;
   }
   .fc-view-harness {
     margin: 0 -1.6rem;
@@ -359,10 +355,10 @@ $fc-day-toggle-btn-padding: 0.55rem 1.5rem;
     background: transparent !important;
   }
 
-  @media (min-width: 992px) {
+  @media (min-width: 800) {
     .app-calendar-sidebar {
       position: static;
-      height: auto;
+      height: 400px;
       box-shadow: none !important;
 
       .flatpickr-days {

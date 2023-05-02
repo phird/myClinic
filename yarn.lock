@@ -1334,15 +1334,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fullcalendar/core@npm:~6.1.6":
-  version: 6.1.6
-  resolution: "@fullcalendar/core@npm:6.1.6"
-  dependencies:
-    preact: ~10.12.1
-  checksum: 72ec698bd226ea76cef106b9eecd4391a0434b13f9f02f663a84720d5b1e0ca8db21f1ace72278d22814cc4d1dfb1374f17532abde0ae99210bfd5ad7468e17f
-  languageName: node
-  linkType: hard
-
 "@fullcalendar/daygrid@npm:^5.11.0, @fullcalendar/daygrid@npm:~5.11.4":
   version: 5.11.4
   resolution: "@fullcalendar/daygrid@npm:5.11.4"
@@ -1350,15 +1341,6 @@ __metadata:
     "@fullcalendar/common": ~5.11.4
     tslib: ^2.1.0
   checksum: a25d83cfe5b3ac3feeb49af47701c54e858d30b0b53871df2a83aa7edbcc7d49f435d59fdbf3d6e18b5699caced8133e9c4b1c919caca2c8717bd92f57c08ab4
-  languageName: node
-  linkType: hard
-
-"@fullcalendar/daygrid@npm:~6.1.6":
-  version: 6.1.6
-  resolution: "@fullcalendar/daygrid@npm:6.1.6"
-  peerDependencies:
-    "@fullcalendar/core": ~6.1.6
-  checksum: e7b60e359b620091c834fe3472761b9f4ebf3cd8d65a2ae56ead10dcb65a898c4c86770046dc3addff86002df9972a58395b7916502e8a4ec8d7b83a74b150b9
   languageName: node
   linkType: hard
 
@@ -1372,15 +1354,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fullcalendar/interaction@npm:~6.1.6":
-  version: 6.1.6
-  resolution: "@fullcalendar/interaction@npm:6.1.6"
-  peerDependencies:
-    "@fullcalendar/core": ~6.1.6
-  checksum: b7dea490592cdaf902788825ebea122816185657bb37f82dd78ba8129d10fff0c1c45a70d819dd44b5b7088d8b51588899e8e2332652fd939e263160912940dd
-  languageName: node
-  linkType: hard
-
 "@fullcalendar/list@npm:^5.11.0":
   version: 5.11.4
   resolution: "@fullcalendar/list@npm:5.11.4"
@@ -1388,26 +1361,6 @@ __metadata:
     "@fullcalendar/common": ~5.11.4
     tslib: ^2.1.0
   checksum: e2cec5e89c57836a9ca4db57fbe67e16f78d91191df39ac0b5d0f18c1fdac9763f04647ae42e5f2d31ffa3cd245423d3aec449ed6c84fafc0195e62079a4eedc
-  languageName: node
-  linkType: hard
-
-"@fullcalendar/list@npm:~6.1.6":
-  version: 6.1.6
-  resolution: "@fullcalendar/list@npm:6.1.6"
-  peerDependencies:
-    "@fullcalendar/core": ~6.1.6
-  checksum: e5beb01c624b9994490ef0e8e3cb4e9f97efd4a0be6539191f912a27df4cd56bbf4124f558536618f18889b8133920fadf0962994a7345fb089fd4245bcbcf15
-  languageName: node
-  linkType: hard
-
-"@fullcalendar/multimonth@npm:~6.1.6":
-  version: 6.1.6
-  resolution: "@fullcalendar/multimonth@npm:6.1.6"
-  dependencies:
-    "@fullcalendar/daygrid": ~6.1.6
-  peerDependencies:
-    "@fullcalendar/core": ~6.1.6
-  checksum: 29a10cf4c48a2e8f773c7bcdc2415e0fb7735f5c0125b23d7645d7d7e72993629d35a45303191ffe987b45d91b204c2ae326ad5306be0b6285bf43fb2adefdf2
   languageName: node
   linkType: hard
 
@@ -1453,17 +1406,6 @@ __metadata:
     "@fullcalendar/daygrid": ~5.11.4
     tslib: ^2.1.0
   checksum: 3a2fccac65198c5fffa53286fcbb2556b6e3885cfc6f7978b7ee21c57cbc2a58617e6c54eff977f5234163cef3281e50548327a06cf253acc43c6881bed00f2c
-  languageName: node
-  linkType: hard
-
-"@fullcalendar/timegrid@npm:~6.1.6":
-  version: 6.1.6
-  resolution: "@fullcalendar/timegrid@npm:6.1.6"
-  dependencies:
-    "@fullcalendar/daygrid": ~6.1.6
-  peerDependencies:
-    "@fullcalendar/core": ~6.1.6
-  checksum: ef79183dad0a49f86f43b3eb58fabfd48312ec0abf03b690094be72c3d8821a488038f8308cb0e136c0f716648409dc33c8a5fc77192c7c0d93cd9962cb4c814
   languageName: node
   linkType: hard
 
@@ -5221,20 +5163,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fullcalendar@npm:^6.1.6":
-  version: 6.1.6
-  resolution: "fullcalendar@npm:6.1.6"
-  dependencies:
-    "@fullcalendar/core": ~6.1.6
-    "@fullcalendar/daygrid": ~6.1.6
-    "@fullcalendar/interaction": ~6.1.6
-    "@fullcalendar/list": ~6.1.6
-    "@fullcalendar/multimonth": ~6.1.6
-    "@fullcalendar/timegrid": ~6.1.6
-  checksum: 13fd939f87ccde794e549e4ba78645bac8cd5f5f7597305cbc75734110c18094e46bd12ec331d55cb86c08d96b8901462917f49c797198c1152767a17e67a677
-  languageName: node
-  linkType: hard
-
 "function-bind@npm:^1.1.1":
   version: 1.1.1
   resolution: "function-bind@npm:1.1.1"
@@ -7198,7 +7126,6 @@ __metadata:
     file-saver: ^2.0.5
     firebase: ^9.18.0
     flatpickr: ^4.6.13
-    fullcalendar: ^6.1.6
     google-maps-react: ^2.0.6
     history: ^5.3.0
     html-to-draftjs: 1.5.0
@@ -7990,13 +7917,6 @@ __metadata:
   version: 10.13.2
   resolution: "preact@npm:10.13.2"
   checksum: 3bc98aa09bcd297eb59abd7e4f3a4d499b8e345bd68b922f7678ef105ba4721dc9b9940b221e6e3443f957d51402fe407bb96ccaa0a4b65d6808ca8a3be76bfa
-  languageName: node
-  linkType: hard
-
-"preact@npm:~10.12.1":
-  version: 10.12.1
-  resolution: "preact@npm:10.12.1"
-  checksum: 0de99f477563ab7f94a0f964952ad216375973c0dcd9eb49881f8eb5effc5ed6948da062548c87d5bb0d82f1a1e516b649020e760eab3a0503dfdd8e64d34a26
   languageName: node
   linkType: hard
 
