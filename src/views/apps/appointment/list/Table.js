@@ -8,8 +8,11 @@ import { columns } from './columns'
 import { getAllData, getData, getEvent } from '../store'
 import { useDispatch, useSelector } from 'react-redux'
 
+
+import { getAllData as patientList } from '../../patients/store'
 // ** Third Party Components
 import Select from 'react-select'
+import AutoComplete from '@components/autocomplete'
 import ReactPaginate from 'react-paginate'
 import DataTable from 'react-data-table-component'
 import { ChevronDown, Share, Printer, FileText, File, Grid, Copy, Plus, PlusCircle, Check, Info } from 'react-feather'
@@ -79,6 +82,20 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
   const [inputPrice, setInputPrice] = useState(0)
   const [inputUnit, setInputUnit] = useState('')
   const [inputDes, setInputDes] = useState('')
+  const [allPatients, setAllPatients] = useState([]);
+  const [patient, setPatient] = useState('');
+
+
+  console.log("Input Patient Name : ")
+  console.log(patient)
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await dispatch(patientList());
+      setAllPatients(data.payload)
+    };
+    fetchData();
+  }, [])
+
 
   // ** Handle Modal 
   const handleModalClosed = () => {
@@ -110,7 +127,11 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
 
   const handleNameChange = (e) => {
     const value = e.target.value;
-    setInputDrug(value)
+    setPatient(value)
+  }
+
+  const handleNameSelect = (value) => {
+    setPatient(value)
   }
 
   const handlePriceChange = (e) => {
@@ -128,6 +149,8 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
     const value = e.target.value;
     setInputDes(value);
   }
+
+
 
 
   return (
@@ -191,39 +214,27 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
               </div>
               <Row md={12} xs={12} style={{ marginBottom: '10px' }}>
                 <Col>
-                  <Label className='form-label font-weight-bold' for='fname'>
+                  <Label className='form-label font-weight-bold' for='pname'>
                     ชื่อผู้ป่วย
                   </Label>
-                  <Input
-                    autoFocus={true}
-                    id='fname'
-                    type='text'
-                    placeholder='ชื่อจริง'
-                    value={inputDrug}
+                  <AutoComplete
+                    suggestions={allPatients}
+                    className='form-control'
+                    filterKey='fname'
+                    suggestionLimit={4}
+                    placeholder="พิมพ์ชื่อ"
+                    value={patient}
                     onChange={handleNameChange}
-                    required
+                    onSuggestionItemClick={handleNameSelect}
                   />
                 </Col>
-                <Col>
-                  <Label className='form-label font-weight-bold' for='lname'>
-                    นามสกุล
-                  </Label>
-                  <Input
-                    autoFocus={true}
-                    id='lname'
-                    type='text'
-                    placeholder='นามสกุล'
-                    value={inputDrug}
-                    onChange={handleNameChange}
-                    required
-                  />
-                </Col>
+
               </Row>
               <Row>
                 <Col sm={6}>
                   <FormGroup>
                     <Label className='h4 form-label font-weight-bold' for='telNo'>
-                      เบอร์โืทรติดต่อ
+                      เบอร์โทรติดต่อ
                     </Label>
                     <Input
                       id='telNo'
@@ -235,8 +246,18 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                     />
                   </FormGroup>
                 </Col>
+                <Col sm={6}>
+                  <FormGroup>
+                    <Label className='h4 form-label font-weight-bold' for='telNo'>
+                      แพทย์
+                    </Label>
+                    <Select
+                      placeholder='รายชื่อแพทย์'
+                    />
+                  </FormGroup>
+                </Col>
 
-                
+
 
               </Row>
               <Row md={12} xs={12} style={{ marginBottom: '10px' }}>
@@ -414,18 +435,13 @@ const AppointmentList = () => {
   return (
     <Fragment>
       <Card className='overflow-hidden'>
-        <CardBody >
+        <div className='react-dataTable'>
           <AppointmentCard
             dispatch={dispatch}
             store={store}
             blankEvent={blankEvent}
             calendarsColor={calendarsColor}
           />
-          <div className='d-flex p-1 justify-content-end'>
-
-          </div>
-        </CardBody>
-        <div className='react-dataTable'>
           <DataTable
             noHeader
             subHeader

@@ -3,7 +3,7 @@ import { useEffect, useState, useRef, memo } from 'react'
 
 // ** Third Party Components
 import axios from 'axios'
-import { Calendar, Menu, ChevronDown } from 'react-feather'
+import { Calendar, Menu, ChevronDown, ChevronUp } from 'react-feather'
 
 import { Collapse, Button, Card, CardBody } from 'reactstrap'
 
@@ -23,8 +23,8 @@ import toast from 'react-hot-toast'
 import th from '@fullcalendar/core/locales/th'
 
 // * Store 
-import { getEvent } from '../store'
 import { useDispatch } from 'react-redux'
+import { getAllData } from '../../patients/store'
 
 
 const AppointmentCard = (props) => {
@@ -42,8 +42,6 @@ const AppointmentCard = (props) => {
         calendarsColor,
     } = props
 
-
-
     /*     // ** UseEffect checks for CalendarAPI Update
           console.log("Event")
           console.log(store.events) */
@@ -56,8 +54,8 @@ const AppointmentCard = (props) => {
         plugins: [interactionPlugin, dayGridPlugin, timeGridPlugin, listPlugin],
         initialView: 'dayGridMonth',
         headerToolbar: {
-            start: 'prev,next,title',
-            end: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+            start: 'sidebarToggle, prev,next, title',
+            end: 'dayGridMonth,timeGridWeek,timeGridDay'
         },
         /*
           Enable dragging and resizing event
@@ -136,15 +134,18 @@ const AppointmentCard = (props) => {
     }
 
     return (
-        <div>
-            <Button.Ripple className='mb-2 justify-content-end align-items-center d-flex' color='primary' onClick={toggle} outline>
-                <ChevronDown size={16} className='mr-10 d-flex' />
-                <span className='d-flex ml-10'>
-                    แสดงปฏิทิน
-                </span>
+        <div className='justify-content-center text-align-center '>
+            <Button.Ripple
+                className='mb-2 justify-content-center align-items-center d-flex'
+                color='flat-primary'
+                onClick={toggle}
+                style={{ width: '100%' }}
+            >
+                {isOpen ? <>  <ChevronUp size={16} className='mr-10 d-flex' /> <span> ซ่อนปฏิทิน </span> </>
+                    : <> <ChevronDown size={16} className='mr-10 d-flex' />  <span> แสดงปฏิทิน </span> </>}
             </Button.Ripple>
             <Collapse isOpen={isOpen}>
-                <Card className='d-flex shadow-none border-0 mb-0 rounded-0' style={{minHeight: "450px"}}  >
+                <Card className='d-flex shadow-none border-0 mb-0 rounded-0' style={{ minHeight: "450px" }}  >
                     <CardBody className='pb-0'>
                         <FullCalendar {...calendarOptions}
                             locale={th}

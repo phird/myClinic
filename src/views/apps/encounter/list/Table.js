@@ -247,6 +247,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
           </Col>
         </Row>
       </div>
+      
       {/* MODAL SECTION  */}
       <Modal isOpen={show} toggle={() => setShow(!show)} className='modal-dialog-centered modal-lg' onClosed={handleModalClosed} backdrop="static" >
         <ModalHeader className='bg-transparent' toggle={() => setShow(!show)}></ModalHeader>
