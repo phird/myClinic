@@ -103,7 +103,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
       const data = await dispatch(patientList());
       const doctor = await dispatch(doctorList());
       setAllPatients(data.payload)
-      setAllDoctor(data.payload)
+      setAllDoctor(doctor.payload)
     };
     fetchData();
   }, [])
@@ -111,25 +111,40 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
 
   // ** Handle Modal 
   const handleModalClosed = () => {
-    setInputDrug('');
-    setInputPrice(0);
-    setInputUnit('');
-    setInputDes('');
+
   }
 
   const handlesubmit = (e) => {
     e.preventDefault();
     console.log("patient that submit is: ")
     console.log(patient)
+    const patientData = patient.trim();
+    const [fname, lname] = patientData.split(" ")
+
+    const foundPatient = allPatients.find(p => p.fname === fname && p.lname === lname);
+    if (foundPatient) {
+
+      // all works 
+      console.log("patientID is ")
+      console.log(foundPatient.patientID)
+    } else {
+
+      // all works 
+      console.log("fname: ")
+      console.log(fname)
+      console.log("lname: ")
+      console.log(lname)
+      console.log("patientID is ")
+      console.log(0)
+    }
+
+
   }
 
 
   const handleNameChange = (e) => {
     e.preventDefault()
     setPatient(e.target.value);
-    //setFilteredData(filterSuggestions(value));
-    //setShowSuggestions(true);
-    //setActiveSuggestion(0);
   };
 
   /*   const handleSelectedName = (url, e) => {
@@ -159,25 +174,6 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
     setInputDes(value);
   }
 
-
-  // * Calendar from AD to BE 
-  // Function to convert a year in A.D. format to B.E. format
-  function convertToBE(yearAD) {
-    return yearAD + 543;
-  }
-
-  // Function to update the year labels in the calendar to show the year in B.E. format
-  function updateCalendarYears(instance) {
-    // Get the year labels in the calendar
-    const yearLabels = instance.calendarContainer.querySelectorAll('.flatpickr-current-month .flatpickr-day span');
-
-    // Loop through the year labels and update them to show the year in B.E. format
-    yearLabels.forEach((yearLabel) => {
-      const yearAD = parseInt(yearLabel.textContent);
-      const yearBE = convertToBE(yearAD);
-      yearLabel.textContent = `${yearBE}`;
-    });
-  }
 
 
 
@@ -233,7 +229,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
         <ModalHeader className='bg-transparent' toggle={() => setShow(!show)}></ModalHeader>
         <ModalBody className='px-sm-5 pt-50 pb-5'>
           <div className='text-center mb-2'>
-            <h1 className='mb-1'>เพิ่มข้อการนัดหมาย</h1>
+            <h1 className='mb-1'>เพิ่มการนัดหมาย</h1>
           </div>
           <Form onSubmit={handlesubmit}>
             <Row className='gy-1 pt-75' >
@@ -260,7 +256,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                       list="suggestions"
                     />
                     <datalist className='dflex' id="suggestions" style={{ maxWidth: '100%' }}>
-                      {allPatients.map(patient => (
+                      {allPatients.slice(0, 3).map(patient => (
                         <option key={patient.patientID} value={patient.fname + " " + patient.lname} onClick={e => setPatient(patient.fname)} />
                       ))}
                     </datalist>
@@ -317,7 +313,6 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                       required
                       value={doctor}
                       styles={{ maxWidth: '100%' }}
-
                     />
                   </FormGroup>
                 </Col>
@@ -334,22 +329,8 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                     className='form-control'
                     onChange={date => setPicker(date)}
                     options={{
-                      altInput: true,
                       locale: Thai,
                       disableMobile: true,
-                      dateFormat: 'Y-m-d',
-                      altFormat: 'd/m/Y (B.E. )',
-                      onMonthChange: (selectedDates, dateStr, instance) => {
-                        updateCalendarYears(instance);
-                      },
-                      onValueUpdate: (selectedDates, dateStr, instance) => {
-                        // Convert the selected date from A.D. to B.E.
-                        const yearBE = convertToBE(selectedDates[0].getFullYear());
-                        instance.altInput.value = instance.altInput.value.replace(
-                          selectedDates[0].getFullYear(),
-                          yearBE
-                        );
-                      },
                     }}
                   />
                 </Col>
