@@ -1,7 +1,7 @@
 // ** User List Component
 import Table from './Table'
 // ** Styles
-import '@styles/react/apps/app-users.scss'
+//import '@styles/react/apps/app-users.scss'
 import '@styles/react/apps/app-calendar.scss'
 
 

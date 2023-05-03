@@ -26,6 +26,9 @@ import th from '@fullcalendar/core/locales/th'
 import { useDispatch } from 'react-redux'
 import { getAllData } from '../../patients/store'
 
+// * Style 
+import '@styles/react/apps/app-calendar.scss'
+
 
 const AppointmentCard = (props) => {
     // ** State

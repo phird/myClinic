@@ -1,12 +1,23 @@
 // ** React Imports
 import { Fragment, useState, useEffect } from 'react'
+import Flatpickr from 'react-flatpickr'
+import { Thai } from 'flatpickr/dist/l10n/th'
+import 'flatpickr/dist/themes/dark.css';
+
+
+// * for tel-phone 
+import Cleave from "cleave.js/react"
+import 'cleave.js/dist/addons/cleave-phone.th'
+
 
 // ** Table Columns
 import { columns } from './columns'
 
 // ** Store & Actions
 import { getAllData, getData, getEvent } from '../store'
+import { getAllData as doctorList } from '../../staff/store';
 import { useDispatch, useSelector } from 'react-redux'
+import classnames from "classnames"
 
 
 import { getAllData as patientList } from '../../patients/store'
@@ -17,15 +28,6 @@ import ReactPaginate from 'react-paginate'
 import DataTable from 'react-data-table-component'
 import { ChevronDown, Share, Printer, FileText, File, Grid, Copy, Plus, PlusCircle, Check, Info } from 'react-feather'
 
-// @deno-types="https://unpkg.com/xlsx/types/index.d.ts"
-import * as XLSX from 'https://unpkg.com/xlsx/xlsx.mjs';
-
-/* load the codepage support library for extended support with older formats  */
-import * as cptable from 'https://unpkg.com/xlsx/dist/cpexcel.full.mjs';
-XLSX.set_cptable(cptable);
-import { saveAs } from 'file-saver';
-
-
 //*** Store
 import { addDrug, editDrug } from '../store'
 
@@ -34,6 +36,9 @@ import AppointmentCard from './AppointmentCard'
 
 // ** Utils
 import { selectThemeColors } from '@utils'
+
+// ** Style 
+import '@styles/react/apps/app-calendar.scss'
 
 // ** Reactstrap Imports
 import {
@@ -76,14 +81,19 @@ const calendarsColor = {
 // ** Table Header
 const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchTerm }) => {
   const dispatch = useDispatch()
+
+
   // **state
   const [show, setShow] = useState(false)  // boolean state for opening a modal 
-  const [inputDrug, setInputDrug] = useState('')
-  const [inputPrice, setInputPrice] = useState(0)
-  const [inputUnit, setInputUnit] = useState('')
-  const [inputDes, setInputDes] = useState('')
+
   const [allPatients, setAllPatients] = useState([]);
   const [patient, setPatient] = useState('');
+  const [allDoctor, setAllDoctor] = useState([])
+  const [doctor, setDoctor] = useState([])
+  const [picker, setPicker] = useState(new Date())
+  const [patientID, setPatientID] = useState(0)
+  const [phoneNumber, setPhoneNumber] = useState("")
+  const dateFormat = 'd/m/Y (B.E. )';
 
 
   console.log("Input Patient Name : ")
@@ -91,7 +101,9 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
   useEffect(() => {
     const fetchData = async () => {
       const data = await dispatch(patientList());
+      const doctor = await dispatch(doctorList());
       setAllPatients(data.payload)
+      setAllDoctor(data.payload)
     };
     fetchData();
   }, [])
@@ -107,32 +119,29 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
 
   const handlesubmit = (e) => {
     e.preventDefault();
-    const drugName = inputDrug;
-    const drugPrice = inputPrice;
-    const unit = inputUnit;
-    const description = inputDes;
-    const newData = { drugName, drugPrice, unit, description }
-
-    if (!drugName || !unit || !drugPrice) {
-      return;
-    }
-    try {
-      dispatch(addDrug(newData))
-      setShow(false)
-      toast.success("เพิ่มข้อมูลยาสำเร็จ")
-    } catch (error) {
-      console.error(error)
-    }
+    console.log("patient that submit is: ")
+    console.log(patient)
   }
+
 
   const handleNameChange = (e) => {
-    const value = e.target.value;
-    setPatient(value)
-  }
+    e.preventDefault()
+    setPatient(e.target.value);
+    //setFilteredData(filterSuggestions(value));
+    //setShowSuggestions(true);
+    //setActiveSuggestion(0);
+  };
 
-  const handleNameSelect = (value) => {
-    setPatient(value)
-  }
+  /*   const handleSelectedName = (url, e) => {
+      console.log("Click")
+      //e.preventDefault()
+      setPatient(e.target.value)
+    } */
+  const handleSelectedName = (e) => {
+    e.preventDefault();
+    console.log("click suggestion")
+    console.log(e.target.value)
+  };
 
   const handlePriceChange = (e) => {
     const value = e.target.value;
@@ -150,6 +159,25 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
     setInputDes(value);
   }
 
+
+  // * Calendar from AD to BE 
+  // Function to convert a year in A.D. format to B.E. format
+  function convertToBE(yearAD) {
+    return yearAD + 543;
+  }
+
+  // Function to update the year labels in the calendar to show the year in B.E. format
+  function updateCalendarYears(instance) {
+    // Get the year labels in the calendar
+    const yearLabels = instance.calendarContainer.querySelectorAll('.flatpickr-current-month .flatpickr-day span');
+
+    // Loop through the year labels and update them to show the year in B.E. format
+    yearLabels.forEach((yearLabel) => {
+      const yearAD = parseInt(yearLabel.textContent);
+      const yearBE = convertToBE(yearAD);
+      yearLabel.textContent = `${yearBE}`;
+    });
+  }
 
 
 
@@ -217,16 +245,26 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                   <Label className='form-label font-weight-bold' for='pname'>
                     ชื่อผู้ป่วย
                   </Label>
-                  <AutoComplete
-                    suggestions={allPatients}
-                    className='form-control'
-                    filterKey='fname'
-                    suggestionLimit={4}
-                    placeholder="พิมพ์ชื่อ"
-                    value={patient}
-                    onChange={handleNameChange}
-                    onSuggestionItemClick={handleNameSelect}
-                  />
+                  <>
+                    <Input
+                      className='custom-select custom-select-sm'
+                      id='pname'
+                      type="text"
+                      value={patient}
+                      placeholder='ชื่อผู้นัดหมาย'
+                      onChange={handleNameChange}
+                      onInput={(event) => {
+                        const currentValue = event.target.value.toLowerCase();
+                        setPatient(currentValue);
+                      }}
+                      list="suggestions"
+                    />
+                    <datalist className='dflex' id="suggestions" style={{ maxWidth: '100%' }}>
+                      {allPatients.map(patient => (
+                        <option key={patient.patientID} value={patient.fname + " " + patient.lname} onClick={e => setPatient(patient.fname)} />
+                      ))}
+                    </datalist>
+                  </>
                 </Col>
 
               </Row>
@@ -236,14 +274,33 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                     <Label className='h4 form-label font-weight-bold' for='telNo'>
                       เบอร์โทรติดต่อ
                     </Label>
-                    <Input
-                      id='telNo'
-                      type='number'
-                      placeholder='ราคาต่อหน่วย'
-                      value={inputPrice}
-                      onChange={handlePriceChange}
-                      required
-                    />
+
+                    <InputGroup className='input-group-merge'>
+                      <InputGroupText
+                        className={classnames({
+                          //'is-invalid': errors.phoneNo && true
+                        })}
+                      >
+                        TH (+66)
+                      </InputGroupText>
+                      <Cleave
+                        id='phoneNo'
+                        name='phoneNo'
+                        value={phoneNumber}
+                        onChange={e => setPhoneNumber(e.target.value)}
+                        placeholder='081 234 5678'
+                        className={classnames('form-control', {
+                          'is-invalid': phoneNumber === null && true
+                        })}
+                        options={{
+                          phone: true,
+                          phoneRegionCode: 'TH'
+                        }}
+                      // disabled={!editAble}
+                      />
+                      {/* {phoneNumber === '' && <FormFeedback>{'กรุณากรอกหมายเลขโทรศัพท์ 10 หลัก'}</FormFeedback>} */}
+                    </InputGroup>
+
                   </FormGroup>
                 </Col>
                 <Col sm={6}>
@@ -252,26 +309,48 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                       แพทย์
                     </Label>
                     <Select
-                      placeholder='รายชื่อแพทย์'
+                      theme={selectThemeColors}
+                      className='react-select'
+                      classNamePrefix='select'
+                      placeholder='ค้นหา/เลือก แพทย์ที่นัดหมาย'
+                      options={allDoctor.map((doc) => ({ value: doc.staffID, label: doc.fname + " " + doc.lname }))}
+                      required
+                      value={doctor}
+                      styles={{ maxWidth: '100%' }}
+
                     />
                   </FormGroup>
                 </Col>
-
-
-
               </Row>
               <Row md={12} xs={12} style={{ marginBottom: '10px' }}>
                 <Col>
-                  <Label className='h4 form-label font-weight-bold' for='note'>
-                    คำอธิบาย:
+                  <Label className='form-label' for='date-time-picker'>
+                    เลือก เลือก - เวลา ที่ทำการนัดหมาย
                   </Label>
-                  <Input
-                    id='note'
-                    type='textarea'
-                    rows='2'
-                    value={inputDes}
-                    placeholder='คำอธิยายเกี่ยวกับยา (option)'
-                    onChange={handleDesChange}
+                  <Flatpickr
+                    value={picker}
+                    data-enable-time
+                    id='date-time-picker'
+                    className='form-control'
+                    onChange={date => setPicker(date)}
+                    options={{
+                      altInput: true,
+                      locale: Thai,
+                      disableMobile: true,
+                      dateFormat: 'Y-m-d',
+                      altFormat: 'd/m/Y (B.E. )',
+                      onMonthChange: (selectedDates, dateStr, instance) => {
+                        updateCalendarYears(instance);
+                      },
+                      onValueUpdate: (selectedDates, dateStr, instance) => {
+                        // Convert the selected date from A.D. to B.E.
+                        const yearBE = convertToBE(selectedDates[0].getFullYear());
+                        instance.altInput.value = instance.altInput.value.replace(
+                          selectedDates[0].getFullYear(),
+                          yearBE
+                        );
+                      },
+                    }}
                   />
                 </Col>
               </Row>

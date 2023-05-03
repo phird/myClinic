@@ -272,12 +272,12 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                 />
               </Row>
               <Row md={12} xs={12} style={{ marginBottom: '20px' }}>
-                <Label className='h4 form-label font-weight-bold' for='lastName'>
+                <Label className='h4 form-label font-weight-bold' for='doctor'>
                   แพทย์ผู้ทำการรักษา:
                 </Label>
                 <Select
-                  id="patientName"
-                  placeholder="เลือก หรือ ค้นแพทย์"
+                  id="doctor"
+                  placeholder="ค้นหา/เลือก แพทย์ผู้ทำการรักษา"
                   options={allDoctor.map((doc) => ({ value: doc.staffID, label: doc.fname + "  " + doc.lname }))}
                   required
                   value={doctor}
