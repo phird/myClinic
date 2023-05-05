@@ -23,13 +23,13 @@ import classnames from "classnames"
 import { getAllData as patientList } from '../../patients/store'
 // ** Third Party Components
 import Select from 'react-select'
-import AutoComplete from '@components/autocomplete'
 import ReactPaginate from 'react-paginate'
 import DataTable from 'react-data-table-component'
-import { ChevronDown, Share, Printer, FileText, File, Grid, Copy, Plus, PlusCircle, Check, Info } from 'react-feather'
+import { ChevronDown, Plus, Check, Info } from 'react-feather'
 
-//*** Store
-import { addDrug, editDrug } from '../store'
+
+// * Store 
+import { addEvent } from '../store';
 
 // * Component
 import AppointmentCard from './AppointmentCard'
@@ -48,13 +48,6 @@ import {
   Input,
   Label,
   Button,
-  CardBody,
-  CardTitle,
-  CardHeader,
-  DropdownMenu,
-  DropdownItem,
-  DropdownToggle,
-  UncontrolledDropdown,
   Modal,
   ModalBody,
   ModalHeader,
@@ -62,13 +55,13 @@ import {
   FormGroup,
   InputGroup,
   InputGroupText,
-  FormFeedback,
 } from 'reactstrap'
 
 // ** Styles
 import '@styles/react/libs/react-select/_react-select.scss'
 import '@styles/react/libs/tables/react-dataTable-component.scss'
-import { toast } from 'react-hot-toast'
+import { pick } from 'react-bootstrap-typeahead/types/utils';
+import { toast } from 'react-hot-toast';
 
 const calendarsColor = {
   Business: 'primary',
@@ -85,19 +78,16 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
 
   // **state
   const [show, setShow] = useState(false)  // boolean state for opening a modal 
+  const [allPatients, setAllPatients] = useState([]); // all patient
+  const [allDoctor, setAllDoctor] = useState([]) // all doctor 
 
-  const [allPatients, setAllPatients] = useState([]);
-  const [patient, setPatient] = useState('');
-  const [allDoctor, setAllDoctor] = useState([])
-  const [doctor, setDoctor] = useState([])
-  const [picker, setPicker] = useState(new Date())
-  const [patientID, setPatientID] = useState(0)
-  const [phoneNumber, setPhoneNumber] = useState("")
-  const dateFormat = 'd/m/Y (B.E. )';
+  // * User Info
+  const [patient, setPatient] = useState(''); // select patient
+  const [doctor, setDoctor] = useState([])  // select doctor 
+  const [note, setNote] = useState('')
+  const [phoneNumber, setPhoneNumber] = useState('') // phoneNO
+  const [picker, setPicker] = useState(new Date()) // date and time that picked 
 
-
-  console.log("Input Patient Name : ")
-  console.log(patient)
   useEffect(() => {
     const fetchData = async () => {
       const data = await dispatch(patientList());
@@ -108,73 +98,105 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
     fetchData();
   }, [])
 
-
   // ** Handle Modal 
   const handleModalClosed = () => {
+    // reset all state after close modal 
 
+    // * Reset all the state 
+    setPatient('')
+    setDoctor([])
+    setNote('')
+    setPhoneNumber('')
+    setPicker(new Date())
+  }
+
+  const convertDateToISO = (datetime) => {
+    // Convert datetime to a string if it's not already
+    console.log("date that gonna convert ")
+    console.log(datetime)
+    if (typeof datetime !== 'string') {
+      datetime = datetime.toString();
+    }
+
+    // Split the ISO date and time into separate parts
+    const dateParts = datetime.split('T')[0].split('-');
+    const timeParts = datetime.split('T')[1].split('.')[0].split(':');
+
+    // Construct a JavaScript Date object using the separate parts
+    const jsDateTime = new Date(
+      parseInt(dateParts[0]) + 2000,   // year
+      parseInt(dateParts[1]) - 1,      // month (January is 0)
+      parseInt(dateParts[2]),          // day
+      parseInt(timeParts[0]),          // hours
+      parseInt(timeParts[1]),          // minutes
+      parseInt(timeParts[2])           // seconds
+    );
+
+    // Format the JavaScript Date object as a MySQL DATETIME string
+    const mysqlDateTime = jsDateTime.toISOString().slice(0, 19).replace('T', ' ');
+
+    return mysqlDateTime
   }
 
   const handlesubmit = (e) => {
     e.preventDefault();
-    console.log("patient that submit is: ")
-    console.log(patient)
     const patientData = patient.trim();
-    const [fname, lname] = patientData.split(" ")
-
+    const [fname, lname] = patientData.split(" ") // split name into fname and lastname 
     const foundPatient = allPatients.find(p => p.fname === fname && p.lname === lname);
-    if (foundPatient) {
 
-      // all works 
-      console.log("patientID is ")
-      console.log(foundPatient.patientID)
-    } else {
+    const doctorID = doctor.value
+    //const date = convertDateToISO(picker)
+    const isoDateString = new Date(picker)
+    const date = isoDateString.toISOString()
 
-      // all works 
-      console.log("fname: ")
-      console.log(fname)
-      console.log("lname: ")
-      console.log(lname)
-      console.log("patientID is ")
-      console.log(0)
+
+    if (foundPatient) { //* if patient is already registered 
+      // if patient is alreay registered 
+      const patientID = foundPatient.patientID
+      const newData = { patientID, fname, lname, doctorID, phoneNumber, note, date }
+
+      console.log("New data contain: ")
+      console.log(newData)
+      try {
+        dispatch(addEvent(newData))
+        toast.success("เพิ่มการนัดหมายสำเร็จ")
+      } catch (error) {
+        console.error(error)
+        toast.danger("เกิดข้อผิดพลาด กรุณาลองอีกครั้ง")
+      }
+
+      // * dispatch handle here 
+
+    } else { //* new patient who not rehgister yet 
+      // new patient who never resgistered 
+      const patientID = 0
+      const newData = { patientID, fname, lname, doctorID, phoneNumber, note, date }
+
+      console.log("New data contain: ")
+      console.log(newData)
+
+      // ** dispatch handle here 
+      try {
+        dispatch(addEvent(newData))
+        toast.success("เพิ่มการนัดหมายสำเร็จ")
+      } catch (error) {
+        console.error(error)
+        toast.danger("เกิดข้อผิดพลาด กรุณาลองอีกครั้ง")
+      }
+
+      setShow(false)
     }
 
 
   }
-
-
-  const handleNameChange = (e) => {
+  const handleNameChange = (e) => {  // handle select or type name of patient 
     e.preventDefault()
     setPatient(e.target.value);
   };
 
-  /*   const handleSelectedName = (url, e) => {
-      console.log("Click")
-      //e.preventDefault()
-      setPatient(e.target.value)
-    } */
-  const handleSelectedName = (e) => {
-    e.preventDefault();
-    console.log("click suggestion")
-    console.log(e.target.value)
-  };
-
-  const handlePriceChange = (e) => {
-    const value = e.target.value;
-    setInputPrice(value)
+  const handleDoctorSelect = (selectedOption) => { // handle select doctor 
+    setDoctor(selectedOption);
   }
-
-
-  const handleUnitChange = (e) => {
-    const value = e.target.value;
-    setInputUnit(value);
-  }
-
-  const handleDesChange = (e) => {
-    const value = e.target.value;
-    setInputDes(value);
-  }
-
-
 
 
   return (
@@ -312,6 +334,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                       options={allDoctor.map((doc) => ({ value: doc.staffID, label: doc.fname + " " + doc.lname }))}
                       required
                       value={doctor}
+                      onChange={handleDoctorSelect}
                       styles={{ maxWidth: '100%' }}
                     />
                   </FormGroup>
@@ -332,6 +355,21 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                       locale: Thai,
                       disableMobile: true,
                     }}
+                  />
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <Label className='form-label' for='note'>
+                    หมายเหตุ
+                  </Label>
+                  <Input
+                    type='textarea'
+                    name='text'
+                    id='note'
+                    rows='3'
+                    placeholder='ตย. ตรวจร่างกาย, ปรึกษา '
+                    onChange={e => setNote(e.target.value)}
                   />
                 </Col>
               </Row>
@@ -464,11 +502,16 @@ const AppointmentList = () => {
     const startIndex = (currentPage - 1) * rowsPerPage
     const endIndex = startIndex + rowsPerPage
 
+
+    console.log("my data and length is ")
+    console.log(store.data.length)
+    console.log(store.data)
     if (store.data.length > 0) {
       return store.data.slice(startIndex, endIndex)
-    } else if (store.data.length === 0 && isFiltered) {
+    } else if (store.data.length === 0 /* && isFiltered */) {
       return []
     } else {
+      //console.log("i render all data instead of getData")
       return store.allData.slice(0, rowsPerPage)
     }
   }
@@ -522,7 +565,6 @@ const AppointmentList = () => {
                 rowsPerPage={rowsPerPage}
                 handleFilter={handleFilter}
                 handlePerPage={handlePerPage}
-
               />
             }
           />
@@ -531,8 +573,6 @@ const AppointmentList = () => {
           </div>
         </div>
       </Card>
-
-
     </Fragment>
   )
 }

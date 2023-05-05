@@ -4,23 +4,11 @@ import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
 
-// ** Custom Components
-import Avatar from '@components/avatar'
-
-// ** Store & Actions
-import { store } from '@store/store'
-import { getDrug, editDrug, deleteDrug } from '../store'
-
 // ** Icons Imports
-import { Save, Plus, Edit, Slack, User, Settings, Database, Edit2, MoreVertical, FileText, Trash2, Archive, Check} from 'react-feather'
+import { Save, Edit, FileText, Trash2, Check, Clock } from 'react-feather'
 
 // ** Reactstrap Imports
 import {
-  Badge,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
   Input,
   Modal,
   ModalBody,
@@ -46,7 +34,7 @@ export const columns = [
     name: 'รหัสการนัดหมาย',
     sortable: true,
     minWidth: '172px',
-    sortField: 'role',
+    sortField: 'appointmentID',
     selector: row =>
       <div className='d-flex justify-content-left align-items-center'>
         <div className='d-flex flex-column'>
@@ -58,25 +46,37 @@ export const columns = [
     name: 'ชื่อผู้ป่วย',
     sortable: true,
     minWidth: '300px',
-    sortField: 'fullName',
+    sortField: 'patient_name',
     selector: row => row.patient_name,
-    cell: row => (
-      <div className='d-flex justify-content-left align-items-center'>
-        <div className='d-flex flex-column'>
-          <Link
-            className='user_name text-truncate text-body'
-          >
-            <span className='fw-bolder'>{row.patient_name}</span>
-          </Link>
+    cell: row => {
+      const firstName = row.patient_name
+      const lastname = row.patient_lastname
+      let fullname 
+      if(lastname){
+        fullname = firstName + " " + lastname
+      }else{
+        fullname = firstName
+      }
+
+      
+      return (
+        <div className='d-flex justify-content-left align-items-center'>
+          <div className='d-flex flex-column'>
+            <Link
+              className='user_name text-truncate text-body'
+            >
+              <span className='fw-bolder'>{ fullname }</span>
+            </Link>
+          </div>
         </div>
-      </div>
-    )
+      )
+    }
   },
+
+
   {
     name: 'วันที่ทำการนัดหมาย',
-    sortable: true,
     minWidth: '172px',
-    sortField: 'drugPrice',
     selector: row => row.date,
     cell: row => {
       const currentdate = new Date()
@@ -85,11 +85,11 @@ export const columns = [
       const thaidate = date.toLocaleDateString('th-TH', options)
 
       const isPassedDate = currentdate > date
-     
+
       return (
         <div className='d-flex justify-content-left align-items-center'>
           <div className='d-flex flex-column'>
-            <span className='fw-bolder'> {isPassedDate ? <Check size={16} color='green'/>  : <></>}  {thaidate} </span>
+            <span className='fw-bolder'> {isPassedDate ? <Check size={16} color='green' /> : <Clock size={16} color='orange' />}  {thaidate} </span>
           </div>
         </div>
       )
@@ -120,7 +120,7 @@ export const columns = [
 
       const handleShow = (e) => {
         e.preventDefault();
-        dispatch(getDrug(parseInt(id)))
+        /* dispatch(getDrug(parseInt(id))) */
         setShowModal(true)
       }
       const handleModalClose = () => {
@@ -160,7 +160,7 @@ export const columns = [
           return;
         }
         try {
-          dispatch(editDrug(newData))
+          /*  dispatch(editDrug(newData)) */
           setShowModal(false)
           toast.success("แก้ไขข้อมูลยาสำเร็จ")
         } catch (error) {
@@ -172,7 +172,7 @@ export const columns = [
       const handleDelete = (e) => {
         e.preventDefault();
         try {
-          dispatch(deleteDrug(id))
+          /*  dispatch(deleteDrug(id)) */
         } catch (error) {
           console.log(error)
         }

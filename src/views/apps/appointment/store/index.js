@@ -13,7 +13,9 @@ export const getAllData = createAsyncThunk('appAppt/getAllData', async () => {
 
 export const getData = createAsyncThunk('appAppt/getData', async params => {
   try {
+    console.log("i do getData")
     const response = await axios.get(`${appointmentURL}/appointment`, { params: params })
+    console.log(response)
     return {
       params: params,
       data: response.data,
@@ -25,11 +27,21 @@ export const getData = createAsyncThunk('appAppt/getData', async params => {
   }
 })
 
+export const addEvent = createAsyncThunk('appAppt/addEvent', async (newData, {dispatch}) => {
+try {
+  await axios.post(`${appointmentURL}/appointment`,newData)
+  const refresh = await dispatch(getData())
+  return refresh.payload
+} catch (error) {
+  
+}
+})
+
+
+// for calendar
 export const getEvent = createAsyncThunk('appAppt/getEvent', async () => {
   try {
     const response = await axios.get(`${appointmentURL}/event`)
-    console.log("do getEvent and here is response : ")
-    console.log(response.data)
     return response.data
   } catch (error) {
     console.log("error in client side getEvent")
@@ -37,35 +49,6 @@ export const getEvent = createAsyncThunk('appAppt/getEvent', async () => {
   }
 })
 
-export const getDrug = createAsyncThunk('/appDrugs/getDrug', async id => {
-  try {
-    const response = await axios.get(`http://localhost:8000/drugs/getDrug/${id}`)
-    return response.data[0]
-  } catch (error) {
-    console.error(error)
-  }
-})
-
-
-export const addDrug = createAsyncThunk('appDrugs/addDrug', async (newData) => {
-  try {
-    await axios.post('http://localhost:8000/drugs/add/drug', newData)
-  } catch (error) {
-    console.error(error)
-  }
-})
-
-export const editDrug = createAsyncThunk('appDrugs/edit/Drug', async (newData) => {
-  try {
-    await axios.put('http://localhost:8000/drugs/edit/drug', newData)
-  } catch (error) {
-    console.error(error)
-  }
-})
-
-export const deleteDrug = createAsyncThunk('appDrugs/deleteDrug', async (id) => {
-  await axios.put(`http://localhost:8000/drugs/delete/drug/${id}`)
-})
 
 export const ApptSlice = createSlice({
   name: 'appAppt',
@@ -91,18 +74,10 @@ export const ApptSlice = createSlice({
       .addCase(getEvent.fulfilled, (state, action) => {
         state.events = action.payload
       })
-      .addCase(addDrug.fulfilled, (state, action) => {
-        state.total = state.total + 1
+      .addCase(addEvent.fulfilled, (state, action) => {
+        state.data = action.payload
       })
-      .addCase(getDrug.fulfilled, (state, action) => {
-        state.selectedDrug = action.payload
-      })
-      .addCase(editDrug.fulfilled, (state, action) => {
-        state.selectedDrug = action.payload
-      })
-      .addCase(deleteDrug.fulfilled, (state, action) => {
-        state.total = state.total - 1
-      })
+      
   }
 })
 

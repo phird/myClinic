@@ -132,6 +132,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
   const handlePatientChange = (selectedOption) => {
     setPatient(selectedOption);
   }
+  
   const handleDoctorChange = (selectedOption) => {
     console.log("here is selected Option")
     console.log(selectedOption)
