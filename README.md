@@ -1,5 +1,5 @@
 # myClnic Project
-
+status - on develope 
 ## version-log
  - 0.8.1
   -- update appts and event on calendar
