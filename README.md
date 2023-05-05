@@ -2,7 +2,7 @@
 
 ## version-log
  - 0.8.1
-  - update appts and event on calendar
+  -- update appts and event on calendar
 
 myClinic is built using Vite. You don't need to install or configure tools like Webpack or Babel.
 
