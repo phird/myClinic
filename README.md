@@ -4,8 +4,9 @@ status - on develope
 if you get any bugs or issue feel free to let me know by creating issue on GITHUB 🙏🏻
 
 ## version-log
- - 0.8.1
+ - 0.8.1 <br />
   -- update appts and event on calendar
+     can add/ view event from list in appointment 
 
 
 
