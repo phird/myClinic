@@ -5,7 +5,7 @@ if you get any bugs or issue feel free to let me know by creating issue on GITHU
 
 ## version-log
  - 0.8.1 <br />
-  -- update appts and event on calendar
+  -- update appts and event on calendar <br/>
      can add/ view event from list in appointment 
 
 
