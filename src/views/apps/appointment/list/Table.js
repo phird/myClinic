@@ -110,34 +110,6 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
     setPicker(new Date())
   }
 
-  const convertDateToISO = (datetime) => {
-    // Convert datetime to a string if it's not already
-    console.log("date that gonna convert ")
-    console.log(datetime)
-    if (typeof datetime !== 'string') {
-      datetime = datetime.toString();
-    }
-
-    // Split the ISO date and time into separate parts
-    const dateParts = datetime.split('T')[0].split('-');
-    const timeParts = datetime.split('T')[1].split('.')[0].split(':');
-
-    // Construct a JavaScript Date object using the separate parts
-    const jsDateTime = new Date(
-      parseInt(dateParts[0]) + 2000,   // year
-      parseInt(dateParts[1]) - 1,      // month (January is 0)
-      parseInt(dateParts[2]),          // day
-      parseInt(timeParts[0]),          // hours
-      parseInt(timeParts[1]),          // minutes
-      parseInt(timeParts[2])           // seconds
-    );
-
-    // Format the JavaScript Date object as a MySQL DATETIME string
-    const mysqlDateTime = jsDateTime.toISOString().slice(0, 19).replace('T', ' ');
-
-    return mysqlDateTime
-  }
-
   const handlesubmit = (e) => {
     e.preventDefault();
     const patientData = patient.trim();
@@ -146,20 +118,27 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
 
     const doctorID = doctor.value
     //const date = convertDateToISO(picker)
+    console.log("before convert ")
+    console.log(picker)
     const isoDateString = new Date(picker)
-    const date = isoDateString.toISOString()
-
+    const utcTimestamp = isoDateString.getTime() - (isoDateString.getTimezoneOffset() * 60000);
+    const date = new Date(utcTimestamp).toISOString();
+    //const date = isoDateString.toISOString()
+    console.log("after convert ")
+    console.log(date)
+    const addedDate = new Date();
 
     if (foundPatient) { //* if patient is already registered 
       // if patient is alreay registered 
       const patientID = foundPatient.patientID
-      const newData = { patientID, fname, lname, doctorID, phoneNumber, note, date }
+      const newData = { patientID, fname, lname, doctorID, phoneNumber, note, date, addedDate}
 
       console.log("New data contain: ")
       console.log(newData)
       try {
         dispatch(addEvent(newData))
         toast.success("เพิ่มการนัดหมายสำเร็จ")
+        setShow(false)
       } catch (error) {
         console.error(error)
         toast.danger("เกิดข้อผิดพลาด กรุณาลองอีกครั้ง")
@@ -170,7 +149,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
     } else { //* new patient who not rehgister yet 
       // new patient who never resgistered 
       const patientID = 0
-      const newData = { patientID, fname, lname, doctorID, phoneNumber, note, date }
+      const newData = { patientID, fname, lname, doctorID, phoneNumber, note, date, addedDate}
 
       console.log("New data contain: ")
       console.log(newData)
@@ -179,12 +158,11 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
       try {
         dispatch(addEvent(newData))
         toast.success("เพิ่มการนัดหมายสำเร็จ")
+        setShow(false)
       } catch (error) {
         console.error(error)
         toast.danger("เกิดข้อผิดพลาด กรุณาลองอีกครั้ง")
       }
-
-      setShow(false)
     }
 
 
@@ -354,6 +332,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                     options={{
                       locale: Thai,
                       disableMobile: true,
+                      
                     }}
                   />
                 </Col>
@@ -503,9 +482,12 @@ const AppointmentList = () => {
     const endIndex = startIndex + rowsPerPage
 
 
-    console.log("my data and length is ")
-    console.log(store.data.length)
+    console.log("my data is ")
     console.log(store.data)
+
+    console.log("===========")
+    console.log("All data are ")
+    console.log(store.allData)
     if (store.data.length > 0) {
       return store.data.slice(startIndex, endIndex)
     } else if (store.data.length === 0 /* && isFiltered */) {

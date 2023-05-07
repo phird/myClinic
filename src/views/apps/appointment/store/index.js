@@ -6,6 +6,8 @@ import axios from 'axios'
 
 const appointmentURL = "http://localhost:8000/v1/api/appts"
 
+
+
 export const getAllData = createAsyncThunk('appAppt/getAllData', async () => {
   const response = await axios.get(`${appointmentURL}`)
   return response.data
@@ -38,6 +40,16 @@ try {
 })
 
 
+export const event = createAsyncThunk('appAppt/event', async (id) => {
+  try {
+    const response = await axios.get(`${appointmentURL}/appointment/${id}`)
+    return response.data[0]
+  } catch (error) {
+    console.log("error in client side - event ")
+    console.error(error)
+  }
+})
+
 // for calendar
 export const getEvent = createAsyncThunk('appAppt/getEvent', async () => {
   try {
@@ -46,6 +58,17 @@ export const getEvent = createAsyncThunk('appAppt/getEvent', async () => {
   } catch (error) {
     console.log("error in client side getEvent")
     console.log(error)
+  }
+})
+
+// delete event 
+export const deleteEvent = createAsyncThunk('appAppt/deleteEvent', async (id, {dispatch}) => {
+  try {
+    await axios.put(`${appointmentURL}/appointment/${id}`)
+    await dispatch(getData())
+  } catch (error) {
+    console.log("error in client side while deleteEvent")
+    console.error(error)
   }
 })
 
@@ -58,7 +81,7 @@ export const ApptSlice = createSlice({
     params: {},
     allData: [],
     events: [],
-    selectedDrug: null
+    selectedEvent: null
   },
   reducers: {},
   extraReducers: builder => {
@@ -76,6 +99,9 @@ export const ApptSlice = createSlice({
       })
       .addCase(addEvent.fulfilled, (state, action) => {
         state.data = action.payload
+      })
+      .addCase(event.fulfilled, (state,action) => {
+        state.selectedEvent = action.payload
       })
       
   }

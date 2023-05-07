@@ -5,11 +5,10 @@ import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
 
 // ** Icons Imports
-import { Save, Edit, FileText, Trash2, Check, Clock } from 'react-feather'
+import { FileText, Trash2, Check, Clock, Calendar, UserPlus, User, PenTool, PhoneCall } from 'react-feather'
 
 // ** Reactstrap Imports
 import {
-  Input,
   Modal,
   ModalBody,
   ModalHeader,
@@ -17,9 +16,7 @@ import {
   UncontrolledTooltip,
   Col,
   Row,
-  Label,
-  Form,
-  FormGroup
+  Label
 } from 'reactstrap'
 // ** Imports Third Party Component
 import { toast } from 'react-hot-toast'
@@ -27,6 +24,11 @@ import { toast } from 'react-hot-toast'
 import withReactContent from 'sweetalert2-react-content'
 import Swal from 'sweetalert2'
 const MySwal = withReactContent(Swal)
+
+
+import { deleteEvent, event } from '../store'
+import { getAllData as StaffList } from '../../staff/store'
+
 
 
 export const columns = [
@@ -51,21 +53,21 @@ export const columns = [
     cell: row => {
       const firstName = row.patient_name
       const lastname = row.patient_lastname
-      let fullname 
-      if(lastname){
+      let fullname
+      if (lastname) {
         fullname = firstName + " " + lastname
-      }else{
+      } else {
         fullname = firstName
       }
 
-      
+
       return (
         <div className='d-flex justify-content-left align-items-center'>
           <div className='d-flex flex-column'>
             <Link
               className='user_name text-truncate text-body'
             >
-              <span className='fw-bolder'>{ fullname }</span>
+              <span className='fw-bolder'>{fullname}</span>
             </Link>
           </div>
         </div>
@@ -95,113 +97,83 @@ export const columns = [
       )
     }
   },
+
   {
     name: '',
     minWidth: '120px',
     cell: row => {
       const dispatch = useDispatch()
       const [showModal, setShowModal] = useState(false);
-      const [editAble, setEditAble] = useState(false);
-      const [drugName, setDrugName] = useState('');
-      const [drugPrice, setDrugPrice] = useState(0);
-      const [unit, setUnit] = useState('');
-      const [des, setDes] = useState('');
-      const [drug, setDrug] = useState('')
-      const store = useSelector(state => state.drugs)
-      const id = row.drugID
+      const store = useSelector(state => state.appointment)
+      const id = row.appointmentID
+      /// Appts State 
+      const [patientName, setPatientName] = useState('')
+      const [phoneNo, setPhoneNo] = useState('')
+      const [doctor, setDoctor] = useState('')
+      const [dateTime, setDateTime] = useState()
+      const [note, setNote] = useState('')
+      const [addedDate, setAddedDate] = useState()
+      const [staff, setStaff] = useState([])
 
       useEffect(() => {
-        /* setDrug(store.selectedDrug); */
-        setDrugName(store.selectedDrug?.drugName);
-        setDrugPrice(store.selectedDrug?.drugPrice);
-        setUnit(store.selectedDrug?.unit);
-        setDes(store.selectedDrug?.description);
-      }, [store.selectedDrug])
+        const fetchData = async () => {
+          const data = await dispatch(StaffList())
+          setStaff(data.payload)
+          console.log(staff)
+        }
+        fetchData()
+        // * appts set State 
+        setDateTime(store.selectedEvent?.date)
+        setPatientName(store.selectedEvent?.patient_name + ' ' + store.selectedEvent?.patient_lastname)
+        setDoctor(store.selectedEvent?.staffID)
+        setPhoneNo(store.selectedEvent?.contact)
+        setNote(store.selectedEvent?.note)
+        setAddedDate(store.selectedEvent?.addedDate)
+      }, [store.selectedEvent])
 
+
+
+      const convertDate = (dt) => {
+        const dateString = dt;
+        const date = new Date(dateString);
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const thaiDate = date.toLocaleDateString('th-TH', options);
+        const thaiTime = date.toLocaleTimeString('th-TH', { hour: 'numeric', minute: 'numeric', timeZone: 'Asia/Bangkok' });
+        if (thaiTime == '00:00') {
+          const readableDate = `${thaiDate}`;
+          return readableDate
+        }
+        const readableDate = `${thaiDate} เวลา ${thaiTime} น.`;
+        return readableDate
+      }
       const handleShow = (e) => {
         e.preventDefault();
-        /* dispatch(getDrug(parseInt(id))) */
+        dispatch(event(parseInt(id)))
         setShowModal(true)
       }
       const handleModalClose = () => {
-        setDrugName('');
-        setDrugPrice(0);
-        setUnit('');
-        setDes('');
-        setEditAble(false)
-      }
-      const handleEnableEdit = () => {
-        setEditAble(true)
-      }
-
-      const handleNameChange = (e) => {
-        const value = e.target.value
-        setDrugName(value);
-      }
-      const handlePriceChange = (e) => {
-        const value = e.target.value;
-        setDrugPrice(value);
-      }
-      const handleUnitChange = (e) => {
-        const value = e.target.value;
-        setUnit(value);
-      }
-      const handleDesChange = (e) => {
-        const value = e.target.value;
-        setDes(value);
-      }
-
-      const onsubmit = (e) => {
-        e.preventDefault()
-        const drugID = id
-        const description = des;
-        const newData = { drugID, drugName, drugPrice, unit, description }
-        if (!drugName || !unit || !drugPrice) {
-          return;
-        }
-        try {
-          /*  dispatch(editDrug(newData)) */
-          setShowModal(false)
-          toast.success("แก้ไขข้อมูลยาสำเร็จ")
-        } catch (error) {
-          console.error(error)
-        }
-
+        setPatientName('')
+        setPhoneNo('')
+        setDoctor('')
+        setDateTime()
+        setNote('')
+        setAddedDate()
       }
 
       const handleDelete = (e) => {
         e.preventDefault();
         try {
+          dispatch(deleteEvent(id))
           /*  dispatch(deleteDrug(id)) */
         } catch (error) {
           console.log(error)
         }
       }
 
-      const handleConfirmSubmit = async (event) => {
-        event.preventDefault();
-        return MySwal.fire({
-          title: 'ยืนยันการแก้ไขข้อมูลยาหรือไม่?',
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonText: 'ยืนยันการแก้ไข',
-          cancelButtonText: 'ยกเลิก',
-          customClass: {
-            confirmButton: 'btn btn-primary',
-            cancelButton: 'btn btn-outline-danger ms-1'
-          },
-          buttonsStyling: false
-        }).then(function (result) {
-          if (result.value) {
-            onsubmit(event)
-          }
-        })
-      }
-
       const handleDeleteSubmit = async (event) => {
         event.preventDefault();
         const result = await MySwal.fire({
-          title: 'ยืนยันการลบข้อมูลยาหรือไม่?',
+          title: 'ยืนยันการลบข้อมูลการนัดหมายหรือไม่?',
           icon: 'warning',
           showCancelButton: true,
           confirmButtonText: 'ยืนยันการลบ',
@@ -214,9 +186,17 @@ export const columns = [
         })
         if (result.value) {
           handleDelete(event)
-          toast.success('ลบข้อมูลยาสำเร็จ')
+          toast.success('ลบข้อมูลการนัดหมายสำเร็จ')
         }
       }
+
+
+      const searchStaff = (sID) => {
+        const result = staff.find((staffMember) => staffMember.staffID === sID);
+        const staffName = result?.fname + ' ' + result?.lname
+        return staffName
+      }
+
 
 
       return (
@@ -234,7 +214,7 @@ export const columns = [
               </Button.Ripple>
             </Link>
             <UncontrolledTooltip target={`view-${row.drugID}`}>
-              ดูข้อมูลยา
+              ดูข้อมูลการนัดหมาย
             </UncontrolledTooltip>
             {/* Delete  */}
             <Link>
@@ -246,99 +226,76 @@ export const columns = [
               ลบ
             </UncontrolledTooltip>
           </div>
-
           {/* Modal */}
           <Modal className='modal-dialog-centered modal-lg ' isOpen={showModal} onClosed={handleModalClose}>
             <ModalHeader className='bg-transparent' toggle={() => setShowModal(!showModal)}>
-              <Button.Ripple color='flat-primary' onClick={handleEnableEdit} >
-                <Edit size={18} /> แก้ไขข้อมูลยา
-              </Button.Ripple>
             </ModalHeader>
             <ModalBody className='px-sm-5 pt-50 pb-5'>
               <div className='text-center mb-2'>
-                <h3 className='mb-1'>ข้อมูลยา</h3>
+                <h3 className='mb-1'>ข้อมูลการนัดหมาย</h3>
               </div>
-              <Form onSubmit={handleConfirmSubmit}>
-                <Row className='gy-1 pt-75' >
-                  <Row md={12} xs={12} style={{ marginBottom: '10px' }}>
-                    <Col>
-                      <FormGroup>
-                        <Label className='form-label font-weight-bold' for='drugName'>
-                          ชื่อยา
-                        </Label>
-                        <Input
-                          autoFocus={true}
-                          id='drugName'
-                          type='text'
-                          placeholder='ชื่อยา'
-                          required
-                          onChange={handleNameChange}
-                          value={drugName || ''}
-                          disabled={!editAble}
-                        />
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col sm={6}>
-                      <FormGroup>
-                        <Label className='h4 form-label font-weight-bold' for='unit'>
-                          ราคาต่อหน่วย
-                        </Label>
-                        <Input
-                          id='unit'
-                          type='number'
-                          placeholder='ราคาต่อหน่วย'
-                          required
-                          onChange={handlePriceChange}
-                          value={drugPrice || 0}
-                          disabled={!editAble}
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col sm={6}>
-                      <FormGroup>
-                        <Label className='h4 form-label font-weight-bold' for='unit'>
-                          หน่วย
-                        </Label>
-                        <Input
-                          id='unit'
-                          type='text'
-                          placeholder='หน่วยของยา: แผง, เม็ด'
-                          required
-                          onChange={handleUnitChange}
-                          value={unit || ''}
-                          disabled={!editAble}
-                        />
-                      </FormGroup>
-                    </Col>
+              <hr />
+              <Row className='mb-2'>
+                <span className='h2'> {patientName}</span>
+              </Row>
 
-                  </Row>
-                  <Row md={12} xs={12} style={{ marginBottom: '10px' }}>
-                    <Col>
-                      <Label className='h4 form-label font-weight-bold' for='note'>
-                        คำอธิบาย:
-                      </Label>
-                      <Input
-                        id='note'
-                        type='textarea'
-                        rows='2'
-                        placeholder='คำอธิยายเกี่ยวกับยา (option)'
-                        value={des || ''}
-                        onChange={handleDesChange}
-                        disabled={!editAble}
-                      />
-                    </Col>
-                  </Row>
-                  <Col xs={12} className='text-center mt-2 pt-50'>
-                    {editAble && <div>
-                      <Button.Ripple type='submit' color='success' >
-                        <Save size={18}></Save>  บันทึก
-                      </Button.Ripple>
-                    </div>}
+              <Row>
+                <Row className='mb-2'>
+                  <Col className='d-flex flex-column'>
+                    <Label className='form-label font-weight-bold' for='datetime' style={{ fontSize: '1.2rem', fontWeight: 'bold' }} >
+                      <Calendar size={16} /> วันที่นัด
+                    </Label>
+                    <span id='datetime' className='d-flex h5'> {convertDate(dateTime)} </span>
                   </Col>
                 </Row>
-              </Form>
+
+                <Row className='mb-2'>
+                  <Col className='d-flex flex-column'>
+                    <Label className='form-label font-weight-bold' for='datetime' style={{ fontSize: '1.2rem', fontWeight: 'bold' }} >
+                      <PhoneCall size={16} /> เบอร์โทรติดต่อผู้ป่วย
+                    </Label>
+                    <span id='datetime' className='d-flex h5'> {phoneNo} </span>
+                  </Col>
+                </Row>
+
+                <Row className='mb-2'>
+                  <Col className='d-flex flex-column'>
+                    <Label className='form-label font-weight-bold' for='datetime' style={{ fontSize: '1.2rem', fontWeight: 'bold' }} >
+                      <User size={16} />แพทย์ที่ทำการนัด
+                    </Label>
+                    <span id='datetime' className='d-flex h5'> {searchStaff(doctor)} </span>
+                  </Col>
+                </Row>
+
+
+                <Row className='mb-2'>
+                  <Col className='d-flex flex-column'>
+                    <Label className='form-label font-weight-bold' for='datetime' style={{ fontSize: '1.2rem', fontWeight: 'bold' }} >
+                      <PenTool size={16} /> หมายเหตุ
+                    </Label>
+                    <span id='datetime' className='d-flex h5'> {note} </span>
+                  </Col>
+                </Row>
+
+                <hr />
+                <Row className='mb-2'>
+                  <Col className='d-flex flex-column'>
+                    <Label className='form-label font-weight-bold' for='datetime' style={{ fontSize: '1.2rem', fontWeight: 'bold' }} >
+                      <UserPlus size={16} /> ชื่อผู้นัด
+                    </Label>
+                    <span id='datetime' className='d-flex h5'> {searchStaff(doctor)} </span>
+                  </Col>
+                </Row>
+
+                <Row className='mb-2'>
+                  <Col className='d-flex flex-column'>
+                    <Label className='form-label font-weight-bold' for='datetime' style={{ fontSize: '1.2rem', fontWeight: 'bold' }} >
+                      นัดเมื่อวันที่
+                    </Label>
+                    <span id='datetime' className='d-flex h5'> {convertDate(addedDate)} </span>
+                  </Col>
+                </Row>
+              </Row>
             </ModalBody>
           </Modal>
         </div>
