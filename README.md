@@ -7,6 +7,9 @@ if you get any bugs or issue feel free to let me know by creating issue on GITHU
  - 0.8.1
   -- update appts and event on calendar
 
+
+
+====================================================================================
 myClinic is built using Vite. You don't need to install or configure tools like Webpack or Babel.
 
 ## Installation
