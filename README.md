@@ -1,5 +1,8 @@
 # myClnic Project
 status - on develope 
+
+if you get any bugs or issue feel free to let me know by creating issue on GITHUB 🙏🏻
+
 ## version-log
  - 0.8.1
   -- update appts and event on calendar
