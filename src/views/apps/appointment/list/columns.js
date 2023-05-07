@@ -197,8 +197,6 @@ export const columns = [
         return staffName
       }
 
-
-
       return (
         <div className='text-capitalize'>
           {/* View */}

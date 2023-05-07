@@ -115,23 +115,18 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
     const patientData = patient.trim();
     const [fname, lname] = patientData.split(" ") // split name into fname and lastname 
     const foundPatient = allPatients.find(p => p.fname === fname && p.lname === lname);
-
     const doctorID = doctor.value
     //const date = convertDateToISO(picker)
-    console.log("before convert ")
-    console.log(picker)
     const isoDateString = new Date(picker)
     const utcTimestamp = isoDateString.getTime() - (isoDateString.getTimezoneOffset() * 60000);
     const date = new Date(utcTimestamp).toISOString();
     //const date = isoDateString.toISOString()
-    console.log("after convert ")
-    console.log(date)
     const addedDate = new Date();
 
     if (foundPatient) { //* if patient is already registered 
       // if patient is alreay registered 
       const patientID = foundPatient.patientID
-      const newData = { patientID, fname, lname, doctorID, phoneNumber, note, date, addedDate}
+      const newData = { patientID, fname, lname, doctorID, phoneNumber, note, date, addedDate }
 
       console.log("New data contain: ")
       console.log(newData)
@@ -149,7 +144,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
     } else { //* new patient who not rehgister yet 
       // new patient who never resgistered 
       const patientID = 0
-      const newData = { patientID, fname, lname, doctorID, phoneNumber, note, date, addedDate}
+      const newData = { patientID, fname, lname, doctorID, phoneNumber, note, date, addedDate }
 
       console.log("New data contain: ")
       console.log(newData)
@@ -332,7 +327,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                     options={{
                       locale: Thai,
                       disableMobile: true,
-                      
+
                     }}
                   />
                 </Col>
@@ -378,6 +373,9 @@ const AppointmentList = () => {
   const [sortColumn, setSortColumn] = useState('appointmentID')
   const [rowsPerPage, setRowsPerPage] = useState(10)
 
+  const [toggleEvent, setToggleEvent] = useState(false)
+  const toggle = () => setToggleEvent(!toggleEvent)
+
   // ** Get data on mount
   useEffect(() => {
     dispatch(getAllData())
@@ -392,7 +390,6 @@ const AppointmentList = () => {
     )
     dispatch(getEvent())
   }, [dispatch, store.data.length, store.events.length, store.total, sort, sortColumn, searchTerm, currentPage, store.selectedDrug])
-
   // ** Blank Event Object
   const blankEvent = {
     title: '',
@@ -414,7 +411,6 @@ const AppointmentList = () => {
     )
     setCurrentPage(page.selected + 1)
   }
-
   // ** Function in get data on rows per page
   const handlePerPage = e => {
     const value = parseInt(e.currentTarget.value)
@@ -429,7 +425,6 @@ const AppointmentList = () => {
     )
     setRowsPerPage(value)
   }
-
   // ** Function in get data on search query change
   const handleFilter = val => {
     setSearchTerm(val)
@@ -444,7 +439,6 @@ const AppointmentList = () => {
       })
     )
   }
-
   // ** Custom Pagination
   const CustomPagination = () => {
     const count = Number(Math.ceil(store.total / rowsPerPage))
@@ -467,7 +461,6 @@ const AppointmentList = () => {
       />
     )
   }
-
   // ** Table data to render
   const dataToRender = () => {
     const filters = {
@@ -480,14 +473,6 @@ const AppointmentList = () => {
 
     const startIndex = (currentPage - 1) * rowsPerPage
     const endIndex = startIndex + rowsPerPage
-
-
-    console.log("my data is ")
-    console.log(store.data)
-
-    console.log("===========")
-    console.log("All data are ")
-    console.log(store.allData)
     if (store.data.length > 0) {
       return store.data.slice(startIndex, endIndex)
     } else if (store.data.length === 0 /* && isFiltered */) {
@@ -526,6 +511,7 @@ const AppointmentList = () => {
             store={store}
             blankEvent={blankEvent}
             calendarsColor={calendarsColor}
+            toggleEvent={toggle}
           />
           <DataTable
             noHeader

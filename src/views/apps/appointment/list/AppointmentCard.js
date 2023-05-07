@@ -24,7 +24,11 @@ import th from '@fullcalendar/core/locales/th'
 
 // * Store 
 import { useDispatch } from 'react-redux'
-import { getAllData } from '../../patients/store'
+import {event } from '../store'
+
+// * Component 
+import ModalEvent from './modal'
+
 
 // * Style 
 import '@styles/react/apps/app-calendar.scss'
@@ -43,6 +47,7 @@ const AppointmentCard = (props) => {
         dispatch,
         blankEvent,
         calendarsColor,
+        toggleEvent,
     } = props
 
     /*     // ** UseEffect checks for CalendarAPI Update
@@ -105,9 +110,7 @@ const AppointmentCard = (props) => {
 
         dateClick(info) {
             const ev = blankEvent
-            ev.start = info.date
-            ev.end = info.date
-            dispatch(selectEvent(ev))  /// load data of each appointment (view-only)
+            dispatch(event(ev))  /// load data of each appointment (view-only)
             handleAddEventSidebar() // handle it with open modal
         },
 
