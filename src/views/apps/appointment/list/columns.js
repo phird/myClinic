@@ -110,6 +110,7 @@ export const columns = [
       const [patientName, setPatientName] = useState('')
       const [phoneNo, setPhoneNo] = useState('')
       const [doctor, setDoctor] = useState('')
+      const [staffID, setStaffID] = useState()
       const [dateTime, setDateTime] = useState()
       const [note, setNote] = useState('')
       const [addedDate, setAddedDate] = useState()
@@ -129,6 +130,7 @@ export const columns = [
         setPhoneNo(store.selectedEvent?.contact)
         setNote(store.selectedEvent?.note)
         setAddedDate(store.selectedEvent?.addedDate)
+        setStaffID(store.selectedEvent?.addedBy)
       }, [store.selectedEvent])
 
 
@@ -193,7 +195,7 @@ export const columns = [
 
       const searchStaff = (sID) => {
         const result = staff.find((staffMember) => staffMember.staffID === sID);
-        const staffName = result?.fname + ' ' + result?.lname
+        const staffName = result?.prefix + ' ' + result?.fname + ' ' + result?.lname
         return staffName
       }
 
@@ -281,7 +283,7 @@ export const columns = [
                     <Label className='form-label font-weight-bold' for='datetime' style={{ fontSize: '1.2rem', fontWeight: 'bold' }} >
                       <UserPlus size={16} /> ชื่อผู้นัด
                     </Label>
-                    <span id='datetime' className='d-flex h5'> {searchStaff(doctor)} </span>
+                    <span id='datetime' className='d-flex h5'> {searchStaff(staffID)} </span>
                   </Col>
                 </Row>
 

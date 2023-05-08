@@ -109,9 +109,16 @@ const AppointmentCard = (props) => {
         },
 
         dateClick(info) {
+            // * info is data of date that we click 
             const ev = blankEvent
-            dispatch(event(ev))  /// load data of each appointment (view-only)
-            handleAddEventSidebar() // handle it with open modal
+            ev.start = info.date  // set ev start at date that click on calendar 
+
+            // so next try to open modal with date that we click 
+            toggleEvent(); // open modal 
+
+            //dispatch(event(ev))  /// load data of each appointment (view-only) -> like sent a date that click into modal 
+            //handleAddEventSidebar()
+            console.log("I am clicking na kub") // handle it with open modal
         },
 
         /*

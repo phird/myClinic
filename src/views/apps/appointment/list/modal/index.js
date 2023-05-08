@@ -2,7 +2,7 @@
 import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
-
+import { useState, useEffect } from 'react'
 // ** Icons Imports
 import { FileText, Trash2, Check, Clock, Calendar, UserPlus, User, PenTool, PhoneCall } from 'react-feather'
 
@@ -25,13 +25,12 @@ import Swal from 'sweetalert2'
 const MySwal = withReactContent(Swal)
 
 
-import { deleteEvent, event } from '../../store'
+import { event } from '../../store'
 import { getAllData as StaffList } from '../../../staff/store'
 
 
-const ModalEvent = () => {
+const ModalEvent = ({openModal, toggleModal}) => {
     const dispatch = useDispatch()
-    const [showModal, setShowModal] = useState(false);
     const store = useSelector(state => state.appointment)
     //const id = appointmentID  // send id instead of retrieve from row 
     /// Appts State 
@@ -79,6 +78,7 @@ const ModalEvent = () => {
         dispatch(event(parseInt(id)))
         setShowModal(true)
     }
+
     const handleModalClose = () => {
         setPatientName('')
         setPhoneNo('')
@@ -97,8 +97,8 @@ const ModalEvent = () => {
 
     return (
         <div className='text-capitalize'>
-            <Modal className='modal-dialog-centered modal-lg ' isOpen={showModal} onClosed={handleModalClose}>
-                <ModalHeader className='bg-transparent' toggle={() => setShowModal(!showModal)}>
+            <Modal className='modal-dialog-centered modal-lg ' isOpen={openModal} onClosed={handleModalClose}>
+                <ModalHeader className='bg-transparent' toggle={toggleModal}>
                 </ModalHeader>
                 <ModalBody className='px-sm-5 pt-50 pb-5'>
                     <div className='text-center mb-2'>

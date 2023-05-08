@@ -33,6 +33,7 @@ import { addEvent } from '../store';
 
 // * Component
 import AppointmentCard from './AppointmentCard'
+import ModalEvent from './modal'
 
 // ** Utils
 import { selectThemeColors } from '@utils'
@@ -83,12 +84,21 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
 
   // * User Info
   const [patient, setPatient] = useState(''); // select patient
-  const [doctor, setDoctor] = useState([])  // select doctor 
-  const [note, setNote] = useState('')
+  const [doctor, setDoctor] = useState([])  // select doctor  -> who gonna see a patient 
+  const [note, setNote] = useState('') // note that tell us what patient needs 
   const [phoneNumber, setPhoneNumber] = useState('') // phoneNO
   const [picker, setPicker] = useState(new Date()) // date and time that picked 
+  const [staffID, setStaffID] = useState(0) // staff that added an appointment 
+
 
   useEffect(() => {
+    // get Staff ID 
+    const staffIDFromStorage = JSON.parse(localStorage.getItem('userData'));
+    if (staffIDFromStorage) {
+      setStaffID(staffIDFromStorage.staffID);
+    }
+
+    // Get doctor List at first time 
     const fetchData = async () => {
       const data = await dispatch(patientList());
       const doctor = await dispatch(doctorList());
@@ -97,6 +107,9 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
     };
     fetchData();
   }, [])
+
+  console.log("Current StaffID is ")
+  console.log(staffID)
 
   // ** Handle Modal 
   const handleModalClosed = () => {
@@ -116,17 +129,17 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
     const [fname, lname] = patientData.split(" ") // split name into fname and lastname 
     const foundPatient = allPatients.find(p => p.fname === fname && p.lname === lname);
     const doctorID = doctor.value
-    //const date = convertDateToISO(picker)
     const isoDateString = new Date(picker)
     const utcTimestamp = isoDateString.getTime() - (isoDateString.getTimezoneOffset() * 60000);
     const date = new Date(utcTimestamp).toISOString();
-    //const date = isoDateString.toISOString()
     const addedDate = new Date();
+
+
 
     if (foundPatient) { //* if patient is already registered 
       // if patient is alreay registered 
       const patientID = foundPatient.patientID
-      const newData = { patientID, fname, lname, doctorID, phoneNumber, note, date, addedDate }
+      const newData = { patientID, fname, lname, doctorID, staffID,phoneNumber, note, date, addedDate }
 
       console.log("New data contain: ")
       console.log(newData)
@@ -144,7 +157,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
     } else { //* new patient who not rehgister yet 
       // new patient who never resgistered 
       const patientID = 0
-      const newData = { patientID, fname, lname, doctorID, phoneNumber, note, date, addedDate }
+      const newData = { patientID, fname, lname, doctorID, staffID,phoneNumber, note, date, addedDate }
 
       console.log("New data contain: ")
       console.log(newData)
@@ -162,6 +175,9 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
 
 
   }
+
+
+
   const handleNameChange = (e) => {  // handle select or type name of patient 
     e.preventDefault()
     setPatient(e.target.value);
@@ -217,7 +233,6 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
           </div>
         </Col>
       </Row>
-
 
       {/* // Modal SECTION */}
       <Modal isOpen={show} toggle={() => setShow(!show)} className='modal-dialog-centered modal-lg' onClosed={handleModalClosed} backdrop="static">
@@ -391,10 +406,11 @@ const AppointmentList = () => {
     dispatch(getEvent())
   }, [dispatch, store.data.length, store.events.length, store.total, sort, sortColumn, searchTerm, currentPage, store.selectedDrug])
   // ** Blank Event Object
+  
+  
   const blankEvent = {
-    title: '',
+    patientName: '',
     start: '',
-    end: '',
     allDay: false,
   }
 
@@ -513,6 +529,7 @@ const AppointmentList = () => {
             calendarsColor={calendarsColor}
             toggleEvent={toggle}
           />
+          <ModalEvent openModal={toggleEvent} toggleModal={toggle}/>
           <DataTable
             noHeader
             subHeader
