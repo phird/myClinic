@@ -4,13 +4,17 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 // ** Axios Imports
 import axios from 'axios'
 
+const drugURL = "http://localhost:8000/"
+
+const drugLLL  = "http://localhost:8000/drugs"
+
 export const getAllData = createAsyncThunk('appDrugs/getAllData', async () => {
-  const response = await axios.get('http://localhost:8000/drugs/list/allDrugs')
+  const response = await axios.get(`${drugURL}drugs/list/allDrugs`)
   return response.data
 })
 
 export const getData = createAsyncThunk('appDrugs/getData', async params => {
-  const response = await axios.get('http://localhost:8000/drugs/list/getDrug', { params: params })
+  const response = await axios.get(`${drugURL}drugs/list/getDrug`, { params: params })
   return {
     params,
     data: response.data,
@@ -20,7 +24,7 @@ export const getData = createAsyncThunk('appDrugs/getData', async params => {
 
 export const getDrug = createAsyncThunk('/appDrugs/getDrug', async id => {
   try {
-    const response = await axios.get(`http://localhost:8000/drugs/getDrug/${id}`)
+    const response = await axios.get(`${drugURL}drugs/getDrug/${id}`)
     return response.data[0]
   } catch (error) {
     console.error(error)
@@ -30,7 +34,7 @@ export const getDrug = createAsyncThunk('/appDrugs/getDrug', async id => {
 
 export const addDrug = createAsyncThunk('appDrugs/addDrug', async (newData) => {
   try {
-    await axios.post('http://localhost:8000/drugs/add/drug',  newData )
+    await axios.post(`${drugURL}drugs/add/drug`,  newData )
   } catch (error) {
     console.error(error)
   }
@@ -38,7 +42,7 @@ export const addDrug = createAsyncThunk('appDrugs/addDrug', async (newData) => {
 
 export const editDrug = createAsyncThunk('appDrugs/edit/Drug', async(newData) => {
   try {
-    await axios.put('http://localhost:8000/drugs/edit/drug', newData)
+    await axios.put(`http://localhost:8000/drugs/edit/drug`, newData)
   } catch (error) {
     console.error(error)
   }

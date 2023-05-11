@@ -8,15 +8,17 @@ import axios from 'axios'
 
 import { getLatestEncounterID } from '../../encounter/store'
 
+const prescriptionURL = "http://localhost:8000/prescriptions/"
+
 export const createPrescription = createAsyncThunk('appPrescription/createPrescription', async (data, { dispatch }) => {
     const encounterID = await dispatch(getLatestEncounterID());
     data['encounterID'] = encounterID.payload;
-    const response = await axios.post('http://localhost:8000/prescriptions/createPrescription', data)
+    const response = await axios.post(`${prescriptionURL}createPrescription`, data)
 })
 
 export const getPrescription = createAsyncThunk('appPrescription/getPrescription', async(encounterID) => {
     try {
-        const response = await axios.get(`http://localhost:8000/prescriptions/getPrescription/${encounterID}`);
+        const response = await axios.get(`${prescriptionURL}getPrescription/${encounterID}`);
         console.log(`Prescription of encounterID ${encounterID}`)
         return response.data
     } catch (error) {
@@ -29,7 +31,7 @@ export const postDrugList = createAsyncThunk('appPrescription/postDrugList', asy
     console.log("postDrugList --------> ")
     console.log(drugListArray)
     try {
-        await axios.post('http://localhost:8000/prescriptions/addDrugList', drugListArray);
+        await axios.post(`${prescriptionURL}addDrugList`, drugListArray);
     } catch (error) {
         console.log(error)
     }

@@ -4,20 +4,23 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 // ** Axios Imports
 import axios from 'axios'
 
+const staffURL = "http://localhost:8000/staff/"
+const jwtURL = "http://localhost:8000/jwt/"
+
 export const getAllData = createAsyncThunk('appStaffs/getAllData', async (params) => {
-  const response = await axios.get(`http://localhost:8000/staff/allData/${params}`)
+  const response = await axios.get(`${staffURL}allData/${params}`)
   return response.data
 })
 
 export const getAllDoc = createAsyncThunk('appStaffs/getAllData', async () => {
-  const response = await axios.get('http://localhost:8000/staff/allData')
+  const response = await axios.get(`${staffURL}allData`)
   return response.data
 })
 
 
 export const getData = createAsyncThunk('appStaffs/getData', async params => {
   try {
-    const response = await axios.get('http://localhost:8000/staff/list/data', { params: params })
+    const response = await axios.get(`${staffURL}list/data`, { params: params })
     return {
       params,
       data: response.data,
@@ -40,7 +43,7 @@ export const getCurrentStaff = createAsyncThunk('appStaffs/getCurrentStaff', asy
 
 export const getStaffData = createAsyncThunk('appStaffs/getStaffData', async id => {
   try {
-    const response = await axios.get(`http://localhost:8000/staff/getStaffData/${id}`);
+    const response = await axios.get(`${staffURL}getStaffData/${id}`);
     return response.data[0]
   } catch (error) {
     console.log(error)
@@ -49,14 +52,14 @@ export const getStaffData = createAsyncThunk('appStaffs/getStaffData', async id 
 
 // * INSERT NEW PATIENT TO DATABASE
 export const postStaff = createAsyncThunk('appStaffs/postStff', async (newData) => {
-  const response = await axios.post('http://localhost:8000/staff/createStaff', newData)
+  const response = await axios.post(`${staffURL}createStaff`, newData)
   return response.data
 })
 
 // ** create users acount for staff 
 export const createUser = createAsyncThunk('appStaffs/createUser', async (staffID) => {
   try {
-    await axios.post('http://localhost:8000/jwt/createUser', {staffID})
+    await axios.post(`${jwtURL}createUser`, {staffID})
   } catch (error) {
     console.log(error)
     console.error(error)
@@ -67,7 +70,7 @@ export const createUser = createAsyncThunk('appStaffs/createUser', async (staffI
 
 export const getEncounterStaff = createAsyncThunk('appStaffs/getEncounterStaff', async id => {
   try {
-    const response = await axios.get(`http://localhost:8000/staff/getEncounterStaff/${id}`)
+    const response = await axios.get(`${staffURL}getEncounterStaff/${id}`)
     console.log(response)
     return response.data
   } catch (error) {
@@ -79,7 +82,7 @@ export const getEncounterStaff = createAsyncThunk('appStaffs/getEncounterStaff',
 export const updateStaff = createAsyncThunk('appStaffs/updateStaff', async (newData, { dispatch }) => {
   const { id, ...updatedStaff } = newData
   try {
-    await axios.put(`http://localhost:8000/staff/editStaffData/${id}`, updatedStaff);
+    await axios.put(`${staffURL}editStaffData/${id}`, updatedStaff);
     const refresh = await dispatch(getStaffData(id))
     console.log(refresh)
     return refresh.payload
@@ -93,7 +96,7 @@ export const updateRole = createAsyncThunk('appStaffs/updateRole', async (newDat
   const roleID = newData[1];
   console.log(staffID);
   console.log(roleID);
-  await axios.put(`http://localhost:8000/staff/updateRole/${staffID}`, { roleID })
+  await axios.put(`${staffURL}updateRole/${staffID}`, { roleID })
     .then(response => {
       console.log(response.data); // handle response from server
     })
@@ -106,7 +109,7 @@ export const updateRole = createAsyncThunk('appStaffs/updateRole', async (newDat
 export const updatePassword = createAsyncThunk('appStaffs/updatePassword', async (newData, {dispatch}) => {
   const userID = newData[0]
   const password = newData[1]
-  await axios.put(`http://localhost:8000/jwt/updatePassword/${userID}`, { password })
+  await axios.put(`${jwtURL}updatePassword/${userID}`, { password })
     .then(response => {
       console.log(response.data); // handle response from server
     })
@@ -119,7 +122,7 @@ export const updateUsername = createAsyncThunk('appStaffs/updateUsername', async
   const staffID = newData[0]
   const username = newData[1]
   try {
-    await axios.put(`http://localhost:8000/jwt/setUsername`, {staffID, username})
+    await axios.put(`${jwtURL}setUsername`, {staffID, username})
   } catch (error) {
     console.log(error)
   }
@@ -127,7 +130,7 @@ export const updateUsername = createAsyncThunk('appStaffs/updateUsername', async
 
 export const deleteStaff = createAsyncThunk('appStaffs/deleteStaff' , async id => {
   try {
-    await axios.put(`http://localhost:8000/staff/deleteStaff/${id}`)
+    await axios.put(`${staffURL}deleteStaff/${id}`)
   } catch (error) {
     console.error(error)
   }
@@ -137,7 +140,7 @@ export const deleteStaff = createAsyncThunk('appStaffs/deleteStaff' , async id =
 
 export const getWidgetData = createAsyncThunk('/appStaffs/getWidgetData', async staffID => {
   try {
-    const response = await axios.get(`http://localhost:8000/staff/widget/${staffID}`)
+    const response = await axios.get(`${staffURL}widget/${staffID}`)
     return response.data[0]
   } catch (error) {
     console.log(error)
@@ -146,7 +149,7 @@ export const getWidgetData = createAsyncThunk('/appStaffs/getWidgetData', async 
 
 
 export const appStaffsSlice = createSlice({
-  name: 'appUsers',
+  name: 'appStaffs',
   initialState: {
     currentStaff: [],
     data: [],

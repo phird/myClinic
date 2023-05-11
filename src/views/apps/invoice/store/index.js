@@ -4,36 +4,41 @@ import { getLatestEncounterID } from '../../encounter/store'
 // ** Axios Imports
 import axios from 'axios'
 
+const invoiceURL = "http://localhost:8000/invoice/"
+
 export const getData = createAsyncThunk('appInvoice/getData', async (params) => {
-  const response = await axios.get('http://localhost:8000/invoice/getInvoice', {params: params})
-  console.log("in getData")
+  const response = await axios.get(`${invoiceURL}getInvoice`, {params: params})
+  console.log(" in get data ")
   console.log(response)
+
+
+  
   return {
     params,
     data: response.data,
     total: response.data.length
   }
 })
-export const deleteInvoice = createAsyncThunk('appInvoice/deleteInvoice', async (id, { dispatch,getState}) => {
+export const deleteInvoice = createAsyncThunk(`appInvoice/deleteInvoice`, async (id, { dispatch,getState}) => {
   await axios.delete('/apps/invoice/delete', { id })
   await dispatch(getData(getState().invoice.params))
   return id
 })
 
 export const changeStatusInvoice = createAsyncThunk('appInvoice/changeStatusInvoice', async (id) => {
-  await axios.put(`http://localhost:8000/invoice/status/${id}`)
+  await axios.put(`${invoiceURL}status/${id}`)
 } )
 
 export const createInvoice = createAsyncThunk('appInvoice/createInvoice', async(data,{dispatch,getState})=> {
   const encounterID = await dispatch(getLatestEncounterID());
   data['encounterID'] = encounterID.payload;
   //** NEED TO POST name and price to Invoice_List table */
-  const response = await axios.post('http://localhost:8000/invoice/createInvoice', data)
+  const response = await axios.post(`${invoiceURL}createInvoice`, data)
 })
 
 export const getInvoice = createAsyncThunk('appInvoice/getInvoice', async(encounterID) => {
   try {
-    const response = await axios.get(`http://localhost:8000/invoice/getInvoice/${encounterID}`);
+    const response = await axios.get(`${invoiceURL}getInvoice/${encounterID}`);
     return response.data
   } catch (error) {
     console.log(error)
@@ -42,7 +47,7 @@ export const getInvoice = createAsyncThunk('appInvoice/getInvoice', async(encoun
 
 export const getInvoiceDetail = createAsyncThunk('appInvoice/getInvoiceDetail', async(invID) => {
   try {
-    const response = await axios.get(`http://localhost:8000/invoice/getInvoiceDetail/${invID}`)
+    const response = await axios.get(`${invoiceURL}getInvoiceDetail/${invID}`)
     return response.data[0]
   } catch (error) {
     console.log(error)
@@ -51,7 +56,7 @@ export const getInvoiceDetail = createAsyncThunk('appInvoice/getInvoiceDetail', 
 
 export const getInvoiceList = createAsyncThunk('appInvoice/getInvoceList', async(invID) => {
   try {
-    const response = await axios.get(`http://localhost:8000/invoice/getInvoiceList/${invID}`) 
+    const response = await axios.get(`${invoiceURL}getInvoiceList/${invID}`) 
     return response.data
   } catch (error) {
     console.log(error)
@@ -60,7 +65,7 @@ export const getInvoiceList = createAsyncThunk('appInvoice/getInvoceList', async
 
 export const getInvoicePrescription = createAsyncThunk('/appInvoice/getInvoicePrescription' , async (id) => {
   try {
-    const response = await axios.get(`http://localhost:8000/invoice/getInvoice/prescription/${id}`);
+    const response = await axios.get(`${invoiceURL}getInvoice/prescription/${id}`);
     console.log("Invoice Prescription")
     console.log(response.data)
     console.log("========>>>")
@@ -72,7 +77,7 @@ export const getInvoicePrescription = createAsyncThunk('/appInvoice/getInvoicePr
 
 export const postInvoiceList = createAsyncThunk('appInvoice/postInvoiceList' , async(invoiceArray) => {
   try {
-    await axios.post('http://localhost:8000/invoice/addInvoiceList', invoiceArray);
+    await axios.post(`${invoiceURL}addInvoiceList`, invoiceArray);
   } catch (error) {
     console.log(error)
   }

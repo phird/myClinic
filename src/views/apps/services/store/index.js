@@ -4,9 +4,11 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 // ** Axios Imports
 import axios from 'axios'
 
+const serviceURL = "http://localhost:8000/services/"
+
 export const getAllData = createAsyncThunk('appService/getAllData', async () => {
   try {
-    const response = await axios.get('http://localhost:8000/services/list/getAllData')
+    const response = await axios.get(`${serviceURL}list/getAllData`)
     return response.data.services
   } catch (error) {
     console.error(error)
@@ -15,7 +17,7 @@ export const getAllData = createAsyncThunk('appService/getAllData', async () => 
 
 export const getData = createAsyncThunk('appService/getData', async params => {
   try {
-    const response = await axios.get('http://localhost:8000/services/list/getData', { params: params })
+    const response = await axios.get(`${serviceURL}list/getData`, { params: params })
     console.log(response)
     return {
       params,
@@ -28,21 +30,21 @@ export const getData = createAsyncThunk('appService/getData', async params => {
 })
 
 export const getServiceData = createAsyncThunk('appService/getServiceData', async (id) => {
-  const response  = await axios.get(`http://localhost:8000/services/getService/${id}`);
+  const response  = await axios.get(`${serviceURL}getService/${id}`);
   return response.data[0]
 })
 
 export const addService = createAsyncThunk('appService/addService', async(newData) => {
-  const response = await axios.post('http://localhost:8000/services/addService', newData);
+  const response = await axios.post(`${serviceURL}addService`, newData);
   return response.data
 })
 
 export const editService = createAsyncThunk('appService/editService', async newData => {
-  await axios.put('http://localhost:8000/services/updateService',  { params: newData })
+  await axios.put(`${serviceURL}updateService`,  { params: newData })
 })
 
 export const deleteService = createAsyncThunk('appService/deleteService' , async (id) => {
-  await axios.put(`http://localhost:8000/services/delete/${id}`)
+  await axios.put(`${serviceURL}delete/${id}`)
 })
 
 

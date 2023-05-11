@@ -4,10 +4,12 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axios from 'axios'
 
 
+const patientURL = "http://localhost:8000/app/Patient/"
+
 //* Here should get all data from Patient table 
 export const getAllData = createAsyncThunk('appPatients/getAllData', async () => {
   try {
-    const response = await axios.get('http://localhost:8000/app/Patient/list/data/')
+    const response = await axios.get(`${patientURL}list/data/`)
     return response.data
   } catch (err) {
     console.log(err)
@@ -15,7 +17,7 @@ export const getAllData = createAsyncThunk('appPatients/getAllData', async () =>
 })
 
 export const getData = createAsyncThunk('appPatients/getData', async (params) => {
-  const response = await axios.get('http://localhost:8000/app/Patient/list/getdata', {params: params})
+  const response = await axios.get(`${patientURL}list/getdata`, {params: params})
   /* console.log(response.data.patients.length) */
   return {
     params: params,
@@ -26,21 +28,21 @@ export const getData = createAsyncThunk('appPatients/getData', async (params) =>
 
 // * INSERT NEW PATIENT TO DATABASE
 export const postPatient = createAsyncThunk('appPatients/postPatient', async (newData) => {
-  const response = await axios.post('http://localhost:8000/app/Patient/createPatient', newData)
+  const response = await axios.post(`${patientURL}createPatient`, newData)
   return response.data
 })
 
 export const updatePatient = createAsyncThunk('appPatients/updatePatient', async (newData, { dispatch, getState }) => {
   const { id, ...updatedPatient } = newData
   console.log("updatePatient has been called");
-  await axios.put(`http://localhost:8000/app/Patient/editPatient/${id}`, updatedPatient);
+  await axios.put(`${patientURL}editPatient/${id}`, updatedPatient);
   const refresh = await dispatch(getPatient(id))
   return refresh.data.patient[0]
 })
 
 //* This one need to receive id from user to get user info 
 export const getPatient = createAsyncThunk('appPatients/getPatient', async id => {
-  const response = await axios.get(`http://localhost:8000/app/Patient/patients/patient/${id}`)
+  const response = await axios.get(`${patientURL}patients/patient/${id}`)
   /* const response = await axios.get('http://localhost:8000/app/Patient/patients/patient/${id}') */
   console.log("this is getPatient")
   return response.data.patient[0]

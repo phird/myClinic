@@ -7,14 +7,16 @@ import axios from 'axios'
 import { createInvoice } from '../../invoice/store'
 import { createPrescription } from '../../prescription/store'
  
+const encounterURL = "http://localhost:8000/"
+
 
 export const getAllEncounter = createAsyncThunk('appEncounters/getAllEncounter', async () => {
-  const response = await axios.get('http://localhost:8000/app/Encounter/list/data')
+  const response = await axios.get(`${encounterURL}app/Encounter/list/data`)
   return response.data.encounter
 })
 
 export const getEncounterData = createAsyncThunk('appEncounters/getEncounterData', async params => {
-  const response = await axios.get('http://localhost:8000/app/Encounter/list/getdata', {params: params})
+  const response = await axios.get(`${encounterURL}app/Encounter/list/getdata`, {params: params})
   return {
     params,
     data: response.data.encounters,
@@ -24,7 +26,7 @@ export const getEncounterData = createAsyncThunk('appEncounters/getEncounterData
 
 // to create an empty encounter 
 export const postEncounter = createAsyncThunk('appEncounter/postEncounter', async (newData, { dispatch, getState }) => {
-  const response = await axios.post('http://localhost:8000/app/Encounter/createEncounter', newData)
+  const response = await axios.post(`${encounterURL}app/Encounter/createEncounter`, newData)
   await dispatch(createInvoice(newData));
   await dispatch(createPrescription(newData));
   return response.data
@@ -32,7 +34,7 @@ export const postEncounter = createAsyncThunk('appEncounter/postEncounter', asyn
 
 export const handleSubmitEncounter = createAsyncThunk('appEncounter/handleSubmitEncounter', async(encounterID)=>{
   try {
-    await axios.put(`http://localhost:8000/app/Encounter/handleSubmit/${encounterID}`)
+    await axios.put(`${encounterURL}app/Encounter/handleSubmit/${encounterID}`)
   } catch (error) {
     console.log(error)
   }
@@ -40,7 +42,7 @@ export const handleSubmitEncounter = createAsyncThunk('appEncounter/handleSubmit
 
 //** 🙋🏻‍♂️ get specific encounter for patient  */
 export const getPatientEncounter = createAsyncThunk('appPatient/getEncounter', async params => {
-  const response = await axios.get(`http://localhost:8000/app/Patient/list/getPatientEncounter`, {params : params})
+  const response = await axios.get(`${encounterURL}app/Patient/list/getPatientEncounter`, {params : params})
   if (response.status == 200) {
     return {
       params,
@@ -58,12 +60,12 @@ export const getPatientEncounter = createAsyncThunk('appPatient/getEncounter', a
 //** ⭐️ legacy get encounter  */
 
 export const getEncounter = createAsyncThunk('appEncounter/getEncounter', async id => {
-  const response = await axios.get(`http://localhost:8000/app/Encounter/encounters/encounter/${id}`)
+  const response = await axios.get(`${encounterURL}app/Encounter/encounters/encounter/${id}`)
   return response.data.encounter[0]
 })
 
 export const getLatestEncounterID = createAsyncThunk('appEncounter/getLatestEncounterID', async () => {
-  const idLastes = await axios.get('http://localhost:8000/app/Encounter/latestID')
+  const idLastes = await axios.get(`${encounterURL}app/Encounter/latestID`)
   const enid = idLastes.data[0].id
   return enid
 })
@@ -71,7 +73,7 @@ export const getLatestEncounterID = createAsyncThunk('appEncounter/getLatestEnco
 //** end of code encounter */
 export const addNote = createAsyncThunk('appEncounter/addNote', async (dataArray) => {
   try {
-    const response = await axios.put('http://localhost:8000/app/Encounter/addNote', dataArray)
+    const response = await axios.put(`${encounterURL}app/Encounter/addNote`, dataArray)
     return response;
   } catch (error) {
     console.log("an error in addNote")
@@ -84,7 +86,7 @@ export const addNote = createAsyncThunk('appEncounter/addNote', async (dataArray
 // ** 🧸 Widget in Patient View 
 export const getWidgetEncounter = createAsyncThunk('appEncounter/getWidgetEncounter', async id => {
   try {
-    const response = await axios.get(`http://localhost:8000/app/Encounter/widgetData/${id}`)
+    const response = await axios.get(`${encounterURL}app/Encounter/widgetData/${id}`)
     console.log(response)
     return {
       data: response.data[0],
@@ -100,7 +102,7 @@ export const getWidgetEncounter = createAsyncThunk('appEncounter/getWidgetEncoun
 //* For Encounter SYMPTOM 
 export const getSymptoms = createAsyncThunk('appEncounter/getSymptoms', async(encounterID)=> {
   try{
-    const response = await axios.get('http://localhost:8000/encounterSymptom/getSymptoms', {params: {encounterID}} );
+    const response = await axios.get(`${encounterURL}encounterSymptom/getSymptoms`, {params: {encounterID}} );
     return response.data
   }
   catch(err){
@@ -110,7 +112,7 @@ export const getSymptoms = createAsyncThunk('appEncounter/getSymptoms', async(en
 
 export const addSymptom = createAsyncThunk('appEncounter/addSymptom', async (dataArray) => {
   try {
-    const response = await axios.post('http://localhost:8000/encounterSymptom/addSymptom', dataArray);
+    const response = await axios.post(`${encounterURL}encounterSymptom/addSymptom`, dataArray);
     return response;
   } catch (error) {
     console.log('an error in addSymptom')
@@ -121,7 +123,7 @@ export const addSymptom = createAsyncThunk('appEncounter/addSymptom', async (dat
 
 export const addUrl = createAsyncThunk('appEncounter/addUrl', async (dataArray) => {
   try{
-    await axios.post('http://localhost:8000/app/Encounter/imgUrl', dataArray)
+    await axios.post(`${encounterURL}app/Encounter/imgUrl`, dataArray)
   }catch (error){
     console.log(error)
   }
@@ -129,7 +131,7 @@ export const addUrl = createAsyncThunk('appEncounter/addUrl', async (dataArray) 
 
 export const getImg = createAsyncThunk('appEncounter/getImg', async id => {
   try{
-    const response = await axios.get(`http://localhost:8000/app/Encounter/img/${id}`)
+    const response = await axios.get(`${encounterURL}app/Encounter/img/${id}`)
     return response.data
   }catch(error){
     console.log(error)
@@ -138,7 +140,7 @@ export const getImg = createAsyncThunk('appEncounter/getImg', async id => {
 
 export const forExport = createAsyncThunk('appEncounters/forExport', async () => {
   try{
-    const response = await axios.get(`http://localhost:8000/app/Encounter/forExport`)
+    const response = await axios.get(`${encounterURL}app/Encounter/forExport`)
     return response.data
   }catch(error){
     console.log(error)
@@ -148,7 +150,7 @@ export const forExport = createAsyncThunk('appEncounters/forExport', async () =>
 // * get Suggest Disease 
 export const getDisease = createAsyncThunk('appEncounter/getDisease', async () => {
   try {
-    const response = await axios.get('http://localhost:8000/v1/diseases/api/')
+    const response = await axios.get(`${encounterURL}v1/diseases/api/`)
     return response.data
   } catch (error) {
     console.log("Error occur in Client Side - > getDisease")
@@ -158,7 +160,7 @@ export const getDisease = createAsyncThunk('appEncounter/getDisease', async () =
 
 export const getDiseaseSymptom = createAsyncThunk('appEncounter/getDiseaseSymptom', async(id) => {
   try {
-    const response = await axios.get(`http://localhost:8000/v1/diseases/api/disease/${id}`)
+    const response = await axios.get(`${encounterURL}v1/diseases/api/disease/${id}`)
     return response.data.sympList
   } catch (error) {
     console.log("Error in Client Side - getDiseaseSymptom")
@@ -175,7 +177,7 @@ export const deleteEncounter = createAsyncThunk('appEncounters/deleteEncounter',
 
 export const getDoctorForUser = createAsyncThunk('appEncounters/getDoctorForUser', async () => {
   try {
-    const doctor =  await axios.get('http://localhost:8000/staff/list/doctor')
+    const doctor =  await axios.get(`${encounterURL}staff/list/doctor`)
     return {
       data: doctor.data,
       total: doctor.data.length
