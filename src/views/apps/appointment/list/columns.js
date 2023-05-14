@@ -108,6 +108,7 @@ export const columns = [
       const id = row.appointmentID
       /// Appts State 
       const [patientName, setPatientName] = useState('')
+      const [patientLastName, setPatientLastName] = useState('')
       const [phoneNo, setPhoneNo] = useState('')
       const [doctor, setDoctor] = useState('')
       const [staffID, setStaffID] = useState()
@@ -125,7 +126,8 @@ export const columns = [
         fetchData()
         // * appts set State 
         setDateTime(store.selectedEvent?.date)
-        setPatientName(store.selectedEvent?.patient_name + ' ' + store.selectedEvent?.patient_lastname)
+        setPatientName("คุณ" + " " + store.selectedEvent?.patient_name)
+        setPatientLastName(store.selectedEvent?.patient_lastname)
         setDoctor(store.selectedEvent?.staffID)
         setPhoneNo(store.selectedEvent?.contact)
         setNote(store.selectedEvent?.note)
@@ -236,7 +238,7 @@ export const columns = [
               </div>
               <hr />
               <Row className='mb-2'>
-                <span className='h2'> {patientName}</span>
+                <span className='h2'> {patientName + " " + (patientLastName === null ? " " : patientLastName)}</span>
               </Row>
 
               <Row>
