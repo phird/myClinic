@@ -90,9 +90,9 @@ export const ApptSlice = createSlice({
         state.allData = action.payload
       })
       .addCase(getData.fulfilled, (state, action) => {
-        state.data = action.payload.data
-        state.params = action.payload.params
-        state.total = action.payload.totalPages
+        state.data = action.payload?.data
+        state.params = action.payload?.params
+        state.total = action.payload?.totalPages
       })
       .addCase(getEvent.fulfilled, (state, action) => {
         state.events = action.payload

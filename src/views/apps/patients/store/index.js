@@ -21,7 +21,7 @@ export const getData = createAsyncThunk('appPatients/getData', async (params) =>
   /* console.log(response.data.patients.length) */
   return {
     params: params,
-    data: response.data.patient,
+    data: response?.data.patient,
     totalPages: response.data.patient.length,
   }
 })
@@ -66,7 +66,7 @@ export const appPatientsSlice = createSlice({
         state.allData = action.payload
       })
       .addCase(getData.fulfilled, (state, action) => {
-        state.data = action.payload.data
+        state.data = action.payload?.data
         state.params = action.payload.params
         state.total = action.payload.totalPages
       })

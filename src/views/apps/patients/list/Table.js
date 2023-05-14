@@ -714,7 +714,7 @@ const PatientsList = () => {
     } else if (store.data.length === 0 && isFiltered) {
       return []
     } else {
-      return store.allData.slice(0, rowsPerPage)
+      return store.allData?.slice(0, rowsPerPage)
     }
   }
 

@@ -1,6 +1,6 @@
 // ** React Imports
 import { useEffect, useState, useRef, memo } from 'react'
-
+import { useSelector } from 'react-redux'
 // ** Third Party Components
 import axios from 'axios'
 import { Calendar, Menu, ChevronDown, ChevronUp } from 'react-feather'
@@ -24,10 +24,10 @@ import th from '@fullcalendar/core/locales/th'
 
 // * Store 
 import { useDispatch } from 'react-redux'
-import {event } from '../store'
+import {event} from '../store'
 
 // * Component 
-import ModalEvent from './modal'
+import ModalEvent from './modal/Event'
 
 
 // * Style 
@@ -36,18 +36,20 @@ import '@styles/react/apps/app-calendar.scss'
 
 const AppointmentCard = (props) => {
     // ** State
-
+    const store = useSelector(state => state.appointment)
     const [isOpen, setIsOpen] = useState(false)
     const toggle = () => setIsOpen(!isOpen)
 
     // ** Refs
     const calendarRef = useRef(null)
     const {
-        store,
+        //store,
         dispatch,
         blankEvent,
         calendarsColor,
         toggleEvent,
+        toggleDate,
+        setDate,
     } = props
 
     /*     // ** UseEffect checks for CalendarAPI Update
@@ -57,7 +59,7 @@ const AppointmentCard = (props) => {
 
     // ** calendarOptions(Props)
     const calendarOptions = {
-        events: store.events.length ? store.events : [],
+        events: store.events?.length ? store.events : [],
         //events: store.events,
         plugins: [interactionPlugin, dayGridPlugin, timeGridPlugin, listPlugin],
         initialView: 'dayGridMonth',
@@ -108,13 +110,29 @@ const AppointmentCard = (props) => {
             ]
         },
 
+
+        eventClick ({ event: clickedEvent }) {
+            const apptID = clickedEvent.id;
+            //console.log("Appointment ID : ")
+            //console.log(apptID)
+            dispatch(event(parseInt(apptID)))
+            //console.log("data  : ")
+            //console.log(store.selectedEvent)
+            toggleEvent();
+          },
+      
+
         dateClick(info) {
+            // this section for creating a new one 
+            console.log("current info : ")
+            console.log(info)
             // * info is data of date that we click 
             const ev = blankEvent
+            setDate(info.date)
             ev.start = info.date  // set ev start at date that click on calendar 
 
             // so next try to open modal with date that we click 
-            toggleEvent(); // open modal 
+            toggleDate(); // open modal 
 
             //dispatch(event(ev))  /// load data of each appointment (view-only) -> like sent a date that click into modal 
             //handleAddEventSidebar()

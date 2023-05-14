@@ -265,7 +265,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                 <Select
                   id="patientName"
                   placeholder="เลือก หรือ ค้นผู้ป่วย"
-                  options={allPatients.map((patient) => ({ value: patient.patientID, label: patient.fname + "  " + patient.lname }))}
+                  options={allPatients?.map((patient) => ({ value: patient.patientID, label: patient.fname + "  " + patient.lname }))}
                   value={patient}
                   onChange={handlePatientChange}
                   required

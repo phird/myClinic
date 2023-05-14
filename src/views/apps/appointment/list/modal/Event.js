@@ -58,8 +58,6 @@ const ModalEvent = ({openModal, toggleModal}) => {
         setAddedDate(store.selectedEvent?.addedDate)
     }, [store.selectedEvent])
 
-
-
     const convertDate = (dt) => {
         const dateString = dt;
         const date = new Date(dateString);
@@ -89,7 +87,7 @@ const ModalEvent = ({openModal, toggleModal}) => {
     }
 
     const searchStaff = (sID) => {
-        const result = staff.find((staffMember) => staffMember.staffID === sID);
+        const result = staff?.find((staffMember) => staffMember.staffID === sID);
         const staffName = result?.fname + ' ' + result?.lname
         return staffName
     }

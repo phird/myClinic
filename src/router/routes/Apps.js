@@ -17,9 +17,7 @@ const Setting = lazy(()=> import('../../views/apps/setting/General'))
 const Disease = lazy(() => import('../../views/apps/setting/Disease/list'))
 
 // * Invoice
-const InvoiceAdd = lazy(() => import('../../views/apps/invoice/add'))
 const InvoiceList = lazy(() => import('../../views/apps/invoice/list'))
-const InvoiceEdit = lazy(() => import('../../views/apps/invoice/edit'))
 const InvoicePrint = lazy(() => import('../../views/apps/invoice/print'))
 const InvoicePreview = lazy(() => import('../../views/apps/invoice/preview'))
 
@@ -118,14 +116,6 @@ const AppRoutes = [
   {
     element: <InvoicePreview />,
     path: '/apps/invoice/preview/:id',
-    meta: {
-      action: 'read',
-      resource: 'ACL'
-    }
-  },
-  {
-    element: <InvoiceEdit />,
-    path: '/apps/invoice/edit/:id',
     meta: {
       action: 'read',
       resource: 'ACL'

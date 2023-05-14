@@ -33,7 +33,8 @@ import { addEvent } from '../store';
 
 // * Component
 import AppointmentCard from './AppointmentCard'
-import ModalEvent from './modal'
+import ModalEvent from './modal/Event'
+import ModalDate from './modal/Date';
 
 // ** Utils
 import { selectThemeColors } from '@utils'
@@ -61,7 +62,6 @@ import {
 // ** Styles
 import '@styles/react/libs/react-select/_react-select.scss'
 import '@styles/react/libs/tables/react-dataTable-component.scss'
-import { pick } from 'react-bootstrap-typeahead/types/utils';
 import { toast } from 'react-hot-toast';
 
 const calendarsColor = {
@@ -266,7 +266,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                       list="suggestions"
                     />
                     <datalist className='dflex' id="suggestions" style={{ maxWidth: '100%' }}>
-                      {allPatients.slice(0, 3).map(patient => (
+                      {allPatients?.slice(0, 3).map(patient => (
                         <option key={patient.patientID} value={patient.fname + " " + patient.lname} onClick={e => setPatient(patient.fname)} />
                       ))}
                     </datalist>
@@ -319,7 +319,7 @@ const CustomHeader = ({ store, handlePerPage, rowsPerPage, handleFilter, searchT
                       className='react-select'
                       classNamePrefix='select'
                       placeholder='ค้นหา/เลือก แพทย์ที่นัดหมาย'
-                      options={allDoctor.map((doc) => ({ value: doc.staffID, label: doc.fname + " " + doc.lname }))}
+                      options={allDoctor?.map((doc) => ({ value: doc.staffID, label: doc.fname + " " + doc.lname }))}
                       required
                       value={doctor}
                       onChange={handleDoctorSelect}
@@ -390,6 +390,12 @@ const AppointmentList = () => {
 
   const [toggleEvent, setToggleEvent] = useState(false)
   const toggle = () => setToggleEvent(!toggleEvent)
+  const [toggleEvent2, setToggleEvent2] = useState(false)
+  const toggle2 = () => setToggleEvent2(!toggleEvent2)
+
+  // from calendar to modal 
+  const [datePick, setDatePick] = useState()
+
 
   // ** Get data on mount
   useEffect(() => {
@@ -404,7 +410,7 @@ const AppointmentList = () => {
       })
     )
     dispatch(getEvent())
-  }, [dispatch, store.data.length, store.events.length, store.total, sort, sortColumn, searchTerm, currentPage, store.selectedDrug])
+  }, [dispatch, store.data?.length, store.total, sort, sortColumn, searchTerm, currentPage, store.selectedDrug])
   // ** Blank Event Object
   
   
@@ -489,13 +495,13 @@ const AppointmentList = () => {
 
     const startIndex = (currentPage - 1) * rowsPerPage
     const endIndex = startIndex + rowsPerPage
-    if (store.data.length > 0) {
+    if (store.data?.length > 0) {
       return store.data.slice(startIndex, endIndex)
-    } else if (store.data.length === 0 /* && isFiltered */) {
+    } else if (store.data?.length === 0 /* && isFiltered */) {
       return []
     } else {
       //console.log("i render all data instead of getData")
-      return store.allData.slice(0, rowsPerPage)
+      return store.allData?.slice(0, rowsPerPage)
     }
   }
 
@@ -525,11 +531,14 @@ const AppointmentList = () => {
           <AppointmentCard
             dispatch={dispatch}
             store={store}
+            setDate={setDatePick}
             blankEvent={blankEvent}
             calendarsColor={calendarsColor}
             toggleEvent={toggle}
+            toggleDate = {toggle2}
           />
           <ModalEvent openModal={toggleEvent} toggleModal={toggle}/>
+          <ModalDate  openModal2={toggleEvent2} toggleModal2={toggle2} Date2={datePick}/> 
           <DataTable
             noHeader
             subHeader

@@ -287,7 +287,7 @@ const ServiceList = () => {
         perPage: rowsPerPage,
       })
     )
-  }, [dispatch, store.data.length, store.total, sort, sortColumn, currentPage])
+  }, [dispatch, store.data?.length, store.total, sort, sortColumn, currentPage])
 
   // ** Function in get data on page change
   const handlePagination = page => {
@@ -366,12 +366,12 @@ const ServiceList = () => {
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage
 
-    if (store.data.length > 0) {
+    if (store.data?.length > 0) {
       return store.data.slice(startIndex, endIndex)
-    } else if (store.data.length === 0 && isFiltered) {
+    } else if (store.data?.length === 0 && isFiltered) {
       return []
     } else {
-      return store.allData.slice(0, rowsPerPage)
+      return store.allData?.slice(0, rowsPerPage)
     }
   }
 
