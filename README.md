@@ -4,10 +4,10 @@ status - on develope
 if you get any bugs or issue feel free to let me know by creating issue on GITHUB 🙏🏻
 
 ## version-log
- - 0.8.3 <br />
+ - 0.8.3 May 23, 2023 <br />
   -- Login Handle <br />
      change from localStorage into cookie 
- - 0.8.2 <br />
+ - 0.8.2  May 8, 2023<br /> 
   -- event on calendar can click to add an event <br />
      able to clcik on calendar to open modal  
  - 0.8.1 <br />
