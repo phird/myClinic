@@ -1,5 +1,5 @@
 # myClnic Project
-🔋Status: In development
+🔋Status: Developing
 
 if you get any bugs or issue feel free to let me know by creating issue on GITHUB 🙏🏻
 
