@@ -8,6 +8,7 @@ import { getUserData } from '@utils'
 const PublicRoute = ({ children, route }) => {
   if (route) {
     const user = getUserData()
+    console.log("public route said " , user)
     const restrictedRoute = route.meta && route.meta.restricted
 
     if (user && restrictedRoute) {

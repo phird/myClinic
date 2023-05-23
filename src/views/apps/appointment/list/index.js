@@ -15,5 +15,4 @@ const UsersList = () => {
     </div>
   )
 }
-
 export default UsersList

@@ -9,21 +9,22 @@ export default class JwtService {
   isAlreadyFetchingAccessToken = false
 
 
+  // ** For Refreshing Token
+  subscribers = []
 
   constructor(jwtOverrideConfig) {
     this.jwtConfig = { ...this.jwtConfig, ...jwtOverrideConfig }
-
     // ** Request Interceptor
     axios.interceptors.request.use(
       config => {
-        // ** Get token from localStorage
+        // ** Get token from localStorage // Cookie
         const accessToken = this.getToken()
-
         // ** If token is present add it to request's Authorization Header
         if (accessToken) {
           // ** eslint-disable-next-line no-param-reassign
           config.headers.Authorization = `${this.jwtConfig.tokenType} ${accessToken}`
         }
+        //console.log("config : ", config)
         return config
       },
       error => Promise.reject(error)
@@ -64,26 +65,75 @@ export default class JwtService {
     )
   }
 
+
+
+
+  // config this section into cookie 
   // ** Get token !  --- > Token Session
-  getToken() {
-    return localStorage.getItem(this.jwtConfig.storageTokenKeyName)
+
+  onAccessTokenFetched(accessToken) {
+    this.subscribers = this.subscribers.filter(callback => callback(accessToken))
   }
 
+  addSubscriber(callback) {
+    this.subscribers.push(callback)
+  }
+
+  getToken() {
+    const cookies = document.cookie;
+    if (cookies) {
+      const cookiePairs = cookies.split("; ")
+      for (let i = 0; i < cookiePairs.length; i++) {
+        const cookiePair = cookiePairs[i].split('=');
+        const cookieName = decodeURIComponent(cookiePair[0]);
+        if (cookieName === this.jwtConfig.storageTokenKeyName) {
+          const token = cookiePair[1];
+          //console.log("this what get Token() return : ", token)
+          return token;
+        }
+      }
+    }
+    return null;
+  }
+
+
+
   getRefreshToken() {
-    return localStorage.getItem(this.jwtConfig.storageRefreshTokenKeyName)
+    const cookies = document.cookie;
+    if (cookies) {
+      const cookiePairs = cookies.split("; ")
+      const cookieData = {};
+
+      for (let i = 0; i < cookiePairs.length; i++) {
+        const cookiePair = cookiePairs[i].split('=');
+        const cookieName = decodeURIComponent(cookiePair[0]);
+        const cookieValue = decodeURIComponent(cookiePair[1]);
+        cookieData[cookieName] = cookieValue;
+        if (cookieName === this.jwtConfig.storageRefreshTokenKeyName) {
+          const token = cookiePair[1];
+          //console.log("this what get Token() return : ", token)
+          return token;
+        }
+      }
+    }
+    return null;
   }
 
   setToken(value) {
-    localStorage.setItem(this.jwtConfig.storageTokenKeyName, value)
+    document.cookie = `${this.jwtConfig.storageTokenKeyName} = ${value}`
   }
 
   setRefreshToken(value) {
-    localStorage.setItem(this.jwtConfig.storageRefreshTokenKeyName, value)
+    document.cookie = `${this.jwtConfig.storageRefreshTokenKeyName}=${value}`
   }
 
   login(...args) {
-    console.log("im tryna login !")
     return axios.post(this.jwtConfig.loginEndpoint, ...args)
+    // end handle login
+  }
+
+  async verify(token) {
+    return axios.post(this.jwtConfig.tokenVerifyEndpoint, { accessToken: token });
   }
 
   register(...args) {

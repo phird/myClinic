@@ -1,7 +1,7 @@
 // ** React Imports
 import { Navigate } from 'react-router-dom'
 import { useContext, Suspense } from 'react'
-
+import { isUserLoggedIn, getUserData } from '../../../utility/Utils'
 // ** Context Imports
 import { AbilityContext } from '@src/utility/context/Can'
 
@@ -9,9 +9,13 @@ import { AbilityContext } from '@src/utility/context/Can'
 import Spinner from '../spinner/Loading-spinner'
 
 const PrivateRoute = ({ children, route }) => {
+  //console.log("🔒🚔 in private route ", children, "  and  " , route)
   // ** Hooks & Vars
   const ability = useContext(AbilityContext)
-  const user = JSON.parse(localStorage.getItem('userData'))
+  //console.log("ability in private Route", ability)
+  //const user = JSON.parse(localStorage.getItem('userData'))
+  const user = getUserData();
+  //console.log("🔒 user in private route ", user)
 
   if (route) {
     let action = null
@@ -33,7 +37,7 @@ const PrivateRoute = ({ children, route }) => {
       return <Navigate to='/' />
     }
     if (user && !ability.can(user.action || 'read', resource)) {
-      console.log(ability.can(user.action, resource))
+      //console.log(ability.can(user.action, resource))
       return <Navigate to='/misc/not-authorized' replace />
     }
   }

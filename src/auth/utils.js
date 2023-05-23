@@ -1,27 +1,35 @@
 import useJwt from '@src/@core/auth/jwt/useJwt'
 
-/**
- * Return if user is logged in
- * This is completely up to you and how you want to store the token in your frontend application
- * e.g. If you are using cookies to store the application please update this function
- */
-// eslint-disable-next-line arrow-body-style
 export const isUserLoggedIn = () => {
-  return localStorage.getItem('userData') && localStorage.getItem(useJwt.jwtConfig.storageTokenKeyName)
+  //console.log("this also called ")
+  //console.log("in isUserLoggedIN ")
+  //console.log("[bool]: isUserLoggedIn return => ")
+  //console.log(document.cookie.includes('userData') && document.cookie.includes(useJwt.jwtConfig.storageTokenKeyName))
+  //! legacy code 
+  //return localStorage.getItem('userData') && localStorage.getItem(useJwt.jwtConfig.storageTokenKeyName)
+  return document.cookie.includes('userData') && document.cookie.includes(useJwt.jwtConfig.storageTokenKeyName);
 }
 
-export const getUserData = () => JSON.parse(localStorage.getItem('userData'))
+//export const getUserData = () => JSON.parse(localStorage.getItem('userData'))
+export const getUserData = () => {
+  const cookies = document.cookie;
+  let userData = {};
 
-/**
- * This function is used for demo purpose route navigation
- * In real app you won't need this function because your app will navigate to same route for each users regardless of ability
- * Please note role field is just for showing purpose it's not used by anything in frontend
- * We are checking role just for ease
- * NOTE: If you have different pages to navigate based on user ability then this function can be useful. However, you need to update it.
- * @param {String} userRole Role of user
- */
-export const getHomeRouteForLoggedInUser = userRole => {
-  if (userRole === 'admin') return '/home'
-  if (userRole === 'client') return { name: 'access-control' }
-  return { name: 'auth-login' }
-}
+  if (cookies) {
+    const cookiePairs = cookies.split("; ");
+    for (let i = 0; i < cookiePairs.length; i++) {
+      const cookiePair = cookiePairs[i].split('=');
+      const cookieName = decodeURIComponent(cookiePair[0]);
+      const cookieValue = decodeURIComponent(cookiePair[1]);
+      if (cookieName === 'accessToken') {
+        // Decode the access token to extract the user data
+        const decodedToken = jwtDecode(cookieValue);
+        //console.log("here is decoded Token : ", decodedToken)
+        userData = decodedToken ? decodedToken : {};
+        break;
+      }
+    }
+  }
+
+  return userData ? userData : {};
+};

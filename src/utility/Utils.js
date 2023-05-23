@@ -1,4 +1,11 @@
 import { DefaultRoute } from '../router/routes'
+import jwtDecode from 'jwt-decode'
+import useJwt from '@src/auth/jwt/useJwt'
+import { Jwt } from 'jsonwebtoken'
+
+
+const config = useJwt.jwtConfig
+
 
 // ** Checks if an object is empty (returns boolean)
 export const isObjEmpty = obj => Object.keys(obj).length === 0
@@ -50,17 +57,50 @@ export const formatDateToMonthShort = (value, toTimeForCurrentDay = true) => {
  ** This is completely up to you and how you want to store the token in your frontend application
  *  ? e.g. If you are using cookies to store the application please update this function
  */
-export const isUserLoggedIn = () => localStorage.getItem('userData')
-export const getUserData = () => JSON.parse(localStorage.getItem('userData'))
 
-/**
- ** This function is used for demo purpose route navigation
- ** In real app you won't need this function because your app will navigate to same route for each users regardless of ability
- ** Please note role field is just for showing purpose it's not used by anything in frontend
- ** We are checking role just for ease
- * ? NOTE: If you have different pages to navigate based on user ability then this function can be useful. However, you need to update it.
- * @param {String} userRole Role of user
- */
+// export const isUserLoggedIn = () => localStorage.getItem('userData')
+// export const getUserData = () => JSON.parse(localStorage.getItem('userData'))
+//export const isUserLoggedIn = () => document.cookie.includes('userData');
+
+
+export const isUserLoggedIn = async () => {  // not returning a bool but returning a userdata
+  //return localStorage.getItem('userData') && localStorage.getItem(useJwt.jwtConfig.storageTokenKeyName)
+  const accessTokenCookie = document.cookie
+    .split('; ')
+    .find(row => row.startsWith(`${config.storageTokenKeyName}=`));
+
+  if (accessTokenCookie) {
+    const token = accessTokenCookie.split('=')[1];
+    try {
+      // Verify the access token using the secret or public key
+      const decodedToken = await useJwt.verify(token);
+      return decodedToken.data.isValid; // Return the userData object
+
+    } catch (error) {
+      // Token verification failed
+      console.error('Access token verification failed:', error);
+      return false;
+    }
+  }
+
+  return false;
+}
+
+export const getUserData = () => {
+  const accessTokenCookie = document.cookie
+    .split('; ')
+    .find(row => row.startsWith(`${config.storageTokenKeyName}=`));
+  if (accessTokenCookie) {
+    const accessToken = accessTokenCookie.split('=')[1];
+    const decodedToken = jwtDecode(accessToken);
+    const userData = decodedToken;
+    return userData; // Return the userData object
+  }
+  return null
+};
+
+
+
 
 // ** React Select Theme Colors
 export const selectThemeColors = theme => ({

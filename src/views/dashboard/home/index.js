@@ -2,7 +2,6 @@
 import { useContext } from 'react'
 
 // ** Icons Imports
-import { List } from 'react-feather'
 
 // ** Custom Components
 import Avatar from '@components/avatar'
@@ -15,7 +14,7 @@ import { kFormatter } from '@utils'
 import { ThemeColors } from '@src/utility/context/ThemeColors'
 
 // ** Reactstrap Imports
-import { Row, Col, Card, CardHeader, CardTitle, CardBody } from 'reactstrap'
+import { Row, Col } from 'reactstrap'
 
 // ** Demo Components
 import OrdersReceived from '@src/views/ui-elements/cards/statistics/OrdersReceived'

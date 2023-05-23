@@ -11,6 +11,7 @@ import toast from 'react-hot-toast'
 import { useDispatch } from 'react-redux'
 import { useForm, Controller } from 'react-hook-form'
 import { Coffee, X } from 'react-feather'
+import jwtDecode from 'jwt-decode'
 
 // ** Actions
 import { handleLogin } from '@store/authentication'
@@ -32,7 +33,8 @@ import {
   Button,
   CardText,
   CardTitle,
-  FormFeedback} from 'reactstrap'
+  FormFeedback
+} from 'reactstrap'
 
 // ** Illustrations Imports
 import illustrationsLight from '@src/assets/images/pages/login-v2.svg'
@@ -41,7 +43,7 @@ import illustrationsDark from '@src/assets/images/pages/login-v2-dark.svg'
 // ** Styles
 import '@styles/react/pages/page-authentication.scss'
 
-const ToastContent = ({ t, name, role }) => {
+const ToastContent = ({ t, name }) => {
   return (
     <div className='d-flex'>
       <div className='me-1'>
@@ -82,22 +84,35 @@ const Login = () => {
     console.log("click")
     if (Object.values(data).every(field => field.length > 0)) {
       useJwt
-        .login({ username: data.loginEmail, password: data.password })
+        .login(
+          { username: data.loginEmail, password: data.password })
         .then(res => {
-          console.log("res from frontend: ")
-          console.log(res)
-          const data = { ...res.data.userData, accessToken: res.data.accessToken, refreshToken: res.data.refreshToken }
-          dispatch(handleLogin(data))
-          ability.update(res.data.userData.ability)
+          console.log("here a res ")
+          const { accessToken, refreshToken } = res.data;
+          const tokenData = { accessToken, refreshToken }
+          console.log("gere")
+          dispatch(handleLogin(tokenData)) // put into cookie in browser
+          const decodedToken = jwtDecode(accessToken)
+          const userData = decodedToken;
+
+          const userAbility = [
+            {
+              action: userData.action,
+              subject: userData.subject
+            }
+          ]
+          console.log("there are userData ", userData)
+          console.log("User ability", userData.ability)
+          ability.update(userData.ability)  // update ability
           navigate('/home')
           toast(t => (
-            <ToastContent t={t} role={data.role || 'admin'} name={data.fullname || data.username || 'John Doe'} />
+            <ToastContent t={t} name={userData.name || userData.username || 'ผู้ใช้งาน'} />
           ))
         })
         .catch(err => setError('username', {
-            type: 'manual',
-            message: err.response
-          })
+          type: 'manual',
+          message: err.response
+        })
         )
     } else {
       for (const key in data) {
@@ -129,7 +144,7 @@ const Login = () => {
             <CardText className='mb-2'>myClinic ระบบจัดการข้อมูลคลินิกทางการแพทย์</CardText>
             <Form className='auth-login-form mt-2' onSubmit={handleSubmit(onSubmit)}>
               <div className='mb-1'>
-                <Label className='form-label' for='login-email'>
+                <Label className='form-label' for='loginEmail'>
                   ชื่อผุ้ใช้
                 </Label>
                 <Controller
@@ -150,7 +165,7 @@ const Login = () => {
               </div>
               <div className='mb-1'>
                 <div className='d-flex justify-content-between'>
-                  <Label className='form-label' for='login-password'>
+                  <Label className='form-label' for='password'>
                     รหัสผ่าน
                   </Label>
                   <Link to='/forgot-password'>
@@ -166,7 +181,7 @@ const Login = () => {
                   )}
                 />
               </div>
-              
+
               <Button type='submit' color='primary' block>
                 เข้าสู่ระบบ
               </Button>

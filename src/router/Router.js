@@ -2,7 +2,8 @@
 import { lazy } from 'react'
 
 // ** Router imports
-import { useRoutes, Navigate } from 'react-router-dom'
+import { useRoutes, Navigate  } from 'react-router-dom'
+import { useEffect } from 'react';
 
 // ** Layouts
 import BlankLayout from '@layouts/BlankLayout'
@@ -11,7 +12,8 @@ import BlankLayout from '@layouts/BlankLayout'
 import { useLayout } from '@hooks/useLayout'
 
 // ** Utils
-import { getUserData } from '../utility/Utils'
+
+import { getUserData, isUserLoggedIn } from '../utility/Utils'
 
 // ** GetRoutes
 import { getRoutes } from './routes'
@@ -24,14 +26,17 @@ const NotAuthorized = lazy(() => import('../views/pages/misc/NotAuthorized'))
 const Router = () => {
   // ** Hooks
   const { layout } = useLayout()
-
   const allRoutes = getRoutes(layout)
+
   const getHomeRoute = () => {
-    const user = getUserData()
+    const user = isUserLoggedIn();
+    //console.log(" [getHomeRoute]here a user ", user)
     if (user) {
-      return '/home'
+      //console.log("Redirecting to /home");
+      return ('/home');
     } else {
-      return '/login'
+      //console.log("Redirecting to /login");
+      return ('/login');
     }
   }
 

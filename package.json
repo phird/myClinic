@@ -50,6 +50,7 @@
     "i18next-http-backend": "^2.0.1",
     "jquery": "^3.6.0",
     "jsonwebtoken": "8.5.1",
+    "jwt-decode": "^3.1.2",
     "moment": "^2.29.3",
     "mysql": "^2.18.1",
     "nouislider": "^15.5.0",
