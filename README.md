@@ -1,6 +1,9 @@
 # myClnic Project
 🔋Status: Developing
 
+updated - 15 aug 2023
+🚨 Next -> Turn this project into Platform 
+
 if you get any bugs or issue feel free to let me know by creating issue on GITHUB 🙏🏻
 
 ## version-log
