@@ -170,6 +170,5 @@
     ">0.2%",
     "not dead",
     "not op_mini all"
-  ],
-  "packageManager": "yarn@3.3.1"
+  ]
 }
