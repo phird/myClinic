@@ -4,7 +4,7 @@ name: Build and Push Docker Image to ECR
 on:
   push:
     branches:
-      - example/pipeline-anda # or specify any branch you want to trigger this workflow on
+      - main # or specify any branch you want to trigger this workflow on
 
 permissions:
   id-token: write
