@@ -44,7 +44,7 @@ jobs:
     - name: Build, tag, and push Docker image
       env:
         ECR_URI: "697698820969.dkr.ecr.us-east-1.amazonaws.com/palm-app"
-        IMAGE_TAG: palm
+        IMAGE_TAG: palm_1
       run: |
         yarn install
         yarn build
@@ -55,3 +55,4 @@ jobs:
     #   run: |
     #     IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' ${{ env.REPO_URI }}:${{ github.sha }})
     #     echo "Docker image pushed: $IMAGE_DIGEST"
+```
