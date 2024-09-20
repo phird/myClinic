@@ -29,12 +29,10 @@ jobs:
 
     - name: Log in to Amazon ECR
       id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v2
+      uses: aws-actions/amazon-ecr-login@v3
       env: 
        ECR_URI: "697698820969.dkr.ecr.us-east-1.amazonaws.com/palm-app",
        IMAGE_TAG: "palm"
-      with:
-        aws-region: us-east-1
 
 
     - name: Configure AWS credentials with session token
