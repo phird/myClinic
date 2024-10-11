@@ -3,7 +3,7 @@ name: Build and Push Docker Image to ECR
 on:
   push:
     branches:
-      - main # or specify any branch you want to trigger this workflow on
+      - test-project # or specify any branch you want to trigger this workflow on
 
 permissions:
   id-token: write
