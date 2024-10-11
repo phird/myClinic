@@ -1,6 +1,11 @@
-FROM node:15.13-alpine
+FROM node:alpine
+
 WORKDIR /myclinic
-ENV PATH="./node_modules/.bin:$PATH"
-COPY . . 
-RUN ng build
-CMD [ "ng", "serve"]
+
+COPY . /myclinic
+
+RUN npm install -g @angular/cli
+
+RUN npm install
+
+CMD ["ng", "serve", "--host", "0.0.0.0"]
